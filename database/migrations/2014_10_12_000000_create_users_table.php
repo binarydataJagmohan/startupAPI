@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('country_code')->nullable();
+            $table->string('country')->nullable();
             $table->string('phone')->unique()->nullable();
             $table->string('email_verification_token')->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -24,11 +26,10 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('new_password')->nullable();
             $table->string('gender')->nullable();;
-            $table->string('city')->nullable();;
-            $table->string('country')->nullable();
+            $table->string('city')->nullable();
             $table->string('linkedin_url')->nullable();
             $table->text('profile')->nullable();
-            $table->string('investor_type')->nullable();
+            $table->string('investorType')->nullable();
             // $table->string('experience')->nullable();
             $table->string('profile_pic')->nullable();
             $table->text('profile_desc')->nullable();

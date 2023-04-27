@@ -12,55 +12,9 @@ use App\Models\User;
 use App\Models\Business;
 use App\Models\BankDetails;
 use Mail;
+use App\Models\InvestorTerms;
 class InvestorController extends Controller
 {
-    public function investor_profile(Request $request)
-    {
-        try {
-
-            // $validator = Validator::make($request->all(), [
-            //     'firstname' => 'required|max:255',
-            //     'lastname' => 'required|max:255',
-            //     'email' => 'required|email',
-            //     'phone' => 'required|min:10|max:20',
-            //     'gender' => 'required',
-            //     'city' => 'required',
-            //     'country' => 'required',
-            //     'linkedinurl' => 'required|url'
-            // ]);
-            // if ($validator->fails()) {
-            //     return response()->json([
-            //         'status' => false,
-            //         'message' => 'Validation error',
-            //         'errors' => $validator->errors(),
-            //     ], 200);
-            // } else {
-                // Store the user in the database
-                $user = User::find($request->id);
-                $user->name = $request->firstname . " " . $request->lastname;
-                $user->email = $request->email;
-                $user->password = Hash::make($request->password);
-                $user->phone = $request->phone;
-                $user->gender = $request->gender;
-                $user->city = $request->city;
-                $user->country = $request->country;
-                $user->linkedin_url = $request->linkedinurl;
-                $data  = $user->save();
-                // $otp = VerificationCode::create([
-                //     'user_id' => 1,
-                //     'otp' => rand(1000, 9999),
-                //     'expire_at' => Carbon::now()->addMinutes(1)
-                // ]);
-                if($data){
-                   return response()->json(['status' => true, 'message' => 'User profile stored successfully', 'data' => $user], 200);
-                }else{
-                     return response()->json(['status' => flase, 'message' => 'User profile not stored successfully', 'data' => 'error'], 200);
-                }
-            // }
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-        }
-    }
 
     public function investor_type_information(Request $request)
     {
@@ -71,16 +25,16 @@ class InvestorController extends Controller
               $data->is_profile_completed = '1';
               $data->save();
         
-              $mail['email'] = $data->email;
-              $mail['title'] = "Profile Completed";
-              $mail['body'] =  "Profile has been Completed Successfully.";
-              Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
-                  $message->to($mail['email'])->subject($mail['title']);
-              });
+            //   $mail['email'] = $data->email;
+            //   $mail['title'] = "Profile Completed";
+            //   $mail['body'] =  "Profile has been Completed Successfully.";
+            //   Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
+            //       $message->to($mail['email'])->subject($mail['title']);
+            //   });
             return response()->json([
                 'status' => true,
-                'message' => 'Profile has been Completed Successfully.',
-                'data' => ['data' =>$request->investorType]
+                'message' => 'Data updated Successfully.',
+                'data' => ['data' =>$data]
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -101,6 +55,142 @@ class InvestorController extends Controller
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             }
         } catch (\Exception $e) {
+        }
+
+    }
+    public function angel_investor_terms(Request $request)
+    {
+        try {
+            $userId = $request->user_id;
+            $data = InvestorTerms::where('user_id', $userId)->first();
+            
+            if ($data) {
+                $data->category = $request->category;
+                $data->principal_residence = $request->category == "1" ? $request->principal_residence : 0;
+                $data->cofounder = $request->category == "1" ? $request->cofounder : 0;
+                $data->prev_investment_exp = $request->category == "1" ? $request->prev_investment_exp : 0;
+                $data->experience = $request->category == "1" ? $request->experience : 0;
+                $data->net_worth = $request->category == "2" ? $request->net_worth : 0;
+                $data->no_requirements = $request->category == "3" ? $request->no_requirements : 0;
+                $data->save();
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Profile has been Updated Successfully',
+                    'data' => ['data' => $data]
+                ], 200);
+            } else {
+                $data = new InvestorTerms();
+                $data->user_id = $userId;
+                $data->category = $request->category;
+                $data->principal_residence = $request->category == "1" ? $request->principal_residence : 0;
+                $data->cofounder = $request->category == "1" ? $request->cofounder : 0;
+                $data->prev_investment_exp = $request->category == "1" ? $request->prev_investment_exp : 0;
+                $data->experience = $request->category == "1" ? $request->experience : 0;
+                $data->net_worth = $request->category == "2" ? $request->net_worth : 0;
+                $data->no_requirements = $request->category == "3" ? $request->no_requirements : 0;
+                $data->save();
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Profile has been Completed Successfully.',
+                    'data' => ['data' => $data]
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+
+    public function get_angel_investor_terms(Request $request)
+    {
+        try {
+            $data = InvestorTerms::where('user_id', $request->id)->first();
+
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function accredited_investor_terms(Request $request)
+    {
+        try {
+            $userId = $request->user_id;
+            $data = InvestorTerms::where('user_id', $userId)->first();
+            
+            if ($data) {
+                $data->category = $request->category;
+                $data->annual_income = $request->category == "1" ? $request->annual_income : 0;
+                $data->financial_net_worth = $request->category == "1" ? $request->financial_net_worth : 0;
+                $data->financial_annual_net_worth = $request->category == "1" ? $request->financial_annual_net_worth : 0;
+                $data->foreign_annual_income = $request->category == "1" ? $request->foreign_annual_income : 0;
+                $data->foreign_net_worth = $request->category == "2" ? $request->foreign_net_worth : 0;
+                $data->foreign_annual_net_worth = $request->category == "3" ? $request->foreign_annual_net_worth : 0;
+                $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
+                $data->save();
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Profile has been Updated Successfully',
+                    'data' => ['data' => $data]
+                ], 200);
+            } else {
+                $data = new InvestorTerms();
+                $data->user_id = $userId;
+                $data->category = $request->category;
+                $data->annual_income = $request->category == "1" ? $request->annual_income : 0;
+                $data->financial_net_worth = $request->category == "1" ? $request->financial_net_worth : 0;
+                $data->financial_annual_net_worth = $request->category == "1" ? $request->financial_annual_net_worth : 0;
+                $data->foreign_annual_income = $request->category == "1" ? $request->foreign_annual_income : 0;
+                $data->foreign_net_worth = $request->category == "2" ? $request->foreign_net_worth : 0;
+                $data->foreign_annual_net_worth = $request->category == "3" ? $request->foreign_annual_net_worth : 0;
+                $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
+                $data->save();
+                
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Profile has been Completed Successfully.',
+                    'data' => ['data' => $data]
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_accredited_investor_terms(Request $request)
+    {
+        try {
+            $data = InvestorTerms::where('user_id', $request->id)->first();
+
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
     }
