@@ -54,6 +54,9 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('accredited-investor-terms', [App\Http\Controllers\Api\InvestorController::class, 'accredited_investor_terms']);
     Route::get('get-accredited-investor-terms/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_accredited_investor_terms']);
 
+    Route::get('get-all-investors',[App\Http\Controllers\Api\InvestorController::class,'get_all_investors']);
+    Route::get('get-all-startup',[App\Http\Controllers\Api\StartupController::class,'get_all_startup']);
+
     Route::post('store-bank-details', [App\Http\Controllers\Api\UserController::class, 'store_bank_detail']);
     Route::post('update-bank-details/{id}', [App\Http\Controllers\Api\UserController::class, 'update_bank_detail']);
 
@@ -63,5 +66,7 @@ Route::group(['middleware' => ['api']], function () {
 
      // Countries route 
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
+
+
 
 });

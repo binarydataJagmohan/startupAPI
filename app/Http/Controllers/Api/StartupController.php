@@ -145,9 +145,22 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function get_all_startup(Request $request)
     {
-        //
+        try {
+            $data = User::where(['role'=>'startup','is_profile_completed'=>'1'])->get();
+
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

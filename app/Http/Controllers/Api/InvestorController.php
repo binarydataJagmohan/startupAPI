@@ -91,6 +91,14 @@ class InvestorController extends Controller
                 $data->net_worth = $request->category == "2" ? $request->net_worth : 0;
                 $data->no_requirements = $request->category == "3" ? $request->no_requirements : 0;
                 $data->save();
+
+        $user=User::where('id',$userId)->update(['reg_step_3' => '1','is_profile_completed' =>'1']);
+              $mail['email'] = $data->email;
+              $mail['title'] = "Profile Completed";
+              $mail['body'] =  "Profile has been Completed Successfully.";
+              Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
+                  $message->to($mail['email'])->subject($mail['title']);
+              });
                 
                 return response()->json([
                     'status' => true,
@@ -143,6 +151,8 @@ class InvestorController extends Controller
                 $data->foreign_annual_net_worth = $request->category == "3" ? $request->foreign_annual_net_worth : 0;
                 $data->corporate_net_worth= $request->category == "3" ? $request->corporate_net_worth: 0;
                 $data->save();
+
+                $user=User::where('id',$userId)->update(['reg_step_3' => '1','is_profile_completed' =>'1']);
                 
                 return response()->json([
                     'status' => true,
@@ -162,6 +172,12 @@ class InvestorController extends Controller
                 $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
                 $data->save();
                 
+                  $mail['email'] = $data->email;
+              $mail['title'] = "Profile Completed";
+              $mail['body'] =  "Profile has been Completed Successfully.";
+              Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
+                  $message->to($mail['email'])->subject($mail['title']);
+              });
                 return response()->json([
                     'status' => true,
                     'message' => 'Profile has been Completed Successfully.',
@@ -194,6 +210,23 @@ class InvestorController extends Controller
             ], 500);
         }
 
+    }
+
+    public function get_all_investors(Request $request){
+         try {
+            $data = User::where(['role'=>'investor','is_profile_completed'=>'1'])->get();
+
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
