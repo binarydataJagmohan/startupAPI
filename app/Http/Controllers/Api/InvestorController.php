@@ -20,9 +20,10 @@ class InvestorController extends Controller
     {
         try {
               $data=User::find($request->id);
+              // $data->update(['investorType'=>$request->investorType,'reg_step_2'=>'1']);
               $data->investorType=$request->investorType;
               $data->reg_step_2 = '1';
-              $data->is_profile_completed = '1';
+              // $data->is_profile_completed = '1';
               $data->save();
         
             //   $mail['email'] = $data->email;
@@ -138,9 +139,9 @@ class InvestorController extends Controller
                 $data->financial_net_worth = $request->category == "1" ? $request->financial_net_worth : 0;
                 $data->financial_annual_net_worth = $request->category == "1" ? $request->financial_annual_net_worth : 0;
                 $data->foreign_annual_income = $request->category == "1" ? $request->foreign_annual_income : 0;
-                $data->foreign_net_worth = $request->category == "2" ? $request->foreign_net_worth : 0;
+                $data->foreign_net_worth= $request->category == "2" ? $request->foreign_net_worth: 0;
                 $data->foreign_annual_net_worth = $request->category == "3" ? $request->foreign_annual_net_worth : 0;
-                $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
+                $data->corporate_net_worth= $request->category == "3" ? $request->corporate_net_worth: 0;
                 $data->save();
                 
                 return response()->json([
