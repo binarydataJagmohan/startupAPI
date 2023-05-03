@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>{$mail['title']}}</title>
+        <title>{{$mail['title']}}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Coderthemes" name="author" />
@@ -61,7 +61,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
                                         Hi Dear,<br>
-                                               Congratulations Your profile has been completed now you have access to raise the funds for your startup business.
+                                               Congratulations Your Account has been approved by Adminstrative Department.Now you can access the Dashboard.
                                     </td>
                                 </tr>
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -73,9 +73,6 @@
                                            <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Thanks,<br>
                                               Startup - IT Startups &amp; Digital Services</p>
                                         </td>
-                                        <td>
-                                           <!-- <a href="{{ asset($mail['pdf_file']) }}" download>Download PDF</a> -->
-                                       </td>
                                 </tr>
                             </table>
                         </td>
