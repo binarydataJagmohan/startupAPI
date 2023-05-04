@@ -25,12 +25,12 @@ class BankDetailsController extends Controller
      */
     public function bank_details(Request $request)
     {
-        try {
+         try {
             $userId = $request->id;
-            $data  = BankDetails::where('user_id', $userId)->first();
-            if ($data ) {
-                $data ->update($request->all());
-                return response()->json(['status' => true, 'message' => 'Details updated successfully', 'data' => ['data' => $data]], 200);
+             $data  = BankDetails::where('user_id', $userId)->first();
+             if ($data ) {
+                 $data ->update($request->all());
+                 return response()->json(['status' => true, 'message' => 'Details updated successfully', 'data' => ['data' => $data]], 200);
             } else {
                 $data = new BankDetails();
                 $data->user_id = $userId;
@@ -44,14 +44,20 @@ class BankDetailsController extends Controller
                 $user->reg_step_4 = '1';
                 $user->is_profile_completed = '1';
                 $user->save();
-        
+            
+                $pdf_file_path = public_path('/pdf/file.pdf');
+                
+                $mail['username']= $user->name;
                 $mail['email'] = $user->email;
                 $mail['title'] = "Profile Completed";
                 $mail['body'] = "Profile has been Completed Successfully. ";
-        
+                $mail['pdf_file'] = $pdf_file_path; 
+
                 Mail::send('email.ProfileCompletedMail', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
+                    $message->attach($mail['pdf_file']);
                 });
+
         
                 return response()->json([
                     'status' => true,
@@ -60,6 +66,7 @@ class BankDetailsController extends Controller
                 ], 200);
              
             }
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

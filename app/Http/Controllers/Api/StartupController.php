@@ -148,7 +148,10 @@ class StartupController extends Controller
     public function get_all_startup(Request $request)
     {
         try {
-            $data = User::where(['role'=>'startup','is_profile_completed'=>'1'])->get();
+           $data = User::select('users.*', 'business_details.business_name', 'business_details.stage')
+            ->join('business_details', 'users.id', '=', 'business_details.user_id')
+            ->where(['role' => 'startup', 'is_profile_completed' => '1'])
+            ->get();
 
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
@@ -169,9 +172,34 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+       public function updateApprovalStatus(Request $request, $id)
     {
-        //
+        try {
+            $startup = User::where(['id' => $id, 'role' => 'startup'])->firstOrFail();
+            $startup->approval_status = $request->input('approval_status');
+            $startup->save();
+
+                // $mail['name']= $startup->name;
+                $mail['email'] = $startup->email;
+                $mail['title'] = "Approval Mail";
+                $mail['body'] =  "Your Account has been approved Successfully. ";
+
+                Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data'=>$startup
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -181,11 +209,26 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+       public function updateApprovalStage(Request $request, $id)
     {
-        //
-    }
+        try {
+            $data = Business::where('user_id', $id)->first();
+            $data->stage= $request->input('stage');
+            $data->save();
 
+            return response()->json([
+                'status' => true,
+                'message' => 'Business Stage Updated Successfully.',
+                'data'=>$data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     /**
      * Remove the specified resource from storage.
      *
