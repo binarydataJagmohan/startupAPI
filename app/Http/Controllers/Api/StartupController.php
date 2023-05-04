@@ -72,48 +72,103 @@ class StartupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function business_information(Request $request)
-    { 
-        try {
+{ 
+    try {
         $userId = $request->user_id;
         $data  = Business::where('user_id', $userId)->first();
         if ($data ) {
             $data ->update($request->all());
-            return response()->json(['status' => true, 'message' => 'Business Details updated successfully', 'data' => ['data' => $data]], 200);
         } else {
-            $data                =  new Business();
-            $data->user_id       =    $userId;
-            $data->business_name = $request->business_name;
-            $data->reg_businessname =$request->reg_businessname;
-            $data->website_url   =  $request->website_url;
-            $data->stage         =  $request->stage;
-            // $data->department    =  $request->department;
-            $data->startup_date    =  $request->startup_date;
-            $data->description   =  $request->description;
-            $data->cofounder     = $request->cofounder;
-            // if ($request->hasFile('logo')) {
-            //     $randomNumber = mt_rand(1000000000, 9999999999);
-            //     $imagePath = $request->file('logo');
-            //     $imageName = $randomNumber . $imagePath->getClientOriginalName();
-            //     $imagePath->move('images/profile', $imageName);
-            //     $data->logo = $imageName;
-            // }
-            $data->logo          =$request->logo;
-            $data->kyc_purposes  = $request->kyc_purposes;
-            $data->tagline       = $request->tagline;
-            $data->sector        = $request->sector;
-            $data->updated_at    =Carbon::now();
-            $data->save();
-            $user=User::where('id', $userId)->update(['reg_step_2'=>'1']);
-            return response()->json(['status' => true, 'message' => 'Business Details stored successfully', 'data' => ['data' => $data]], 200);
+            $data = new Business();
+            $data->user_id = $userId;
         }
-        
-        
-    } 
-    catch (\Exception $e) {
+
+        $data->business_name = $request->business_name;
+        $data->reg_businessname = $request->reg_businessname;
+        $data->website_url = $request->website_url;
+        $data->stage = $request->stage;
+        $data->startup_date = $request->startup_date;
+        $data->description = $request->description;
+        $data->cofounder = $request->cofounder;
+        $data->kyc_purposes = $request->kyc_purposes;
+        $data->tagline = $request->tagline;
+        $data->sector = $request->sector;
+        $data->updated_at = Carbon::now();
+
+        // if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $filepath = public_path('docs/');
+
+            // Move the file to the specified path
+            $file->move($filepath, $filename);
+
+            // Save the filename to your database or wherever you need it
+            $data->logo = $filename;
+        // }
+
+        $data->save();
+
+        $user=User::where('id', $userId)->update(['reg_step_2'=>'1']);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Business Details ' . ($data->wasRecentlyCreated ? 'stored' : 'updated') . ' successfully',
+            'data' => ['data' => $data]
+        ], 200);
+    } catch (\Exception $e) {
         throw new HttpException(500, $e->getMessage());
     }
-    }
+}
+
+    // public function business_information(Request $request)
+    // { 
+    //     try {
+    //     $userId = $request->user_id;
+    //     $data  = Business::where('user_id', $userId)->first();
+    //     if ($data ) {
+    //         $data ->update($request->all());
+    //         return response()->json(['status' => true, 'message' => 'Business Details updated successfully', 'data' => ['data' => $data]], 200);
+    //     } else {
+    //         $data                =  new Business();
+    //         $data->user_id       =    $userId;
+    //         $data->business_name = $request->business_name;
+    //         $data->reg_businessname =$request->reg_businessname;
+    //         $data->website_url   =  $request->website_url;
+    //         $data->stage         =  $request->stage;
+    //         // $data->department    =  $request->department;
+    //         $data->startup_date    =  $request->startup_date;
+    //         $data->description   =  $request->description;
+    //         $data->cofounder     = $request->cofounder;
+    //       // if ($request->hasFile('logo')) {
+    //     $file = $request->file('logo');
+    //     $filename = time() . '_' . $file->getClientOriginalName();
+    //     $filepath = public_path('public/docs/');
+
+    //     // Move the file to the specified path
+    //     $file->move($filepath, $filename);
+
+    //     // Save the filename to your database or wherever you need it
+    //     $data->logo = $filename;
+    // // }
+    //         // $data->logo          =$request->logo;
+    //         $data->kyc_purposes  = $request->kyc_purposes;
+    //         $data->tagline       = $request->tagline;
+    //         $data->sector        = $request->sector;
+    //         $data->updated_at    =Carbon::now();
+    //         $data->save();
+    //         $user=User::where('id', $userId)->update(['reg_step_2'=>'1']);
+    //         return response()->json(['status' => true, 'message' => 'Business Details stored successfully', 'data' => ['data' => $data]], 200);
+    //     }
+        
+        
+    // } 
+    // catch (\Exception $e) {
+    //     throw new HttpException(500, $e->getMessage());
+    // }
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -279,6 +334,26 @@ class StartupController extends Controller
     }
 }
 
+// public function get_single_business_details(Request $request,$id)
+//   {
+//     try {
+
+//         $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
+//                 ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
+//                 ->where('business_details.id',$id)
+//                 ->first();
+//         if ($data) {
+//             return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+//         }
+        
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'status' => false,
+//             'message' => 'Error Occurred.',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
 
 
 }

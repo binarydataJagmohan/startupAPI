@@ -13,16 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-       Schema::create('business_units', function (Blueprint $table) {
-    $table->id();
-    $table->integer('business_id');
-    $table->integer('avg_amt_per_person')->nullable();
-    $table->integer('minimum_subscription')->nullable();
-    $table->timestamp('closed_in')->nullable();
-    $table->integer('total_units');
-    $table->timestamps();
-});
-
+        Schema::create('business_units', function (Blueprint $table) {
+            $table->id();
+              $table->integer('business_id');
+             $table->integer('avg_amt_per_person')->nullable();
+             $table->integer('minimum_subscription')->nullable();
+             $table->timestamp('closed_in')->nullable();
+             $table->integer('total_units');
+            $table->timestamps();
+        });
     }
 
     /**
