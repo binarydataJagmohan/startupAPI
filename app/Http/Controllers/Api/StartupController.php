@@ -76,6 +76,26 @@ class StartupController extends Controller
     public function business_information(Request $request)
 { 
     try {
+        $validator = Validator::make($request->all(), [
+            'business_name' => 'required',
+            'reg_businessname' => 'required',
+            'stage' => 'required',
+            'startup_date' => 'required',
+            'website_url' => 'required|url', 
+            'description' => 'required',
+            // 'cofounder' => 'required',
+            'kyc_purposes' => 'required',
+            'tagline' => 'required',
+            'sector' => 'required',
+            // 'logo' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors(),
+            ], 422);
+        } 
         $userId = $request->user_id;
         $data  = Business::where('user_id', $userId)->first();
         if ($data ) {
@@ -97,17 +117,13 @@ class StartupController extends Controller
         $data->sector = $request->sector;
         $data->updated_at = Carbon::now();
 
-        // if ($request->hasFile('logo')) {
+        if ($request->hasFile('logo')) { 
             $file = $request->file('logo');
             $filename = time() . '_' . $file->getClientOriginalName();
             $filepath = public_path('docs/');
-
-            // Move the file to the specified path
             $file->move($filepath, $filename);
-
-            // Save the filename to your database or wherever you need it
             $data->logo = $filename;
-        // }
+        }
 
         $data->save();
 
@@ -292,8 +308,14 @@ class StartupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $startup = Business::find($id);
+        if (!$startup) {
+            return response()->json(['message' => 'Business not found.'], 404);
+        }
+        $startup->delete();
+        return response()->json(['message' => 'Business deleted successfully.']);
     }
+    
 
      public function get_all_business_details()
   {
@@ -317,10 +339,16 @@ class StartupController extends Controller
  public function get_single_business_details($id)
   {
     try {
-        $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
-                ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
-                ->where('business_details.id',$id)
-                ->first();
+        $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
+            ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
+            ->where('business_details.id', $id)
+            ->first();
+
+        //    $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
+        //     ->select('business_details.logo', 'business_units.business_id')
+        //     ->where('business_details.id', $id)
+        //     ->first();
+        
         if ($data) {
             return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
         }
@@ -334,26 +362,7 @@ class StartupController extends Controller
     }
 }
 
-// public function get_single_business_details(Request $request,$id)
-//   {
-//     try {
 
-//         $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
-//                 ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
-//                 ->where('business_details.id',$id)
-//                 ->first();
-//         if ($data) {
-//             return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-//         }
-        
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'status' => false,
-//             'message' => 'Error Occurred.',
-//             'error' => $e->getMessage()
-//         ], 500);
-//     }
-// }
 
 
 }

@@ -30,4 +30,11 @@ class Business extends Model
         'sector',
         'business_file'
     ];
+
+    protected $appends = ['logo'];
+
+    public function getLogoAttribute()
+    {
+        return url('docs/'.$this->attributes['logo']);
+    }
 }
