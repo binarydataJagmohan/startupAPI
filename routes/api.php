@@ -69,6 +69,7 @@ Route::group(['middleware' => ['api']], function () {
      // Countries route 
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
+     Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
 
 
 

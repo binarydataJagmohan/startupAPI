@@ -240,20 +240,45 @@ class StartupController extends Controller
         //
     }
 
-      public function get_all_business_details(Request $request)
-    {
-        try {
-            $data = Business::get();
-            if ($data) {
-                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-            }
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error Occurred.',
-                'error' => $e->getMessage()
-            ], 500);
+     public function get_all_business_details()
+  {
+    try {
+        $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
+                ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
+                ->get();
+        if ($data) {
+            return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
         }
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error Occurred.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
+ public function get_single_business_details($id)
+  {
+    try {
+        $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
+                ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units')
+                ->where('business_details.id',$id)
+                ->first();
+        if ($data) {
+            return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+        }
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error Occurred.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
 }
