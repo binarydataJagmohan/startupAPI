@@ -196,4 +196,21 @@ class StartupController extends Controller
     {
         //
     }
+
+      public function get_all_business_details(Request $request)
+    {
+        try {
+            $data = Business::get();
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
