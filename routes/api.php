@@ -72,8 +72,9 @@ Route::group(['middleware' => ['api']], function () {
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
      Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
-
+     Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
      Route::delete('startups/{id}', [StartupController::class, 'destroy']);
-
+     Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
+;
 
 });
