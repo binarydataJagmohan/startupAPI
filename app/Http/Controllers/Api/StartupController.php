@@ -99,11 +99,37 @@ class StartupController extends Controller
         $userId = $request->user_id;
         $data  = Business::where('user_id', $userId)->first();
         if ($data ) {
-            $data ->update($request->all());
+            // $data ->update($request->all());
+            $data->update([
+                'business_name' => $request->business_name,
+                'reg_businessname' => $request->reg_businessname,
+                'website_url' => $request->website_url,
+                'stage' => $request->stage,
+                'startup_date' => $request->startup_date,
+                'description' => $request->description,
+                'cofounder' => $request->cofounder,
+                'kyc_purposes' => $request->kyc_purposes,
+                'tagline' => $request->tagline,
+                'sector' => $request->sector,
+                'updated_at' => Carbon::now(),
+            ]);
+            if ($request->hasFile('logo')) { 
+                $file = $request->file('logo');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $filepath = public_path('docs/');
+                $file->move($filepath, $filename);
+                $data->logo = $filename;
+                $data->save();
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Business Details Updated successfully',
+                'data' => ['data' => $data]
+            ], 200);
         } else {
             $data = new Business();
             $data->user_id = $userId;
-        }
+        
 
         $data->business_name = $request->business_name;
         $data->reg_businessname = $request->reg_businessname;
@@ -131,60 +157,16 @@ class StartupController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Business Details ' . ($data->wasRecentlyCreated ? 'stored' : 'updated') . ' successfully',
+            'message' => 'Business Details stored successfully',
             'data' => ['data' => $data]
         ], 200);
+    }
     } catch (\Exception $e) {
         throw new HttpException(500, $e->getMessage());
     }
 }
 
-    // public function business_information(Request $request)
-    // { 
-    //     try {
-    //     $userId = $request->user_id;
-    //     $data  = Business::where('user_id', $userId)->first();
-    //     if ($data ) {
-    //         $data ->update($request->all());
-    //         return response()->json(['status' => true, 'message' => 'Business Details updated successfully', 'data' => ['data' => $data]], 200);
-    //     } else {
-    //         $data                =  new Business();
-    //         $data->user_id       =    $userId;
-    //         $data->business_name = $request->business_name;
-    //         $data->reg_businessname =$request->reg_businessname;
-    //         $data->website_url   =  $request->website_url;
-    //         $data->stage         =  $request->stage;
-    //         // $data->department    =  $request->department;
-    //         $data->startup_date    =  $request->startup_date;
-    //         $data->description   =  $request->description;
-    //         $data->cofounder     = $request->cofounder;
-    //       // if ($request->hasFile('logo')) {
-    //     $file = $request->file('logo');
-    //     $filename = time() . '_' . $file->getClientOriginalName();
-    //     $filepath = public_path('public/docs/');
-
-    //     // Move the file to the specified path
-    //     $file->move($filepath, $filename);
-
-    //     // Save the filename to your database or wherever you need it
-    //     $data->logo = $filename;
-    // // }
-    //         // $data->logo          =$request->logo;
-    //         $data->kyc_purposes  = $request->kyc_purposes;
-    //         $data->tagline       = $request->tagline;
-    //         $data->sector        = $request->sector;
-    //         $data->updated_at    =Carbon::now();
-    //         $data->save();
-    //         $user=User::where('id', $userId)->update(['reg_step_2'=>'1']);
-    //         return response()->json(['status' => true, 'message' => 'Business Details stored successfully', 'data' => ['data' => $data]], 200);
-    //     }
-        
-        
-    // } 
-    // catch (\Exception $e) {
-    //     throw new HttpException(500, $e->getMessage());
-    // }
-    // }
+   
 
     /**
      * Store a newly created resource in storage.
