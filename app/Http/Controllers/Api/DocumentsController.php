@@ -41,7 +41,15 @@ class DocumentsController extends Controller
                 $data->uid             = $request->uid;
                 $data->dob             = $request->dob;
                //  $data->proof_img =basename($imagePath);
-                $data->proof_img       = $request->proof_img;
+                // $data->proof_img       = $request->proof_img;
+                if ($request->hasFile('proof_img')) { 
+                    $file = $request->file('proof_img');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->proof_img = $filename;
+                }
+        
                 $data->save();
                 $user=User::where('id',$userId)->update(['reg_step_3'=>'1']);
                return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $data]], 200);
