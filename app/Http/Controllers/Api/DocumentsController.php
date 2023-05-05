@@ -32,7 +32,18 @@ class DocumentsController extends Controller
             $userId = $request->user_id;
             $data  = Documents::where('user_id', $userId)->first();
             if($data){
-                $data ->update($request->all());
+                $data ->update(['user_id'=>$request->user_id,
+                'pan_number'=>$request->pan_number,'uid'=>$request->uid,'dob'=>$request->dob
+            ]);
+            if ($request->hasFile('proof_img')) { 
+                $file = $request->file('proof_img');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $filepath = public_path('docs/');
+                $file->move($filepath, $filename);
+                $data->proof_img = $filename;
+            }
+    
+            $data->save();
                 return response()->json(['status' => true, 'message' => 'Basic Details updated successfully', 'data' => ['data' => $data]], 200);
             }else{
                 $data                  = new Documents();
@@ -41,13 +52,19 @@ class DocumentsController extends Controller
                 $data->uid             = $request->uid;
                 $data->dob             = $request->dob;
                //  $data->proof_img =basename($imagePath);
-                $data->proof_img       = $request->proof_img;
+                // $data->proof_img       = $request->proof_img;
+                if ($request->hasFile('proof_img')) { 
+                    $file = $request->file('proof_img');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->proof_img = $filename;
+                }
+        
                 $data->save();
                 $user=User::where('id',$userId)->update(['reg_step_3'=>'1']);
                return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $data]], 200);
             }
-            //  $data= $request->all();
-            // $imagePath = $request->file('image')->store('public/images');
             
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
