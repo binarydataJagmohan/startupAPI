@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\InvestorBookingController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,6 +75,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
 
      Route::delete('startups/{id}', [StartupController::class, 'destroy']);
+     Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
 
 });
