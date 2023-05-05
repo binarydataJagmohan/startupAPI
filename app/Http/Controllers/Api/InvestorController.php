@@ -92,7 +92,7 @@ class InvestorController extends Controller
                 $data->no_requirements = $request->category == "3" ? $request->no_requirements : 0;
                 $data->save();
 
-        $user=User::where('id',$userId)->update(['reg_step_3' => '1','is_profile_completed' =>'1']);
+              $user=User::where('id',$userId)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
               $mail['email'] = $data->email;
               $mail['title'] = "Profile Completed";
               $mail['body'] =  "Profile has been Completed Successfully.";
@@ -152,7 +152,7 @@ class InvestorController extends Controller
                 $data->corporate_net_worth= $request->category == "3" ? $request->corporate_net_worth: 0;
                 $data->save();
 
-                $user=User::where('id',$userId)->update(['reg_step_3' => '1','is_profile_completed' =>'1']);
+                $user=User::where('id',$userId)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
                 
                 return response()->json([
                     'status' => true,
@@ -224,6 +224,36 @@ class InvestorController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateApprovalStatus(Request $request, $id)
+    {
+        try {
+            $startup = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
+            $startup->approval_status = $request->input('approval_status');
+            $startup->save();
+
+                // $mail['name']= $startup->name;
+                $mail['email'] = $startup->email;
+                $mail['title'] = "Approval Mail";
+                $mail['body'] =  "Your Account has been approved Successfully. ";
+
+                Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data'=>$startup
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
                 'error' => $e->getMessage()
             ], 500);
         }

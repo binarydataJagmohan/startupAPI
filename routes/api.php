@@ -59,6 +59,8 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('update-startup-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStatus']);
     Route::post('update-startup-stage/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStage']);
 
+    Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
+    
     Route::post('store-bank-details', [App\Http\Controllers\Api\UserController::class, 'store_bank_detail']);
     Route::post('update-bank-details/{id}', [App\Http\Controllers\Api\UserController::class, 'update_bank_detail']);
 
@@ -71,6 +73,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
      Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
 
+     Route::delete('startups/{id}', [StartupController::class, 'destroy']);
 
 
 });
