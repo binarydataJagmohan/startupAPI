@@ -389,7 +389,7 @@ class StartupController extends Controller
                 $data->status= $request->status;
                 $data->xirr=$request->xirr;
                 $data->amount= $request->amount;
-                $data->total_no_units=$request->total_units;
+                $data->no_of_units=$request->total_units;
                 $data->save();
               
              return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
