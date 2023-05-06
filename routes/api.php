@@ -78,6 +78,8 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
-;
-
-});
+     Route::get("get-all-funds/{id}",[App\Http\Controllers\Api\StartupController::class,'get_all_funds']);
+     Route::post('update-fund-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateFundStatus']);
+     Route::post('update-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateStatus']);
+     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\StartupController::class,'update_investor_status']);
+    });
