@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\InvestorBooking;
 use Illuminate\Http\Request;
+use App\Models\BusinessUnit;
 
 class InvestorBookingController extends Controller
 {
@@ -46,6 +47,11 @@ class InvestorBookingController extends Controller
     $booking->no_of_units = $request->no_of_units;
 
     $booking->save();
+
+    // Update the units in the business_units table
+    $businessUnit = BusinessUnit::where('business_id', $request->business_id)->first();
+    $businessUnit->no_of_units -= $request->no_of_units;
+    $businessUnit->save();
 
     return response()->json([
         'status' => true,
