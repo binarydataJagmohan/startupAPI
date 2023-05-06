@@ -274,7 +274,7 @@ class StartupController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Business Stage Updated Successfully.',
+                'message' => 'Stage Updated Successfully.',
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
@@ -375,8 +375,10 @@ class StartupController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
+                $fund_id = rand(100000, 999999);
                 $data = new BusinessUnit();
                 $data->business_id=$request->business_id;
+                $data->fund_id='STARTUP-'.$fund_id;
                 $data->total_units = $request->total_units;
                 $data->minimum_subscription= $request->minimum_subscription;
                 $data->avg_amt_per_person= $request->avg_amt_per_person;
@@ -394,6 +396,61 @@ class StartupController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_all_funds($id)
+    {
+        try {
+            $data = BusinessUnit::where('business_id',$id)->get();
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function updateFundStatus(Request $request, $id)
+    {
+        try {
+            $data = BusinessUnit::where(['id' => $id])->firstOrFail();
+            $data->status = $request->input('status');
+            $data->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $startup = User::where(['id' => $id, 'role' => 'startup'])->firstOrFail();
+            $startup->status = $request->input('status');
+            $startup->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $startup
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
                 'error' => $e->getMessage()
             ], 500);
         }
