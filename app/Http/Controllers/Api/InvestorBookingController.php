@@ -55,7 +55,7 @@ class InvestorBookingController extends Controller
 
     return response()->json([
         'status' => true,
-        'data' => $booking,
+        'data' => $businessUnit,
         'message' => 'Data Inserted Successfully'
     ]);
 }
