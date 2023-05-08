@@ -232,23 +232,41 @@ class InvestorController extends Controller
     public function updateApprovalStatus(Request $request, $id)
     {
         try {
-            $startup = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
-            $startup->approval_status = $request->input('approval_status');
-            $startup->save();
+            $data = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
+            $data->approval_status = $request->input('approval_status');
+            $data->save();
+            $mail['email'] = $data->email;
+            $mail['title'] = "Approval Mail";
+            $mail['body'] =  "Your Account has been approved Successfully. ";
 
-                // $mail['name']= $startup->name;
-                $mail['email'] = $startup->email;
-                $mail['title'] = "Approval Mail";
-                $mail['body'] =  "Your Account has been approved Successfully. ";
-
-                Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
-                    $message->to($mail['email'])->subject($mail['title']);
-                });
+            Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                $message->to($mail['email'])->subject($mail['title']);
+            });
 
             return response()->json([
                 'status' => true,
                 'message' => 'Status Updated Successfully.',
-                'data'=>$startup
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function update_investor_status(Request $request, $id)
+    {
+        try {
+            $data = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
+            $data->status = $request->input('status');
+            $data->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
