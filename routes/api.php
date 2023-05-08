@@ -81,5 +81,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::get("get-all-funds/{id}",[App\Http\Controllers\Api\StartupController::class,'get_all_funds']);
      Route::post('update-fund-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateFundStatus']);
      Route::post('update-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateStatus']);
-     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\StartupController::class,'update_investor_status']);
+     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'update_investor_status']);
+     Route::post('update-investor-approvalstatus/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
+
     });

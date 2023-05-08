@@ -458,26 +458,8 @@ class StartupController extends Controller
         }
     }
 
-    public function update_investor_status(Request $request, $id)
-    {
-        try {
-            $data = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
-            $data->status = $request->input('status');
-            $data->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Status Updated Successfully.',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error occurred.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+    
+    
 
  
 }
