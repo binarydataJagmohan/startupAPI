@@ -39,19 +39,26 @@ class InvestorBookingController extends Controller
  public function booking(Request $request)
 {
     $booking = new InvestorBooking();
-
     $booking->user_id = $request->user_id;
     $booking->business_id = $request->business_id;
     $booking->repayment_date = $request->repayment_date;
     $booking->repayment_value = $request->repayment_value;
     $booking->no_of_units = $request->no_of_units;
 
-    $booking->save();
+    // Check if the requested number of units is valid
+    $businessUnit = BusinessUnit::where('business_id', $request->business_id)->first();
+    if ($request->no_of_units > $businessUnit->total_units) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid number of units. Not enough units available.'
+        ]);
+    }
 
     // Update the units in the business_units table
-    $businessUnit = BusinessUnit::where('business_id', $request->business_id)->first();
     $businessUnit->no_of_units -= $request->no_of_units;
     $businessUnit->save();
+
+    $booking->save();
 
     return response()->json([
         'status' => true,
@@ -59,6 +66,7 @@ class InvestorBookingController extends Controller
         'message' => 'Data Inserted Successfully'
     ]);
 }
+
 
 
 
