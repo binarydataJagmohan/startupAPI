@@ -60,7 +60,7 @@ class StartupController extends Controller
                 $user->reg_step_1 = '1';
                 $user->save();
 
-                return response()->json(['status' => true, 'message' => 'Profile updated successfully', 'data' => ['user' => $request->country]], 200);
+                return response()->json(['status' => true, 'message' => 'Profile updated successfully', 'data' => ['user' => $user]], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -365,7 +365,7 @@ class StartupController extends Controller
                 'repay_date' => 'required',
                 'closed_in' => 'required',
                 'resource' => 'required',
-                'status' => 'required',
+                // 'status' => 'required',
                 'xirr'  =>'required'
             ]);
             if ($validator->fails()) {
@@ -386,7 +386,7 @@ class StartupController extends Controller
                 $data->repay_date= $request->repay_date;
                 $data->closed_in=$request->closed_in;
                 $data->resource=$request->resource;
-                $data->status= $request->status;
+                $data->status= 'open';
                 $data->xirr=$request->xirr;
                 $data->amount= $request->amount;
                 $data->no_of_units=$request->total_units;

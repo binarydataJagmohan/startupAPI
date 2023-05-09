@@ -64,7 +64,7 @@ class UserController extends Controller
             });
             $token = JWTAuth::fromUser($user);
            
-            return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, 'token'=>$token]], 200);
+            return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
         }
     } catch (\Exception $e) {
         throw new HttpException(500, $e->getMessage());
