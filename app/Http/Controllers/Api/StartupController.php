@@ -390,6 +390,27 @@ class StartupController extends Controller
                 $data->xirr=$request->xirr;
                 $data->amount= $request->amount;
                 $data->no_of_units=$request->total_units;
+                if ($request->hasFile('agreement')) {
+                    $file = $request->file('agreement');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->agreement = $filename;
+                }
+                if ($request->hasFile('invoice')) {
+                    $file = $request->file('invoice');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->invoice = $filename;
+                }
+                if ($request->hasFile('pdc')) {
+                    $file = $request->file('pdc');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->pdc = $filename;
+                }
                 $data->save();
               
              return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
