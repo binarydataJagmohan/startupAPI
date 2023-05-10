@@ -33,7 +33,7 @@ class StartupController extends Controller
 
             $validator = Validator::make($request->all(), [
                 // 'country_code' => 'required|string',
-               // 'phone' => 'required',
+                'phone' => 'required',
                 'gender' => 'required',
                 'city' => 'required',
                 'country' => 'required',
@@ -53,9 +53,8 @@ class StartupController extends Controller
                 $user->linkedin_url = $request->linkedin_url;
                 $user->gender = $request->gender;
                 $user->city = $request->city;
-                $user->phone =
-                    $request->phone;
-                $user->country_code = $request->country_code;
+                $user->phone = $request->phone;
+                // $user->country_code = $request->country_code;
                 $user->country = $request->country;
                 $user->reg_step_1 = '1';
                 $user->save();
@@ -82,7 +81,7 @@ class StartupController extends Controller
                 'reg_businessname' => 'required',
                 'stage' => 'required',
                 'startup_date' => 'required',
-                'website_url' => 'required|url',
+                'website_url' => 'required',
                 'description' => 'required',
                 // 'cofounder' => 'required',
                 'kyc_purposes' => 'required',
