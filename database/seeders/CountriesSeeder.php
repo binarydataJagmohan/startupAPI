@@ -14,29 +14,30 @@ class CountriesSeeder extends Seeder
      */
     public function run()
     {
-        $countries = [
-            ['name' => 'Afghanistan'],
-            ['name' => 'Armenia'],
-            ['name' => 'Azerbaijan'],
-            ['name' => 'Bahrain'],
-            ['name' => 'Bangladesh'],
-            ['name' => 'Bhutan'],
-            ['name' => 'Brunei'],
-            ['name' => 'Cambodia'],
-            ['name' => 'China'],
-            ['name' => 'Cyprus'],
-            ['name' => 'Georgia'],
-            ['name' => 'India'],
-            ['name' => 'Indonesia'],
-            ['name' => 'Iran'],
-            ['name' => 'Iraq'],
-            ['name' => 'Israel'],
-            ['name' => 'Japan'],
-            ['name' => 'Jordan'],
-            ['name' => 'Kazakhstan'],
-            ['name' => 'Korea'],
-            // Add more countries here...
-        ];
+        $countries = [   
+    ['name' => 'Afghanistan', 'country_code' => '93'],
+    ['name' => 'Armenia', 'country_code' => '374'],
+    ['name' => 'Azerbaijan', 'country_code' => '994'],
+    ['name' => 'Bahrain', 'country_code' => '973'],
+    ['name' => 'Bangladesh', 'country_code' => '880'],
+    ['name' => 'Bhutan', 'country_code' => '975'],
+    ['name' => 'Brunei', 'country_code' => '673'],
+    ['name' => 'Cambodia', 'country_code' => '855'],
+    ['name' => 'China', 'country_code' => '86'],
+    ['name' => 'Cyprus', 'country_code' => '357'],
+    ['name' => 'Georgia', 'country_code' => '995'],
+    ['name' => 'India', 'country_code' => '91'],
+    ['name' => 'Indonesia', 'country_code' => '62'],
+    ['name' => 'Iran', 'country_code' => '98'],
+    ['name' => 'Iraq', 'country_code' => '964'],
+    ['name' => 'Israel', 'country_code' => '972'],
+    ['name' => 'Japan', 'country_code' => '81'],
+    ['name' => 'Jordan', 'country_code' => '962'],
+    ['name' => 'Kazakhstan', 'country_code' => '7'],
+    ['name' => 'Korea', 'country_code' => '82'],
+    // Add more countries here...
+];
+
 
         DB::table('countries')->insert($countries);
     }
