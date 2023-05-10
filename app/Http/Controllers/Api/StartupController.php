@@ -33,7 +33,7 @@ class StartupController extends Controller
 
             $validator = Validator::make($request->all(), [
                 // 'country_code' => 'required|string',
-                'phone' => 'required',
+               // 'phone' => 'required',
                 'gender' => 'required',
                 'city' => 'required',
                 'country' => 'required',
