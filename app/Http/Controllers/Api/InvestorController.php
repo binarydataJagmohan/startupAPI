@@ -20,18 +20,11 @@ class InvestorController extends Controller
     {
         try {
               $data=User::find($request->id);
-              // $data->update(['investorType'=>$request->investorType,'reg_step_2'=>'1']);
               $data->investorType=$request->investorType;
               $data->reg_step_2 = '1';
               // $data->is_profile_completed = '1';
               $data->save();
         
-            //   $mail['email'] = $data->email;
-            //   $mail['title'] = "Profile Completed";
-            //   $mail['body'] =  "Profile has been Completed Successfully.";
-            //   Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
-            //       $message->to($mail['email'])->subject($mail['title']);
-            //   });
             return response()->json([
                 'status' => true,
                 'message' => 'Data updated Successfully.',
@@ -172,7 +165,8 @@ class InvestorController extends Controller
                 $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
                 $data->save();
                 
-                  $mail['email'] = $data->email;
+                $user=User::where("id",$userId);
+              $mail['email'] =$user->email;
               $mail['title'] = "Profile Completed";
               $mail['body'] =  "Profile has been Completed Successfully.";
               Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
