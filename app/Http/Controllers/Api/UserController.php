@@ -41,7 +41,7 @@ class UserController extends Controller
                 'status' => false,
                 'message' => 'Validation error',
                 'errors' => $validator->errors(),
-            ], 422);
+            ], 200);
         } else {
             // Store the user in the database
             $user = new User();

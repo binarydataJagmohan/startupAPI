@@ -84,4 +84,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'update_investor_status']);
      Route::post('update-investor-approvalstatus/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
 
+
+     Route::get('get-all-users',[App\Http\Controllers\Api\AdminController::class,'get_all_users']);
+     Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
     });
