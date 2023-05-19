@@ -460,5 +460,71 @@ class UserController extends Controller
             return response()->json(['success' => true, 'msg' => 'Password reset failed'], 200);
         }
     }
-    
+
+
+    // For update user's status Active or Deactive
+    public function updateUserStatus(Request $request, $id)
+    {
+        try {
+            $startup = User::where(['id' => $id])->firstOrFail();
+            $startup->status = $request->input('status');
+            $startup->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $startup
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // updateUserRole
+    public function updateUserRole(Request $request, $id)
+    {
+        try {
+            $data = User::where('id', $id)->first();
+            $data->role = $request->input('role');
+            $data->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Role Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // updateUserCountry
+    public function updateUserCountry(Request $request, $id)
+    {
+        try {
+            $data = User::where('id', $id)->first();
+            $data->country = $request->input('country');
+            $data->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Country Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

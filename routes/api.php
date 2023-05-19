@@ -59,6 +59,8 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-all-startup',[App\Http\Controllers\Api\StartupController::class,'get_all_startup']);
     Route::post('update-startup-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStatus']);
     Route::post('update-startup-stage/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStage']);
+    Route::post('update-user-role/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserRole']);
+    Route::post('update-user-country/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserCountry']);
 
     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
     
@@ -83,7 +85,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('update-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateStatus']);
      Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'update_investor_status']);
      Route::post('update-investor-approvalstatus/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
-
+     Route::post('update-user-status/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserStatus']);
 
      Route::get('get-all-users',[App\Http\Controllers\Api\AdminController::class,'get_all_users']);
      Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
