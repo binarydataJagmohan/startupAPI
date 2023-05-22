@@ -305,8 +305,8 @@ class StartupController extends Controller
     {
         try {
             $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
-                ->select('business_details.*', 'business_units.avg_amt_per_person', 'business_units.minimum_subscription', 'business_units.closed_in', 'business_units.total_units','business_units.no_of_units','business_units.tenure')
-                ->where('business_units.status','open')->get();
+                ->select('business_details.*', 'business_units.*')
+              ->get();
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }

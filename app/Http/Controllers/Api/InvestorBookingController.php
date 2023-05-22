@@ -41,9 +41,10 @@ class InvestorBookingController extends Controller
     $booking = new InvestorBooking();
     $booking->user_id = $request->user_id;
     $booking->business_id = $request->business_id;
-    $booking->repayment_date = $request->repayment_date;
+    $booking->repayment_date = $request->repay_date;
     $booking->repayment_value = $request->repayment_value;
     $booking->no_of_units = $request->no_of_units;
+    $booking->subscription_value =$request->subscription_value;
 
     // Check if the requested number of units is valid
     $businessUnit = BusinessUnit::where('business_id', $request->business_id)->first();
