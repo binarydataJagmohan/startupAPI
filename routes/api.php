@@ -47,7 +47,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-bank-information/{id}',[App\Http\Controllers\Api\BankDetailsController::class,'get_bank_information']);
     Route::post('investor-type-information',[App\Http\Controllers\Api\InvestorController::class,'investor_type_information']);
     Route::get('get-investor-type-information/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_investor_type_information']);
-    Route::post('update-profile/{id}', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
+    Route::post('update-profile', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
     Route::get('single-user/{id}', [App\Http\Controllers\Api\UserController::class, 'get_single_user']);
     Route::post('join_to_invest', [App\Http\Controllers\Api\UserController::class, 'join_to_invest']);
     Route::post('angel-investor-terms', [App\Http\Controllers\Api\InvestorController::class, 'angel_investor_terms']);

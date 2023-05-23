@@ -49,6 +49,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->role     = $request->role;
+            $user->profile_pic = 'profile.webp';
             $data = $user->save();
             $token = Str::random(40);
             $domain = env('NEXT_URL_LOGIN');
@@ -116,10 +117,10 @@ class UserController extends Controller
     {
         try {
             $user = User::find($request->id);
-            $user->name =  $request->name;
-            $user->phone_no = $request->phone_no;
+            $user->name    =    $request->name;
+            $user->phone =   $request->phone;
             $user->gender =  $request->gender;
-            $user->city = $request->city;
+            $user->city =    $request->city;
             $user->country = $request->country;
             $user->linkedin_url = $request->linkedin_url;
             if ($request->hasFile('profile_pic')) {
@@ -131,7 +132,7 @@ class UserController extends Controller
             }
             $savedata = $user->save();
             if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Profile has been updated succesfully", 'data' => $savedata], 200);
+                return response()->json(['status' => true, 'message' => "Profile has been updated succesfully", 'data' => $request->all()], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for updating the profile", 'data' => ""], 200);
             }
@@ -225,12 +226,12 @@ class UserController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-    public function get_single_user(Request $request)
+    public function get_single_user(Request $request,$id)
     {
         try {
-            $user = User::where('id', $request->id)->first();
+            $user = User::where('id', $id)->first();
             if ($user) {
-                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $user], 200);
+                return response()->json(['status' => true, 'message' => "Single data fetching successfully", 'data' => $user], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             }
