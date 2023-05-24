@@ -49,7 +49,6 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->role     = $request->role;
-            $user->profile_pic = 'profile.webp';
             $data = $user->save();
             $token = Str::random(40);
             $domain = env('NEXT_URL_LOGIN');
@@ -72,6 +71,60 @@ class UserController extends Controller
         return response()->json(['success' => true, 'msg' => 'User has not been Register Successfully.'], 500);
     }
 }
+
+public function updateUser(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|max:255',
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,'.$id],
+                'phone' => 'required',
+                'linkedin_url' =>[
+                    'required',
+                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                ],
+                'status' => 'required',
+                'gender' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+                'role' => 'required|string',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                // Update the user in the database
+                // dd($request->hasFile('profile_pic'));                            
+                $user = User::findOrFail($id);
+                $user->name = $request->input('name');
+                $user->email = $request->input('email');
+                $user->phone = $request->input('phone');
+                $user->status = $request->input('status');
+                $user->city = $request->input('city');
+                $user->linkedin_url = $request->input('linkedin_url');
+                $user->country = $request->input('country');
+                $user->gender = $request->input('gender');
+                $user->role = $request->input('role');
+    
+                
+                $user->save();
+              
+    
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User has been updated successfully.',
+                    'data' => ['user' => $user],
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+    
 
     public function user_login(Request $request)
     {
@@ -117,10 +170,10 @@ class UserController extends Controller
     {
         try {
             $user = User::find($request->id);
-            $user->name    =    $request->name;
-            $user->phone =   $request->phone;
+            $user->name =  $request->name;
+            $user->phone_no = $request->phone_no;
             $user->gender =  $request->gender;
-            $user->city =    $request->city;
+            $user->city = $request->city;
             $user->country = $request->country;
             $user->linkedin_url = $request->linkedin_url;
             if ($request->hasFile('profile_pic')) {
@@ -132,7 +185,7 @@ class UserController extends Controller
             }
             $savedata = $user->save();
             if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Profile has been updated succesfully", 'data' => $request->all()], 200);
+                return response()->json(['status' => true, 'message' => "Profile has been updated succesfully", 'data' => $savedata], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for updating the profile", 'data' => ""], 200);
             }
@@ -226,12 +279,12 @@ class UserController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-    public function get_single_user(Request $request,$id)
+    public function get_single_user(Request $request)
     {
         try {
-            $user = User::where('id', $id)->first();
+            $user = User::where('id', $request->id)->first();
             if ($user) {
-                return response()->json(['status' => true, 'message' => "Single data fetching successfully", 'data' => $user], 200);
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $user], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             }

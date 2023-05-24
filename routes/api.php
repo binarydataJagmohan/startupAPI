@@ -40,6 +40,10 @@ Route::group(['middleware' => 'api'], function () {
 Route::group(['middleware' => ['api']], function () {
     Route::post('personal-information',[App\Http\Controllers\Api\StartupController::class,'personal_information']);
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
+    Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
+    Route::post('business-information-update/{userid}',[App\Http\Controllers\Api\StartupController::class,'business_information_update']);
+    Route::get('single-startup/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_startup']);
+  
     Route::get('get-business-information/{id}',[App\Http\Controllers\Api\StartupController::class,'get_business_information']);
     Route::get('get-basic-information/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_basic_information']);
     Route::post('basic-information',[App\Http\Controllers\Api\DocumentsController::class,'basic_information']);
@@ -47,7 +51,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-bank-information/{id}',[App\Http\Controllers\Api\BankDetailsController::class,'get_bank_information']);
     Route::post('investor-type-information',[App\Http\Controllers\Api\InvestorController::class,'investor_type_information']);
     Route::get('get-investor-type-information/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_investor_type_information']);
-    Route::post('update-profile', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
+    Route::post('update-profile/{id}', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
     Route::get('single-user/{id}', [App\Http\Controllers\Api\UserController::class, 'get_single_user']);
     Route::post('join_to_invest', [App\Http\Controllers\Api\UserController::class, 'join_to_invest']);
     Route::post('angel-investor-terms', [App\Http\Controllers\Api\InvestorController::class, 'angel_investor_terms']);
@@ -61,6 +65,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('update-startup-stage/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStage']);
     Route::post('update-user-role/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserRole']);
     Route::post('update-user-country/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserCountry']);
+    Route::post('update-user/{id}', [App\Http\Controllers\Api\UserController::class, 'updateUser']);
 
     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
     
@@ -74,9 +79,9 @@ Route::group(['middleware' => ['api']], function () {
      // Countries route 
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
-     Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
+      Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
      Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
-     Route::delete('startups/{id}', [StartupController::class, 'destroy']);
+     Route::post('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);

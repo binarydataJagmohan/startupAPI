@@ -66,13 +66,140 @@ class StartupController extends Controller
             return response()->json(['success' => true, 'message' => 'Error Occuring.'], 500);
         }
     }
+    public function update_personal_information(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                // 'country_code' => 'required|string',
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,'.$request->id],
+                'phone' => 'required',
+                'gender' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+                'linkedin_url' =>[
+                    'required',
+                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                ],
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                // Store the user in the database
+                $user = User::find($request->id);
+                $user->update([
+                    $user->email = $request->email,
+                    $user->gender = $request->gender,
+                    $user->linkedin_url = $request->linkedin_url,
+                    $user->gender = $request->gender,
+                    $user->city = $request->city,
+                    $user->phone = $request->phone,
+                    // $user->country_code = $request->country_code;
+                    $user->country = $request->country,
+                    $user->reg_step_1 = '1'
+
+                ]);
+
+              
+                $user->save();
+
+                return response()->json(['status' => true, 'message' => 'Profile updated successfully', 'data' => ['user' => $user]], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json(['success' => true, 'message' => 'Error Occuring.'], 500);
+        }
+    }
+
+    public function business_information_update(Request $request, $userid)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'business_name' => 'required',
+                'reg_businessname' => 'required',
+                'stage' => 'required',
+                'kyc_purposes' => 'required|gt:0',
+                'startup_date' => 'required',
+                'website_url' => 'required',
+                'description' => 'required',
+                'tagline' => 'required',
+                'sector' => 'required',
+                'type' => 'required',
+                'logo' => 'required',
+                
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+    
+            $userId = $userid;
+            $data = Business::where('user_id', $userId)->first();
+    
+            if ($data) {
+                $data->business_name = $request->business_name;
+                $data->reg_businessname = $request->reg_businessname;
+                $data->website_url = $request->website_url;
+                $data->stage = $request->stage;
+                $data->startup_date = $request->startup_date;
+                $data->description = $request->description;
+                $data->cofounder = $request->cofounder;
+                $data->kyc_purposes = $request->kyc_purposes;
+                $data->tagline = $request->tagline;
+                $data->sector = $request->sector;
+                $data->type = $request->type;
+                $data->updated_at = Carbon::now();
+                
+    
+                if ($request->hasFile('logo')) {
+                    $file = $request->file('logo');
+                    $filename =time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->logo = $filename;
+                }
+    
+                $data->save();
+    
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Business Details Updated successfully',
+                    'data' => ['data' => $data],
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function get_single_startup(Request $request,$id){
+       
+        try {
+            $user = User::where(['id'=> $request->id,'role' => 'startup'])->firstOrFail();
+            if ($user) {
+                return response()->json(['status' => true, 'message' => "single startup data fetching successfully", 'data' => $user], 200);
+            } 
+            //  {
+            //     return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
+            // }
+        } catch (\Exception $e) {
+        }
+  
 
+   } 
     public function business_information(Request $request)
     {
         try {
@@ -290,14 +417,19 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        $startup = Business::find($id);
+        $startup = User::find($id)->delete();
         if (!$startup) {
-            return response()->json(['message' => 'Business not found.'], 404);
+            
+            return response()->json([
+                'status'=>false,
+                'message' => 'Business not found.'], 404);
         }
-        $startup->delete();
-        return response()->json(['message' => 'Business deleted successfully.']);
+        
+        return response()->json([
+            'status'=>true,
+            'message' => 'Business deleted successfully.']);
     }
 
 
