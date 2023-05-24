@@ -15,6 +15,7 @@ use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\Contact;
 use App\Mail\EmailVerification;
+use App\Models\BusinessUnit;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
@@ -53,19 +54,19 @@ class AdminController extends Controller
      */
     public function destroy_user_data(Request $request,$id){
 
-        // try {
+        try {
             $data = User::find($id)->delete();
             return response()->json([
                 'status' => true,
                 'message' => 'User Deleted Successfully.',
             ], 200);
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Error occurred.',
-        //         'error' => $e->getMessage()
-        //     ], 500);
-        // }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
 
      }
 
@@ -75,11 +76,23 @@ class AdminController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
-    }
+    public function destroy_fund(Request $request,$id){
 
+        try {
+            $data = BusinessUnit::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Record Deleted Successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+     }
     /**
      * Display the specified resource.
      *

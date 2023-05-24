@@ -89,4 +89,6 @@ Route::group(['middleware' => ['api']], function () {
 
      Route::get('get-all-users',[App\Http\Controllers\Api\AdminController::class,'get_all_users']);
      Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
+     Route::post('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
+     Route::post('fund-update/{id}',[App\Http\Controllers\Api\AdminController::class,'fund_update']);
     });
