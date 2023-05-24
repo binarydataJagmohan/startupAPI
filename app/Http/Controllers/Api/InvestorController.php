@@ -143,18 +143,7 @@ class InvestorController extends Controller
     public function accredited_investor_terms(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'category' => 'required',
-                'principal_residence'=>'required'
-            ]);
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Please Select a Category.',
-                    'errors' => $validator->errors(),
-                ], 200);
-            } else {
-            $userId = $request->id;
+            $userId = $request->user_id;
             $data = InvestorTerms::where('user_id', $userId)->first();
             
             if ($data) {
@@ -201,7 +190,6 @@ class InvestorController extends Controller
                     'data' => ['data' => $data]
                 ], 200);
             }
-        }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
