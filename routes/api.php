@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\InvestorBookingController;
 |
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| is assigned the 'api' middleware group. Enjoy building your API!
 |
 */
 
@@ -91,7 +91,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
-     Route::get("get-all-funds/{id}",[App\Http\Controllers\Api\StartupController::class,'get_all_funds']);
+     Route::get('get-all-funds/{id}',[App\Http\Controllers\Api\StartupController::class,'get_all_funds']);
      Route::post('update-fund-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateFundStatus']);
      Route::post('update-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateStatus']);
      Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'update_investor_status']);
@@ -102,6 +102,9 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
      Route::post('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
      Route::get('fund-single/{id}',[App\Http\Controllers\Api\AdminController::class,'get_single_fund']);
+
+     Route::get('get-all-active-funds',[\App\Http\Controllers\Api\AdminController::class,'get_all_active_funds']);
+     Route::get('totalcount-active-funds',[\App\Http\Controllers\Api\AdminController::class,'total_count_active_funds']);
     
      Route::post('investor-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_investor_data']);
      Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);
