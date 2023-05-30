@@ -506,6 +506,46 @@ class StartupController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
+              if($request->id){
+                $data = BusinessUnit::where('id',$request->id)->first();
+                $data->business_id=$request->business_id;
+                // $data->fund_id='STARTUP-'.$fund_id;
+                $data->total_units = $request->total_units;
+                $data->minimum_subscription= $request->minimum_subscription;
+                $data->avg_amt_per_person= $request->avg_amt_per_person;
+                $data->tenure=$request->tenure;
+                $data->repay_date= $request->repay_date;
+                $data->closed_in=$request->closed_in;
+                $data->resource=$request->resource;
+                $data->status= 'open';
+                $data->xirr=$request->xirr;
+                $data->amount= $request->amount;
+                $data->no_of_units=$request->total_units;
+                $data->desc= $request->desc;
+                if ($request->hasFile('agreement')) {
+                    $file = $request->file('agreement');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->agreement = $filename;
+                }
+                if ($request->hasFile('invoice')) {
+                    $file = $request->file('invoice');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->invoice = $filename;
+                }
+                if ($request->hasFile('pdc')) {
+                    $file = $request->file('pdc');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->pdc = $filename;
+                }
+                $data->save();
+                return response()->json(['status' => true, 'message' => "Data Updated Successfully.","data"=>$data], 200);
+              }else{
                 $fund_id = rand(100000, 999999);
                 $data = new BusinessUnit();
                 $data->business_id=$request->business_id;
@@ -546,6 +586,7 @@ class StartupController extends Controller
                 $data->save();
               
              return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
+              }
             }
         } catch (\Exception $e) {
             return response()->json([

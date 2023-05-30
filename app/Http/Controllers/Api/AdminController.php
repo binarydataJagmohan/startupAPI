@@ -99,15 +99,12 @@ class AdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function get_single_fund(Request $request)
-    {
+    public function get_single_fund(Request $request){
         try {
-            $user = User::where('id', $request->id)->first();
+            $user = BusinessUnit::where('id', $request->id)->first();
             if ($user) {
-                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $user], 200);
-            } else {
-                return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
-            }
+                return response()->json(['status' => true, 'message' => "Single data fetching successfully", 'data' => $user], 200);
+            } 
         } catch (\Exception $e) {
         }
     }
