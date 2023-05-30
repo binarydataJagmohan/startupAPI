@@ -48,6 +48,65 @@ class AdminController extends Controller
 
      }
 
+     public function update_admin_data(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|max:255',
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i',],
+                'phone' => 'required',
+                'linkedin_url' =>[
+                    'required',
+                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                ],
+                
+                'gender' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+            
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                                        
+                $admin = User::where('role','admin')->first();
+
+                $admin->name = $request->input('name');
+                $admin->email = $request->input('email');
+                $admin->phone = $request->input('phone');
+                $admin->city = $request->input('city');
+                $admin->linkedin_url = $request->input('linkedin_url');
+                $admin->country = $request->input('country');
+                $admin->gender = $request->input('gender');
+               
+                if ($request->hasFile('profile_pic')) {
+                    $randomNumber = mt_rand(1000000000, 9999999999);
+                    $imagePath = $request->file('profile_pic');
+                    $imageName = $randomNumber . $imagePath->getClientOriginalName();
+                    $imagePath->move('images/profile', $imageName);
+                    $admin->profile_pic = $imageName;
+                }
+    
+                
+                $admin->save();
+              
+    
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Admin has been updated successfully.',
+                    'data' => $admin,
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    
+     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -86,6 +145,30 @@ class AdminController extends Controller
         //     ], 500);
         // }
 
+     }
+
+     public function get_admin_data(Request $request){
+        try{
+
+            $data = User::where('role','admin')->first();
+
+            if($data){
+                return response()->json([
+
+                    'status'=>false,
+                    'message'=>'Admin Data fetch successfully',
+                    'data'=>$data
+                ],200);
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'Something went wrong',
+                    'data'=>''
+                ]);
+            }
+        }catch(\Exception $e){
+
+        }
      }
      public function get_single_investor(Request $request){
         try{

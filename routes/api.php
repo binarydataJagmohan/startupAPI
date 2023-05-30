@@ -108,5 +108,6 @@ Route::group(['middleware' => ['api']], function () {
     
      Route::post('investor-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_investor_data']);
      Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);
-     
+     Route::get('get-admin-data', [App\Http\Controllers\Api\AdminController::class, 'get_admin_data']);
+     Route::post('update-admin', [App\Http\Controllers\Api\AdminController::class, 'update_admin_data']);
     });
