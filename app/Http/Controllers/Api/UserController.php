@@ -49,6 +49,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
             $user->role     = $request->role;
+            $user->profile_pic=  "default.png";
             $data = $user->save();
             $token = Str::random(40);
             $domain = env('NEXT_URL_LOGIN');

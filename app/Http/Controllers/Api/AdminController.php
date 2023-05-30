@@ -159,9 +159,22 @@ class AdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function get_all_active_funds(Request $request)
     {
-        //
+        try {
+            $funds= BusinessUnit::where('status','open')->get();
+            return response()->json([
+                'status' => true,
+                'message' => 'test',
+                "data"=>$funds
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -171,9 +184,22 @@ class AdminController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function total_count_active_funds(Request $request)
     {
-        //
+        try {
+            $funds= BusinessUnit::where('status','open')->count();
+            return response()->json([
+                'status' => true,
+                'message' => 'test',
+                "data"=>$funds
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
