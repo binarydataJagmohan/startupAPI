@@ -52,6 +52,61 @@ class InvestorController extends Controller
         }
 
     }
+
+    public function updateInvestorInformation(Request $request ,$id){
+        try {
+
+            $validator = Validator::make($request->all(), [
+                // 'country_code' => 'required|string',
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,'.$request->id],
+                'phone' => 'required',
+                'gender' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+                'linkedin_url' =>[
+                    'required',
+                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                ],
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                // Store the user in the database
+                $user = User::find($request->id);
+                $user->update([
+                    $user->email = $request->email,
+                    $user->gender = $request->gender,
+                    $user->linkedin_url = $request->linkedin_url,
+                    $user->gender = $request->gender,
+                    $user->city = $request->city,
+                    $user->phone = $request->phone,
+                    // $user->country_code = $request->country_code;
+                    $user->country = $request->country,
+                    $user->reg_step_1 = '1'
+
+                ]);
+
+              
+                $user->save();
+
+                $response = [
+                    'status' => true,
+                    'message' => 'Profile updated successfully',
+                    'data' => ['user' => $user],
+                ];
+    
+                return response()->json($response, 200)
+                    ->header('Location', url('get-all-investors'))
+                    ->header('Content-Type', 'application/json');
+            }
+        }catch(\Exception $e){
+
+        }
+    }
     public function angel_investor_terms(Request $request)
     {
         try {

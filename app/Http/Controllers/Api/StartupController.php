@@ -310,15 +310,10 @@ class StartupController extends Controller
             $userId = $request->id;
             $data  = Business::where('user_id', $userId)->first();
             if ($data) {
-                $data  = Business::where('user_id', $userId)->first();
+               
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
-            // $data = Business::where('user_id', $request->id)->first();
-            // if ($data) {
-            //     return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-            // } else {
-            //     return response()->json(['status' => false, 'message' => "There has been error for fetching the business data.", 'data' => ""], 400);
-            // }
+           
         } catch (\Exception $e) {
         }
     }

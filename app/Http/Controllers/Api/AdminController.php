@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Models\User;
+
 use App\Models\Business;
 use App\Models\BankDetails;
 use App\Models\CoFounder;
@@ -69,6 +70,49 @@ class AdminController extends Controller
         }
 
      }
+     public function destroy_investor_data(Request $request,$id){
+
+        // try {
+            $data = User::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Investor Deleted Successfully.',
+            ], 200);
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Error occurred.',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
+
+     }
+     public function get_single_investor(Request $request){
+        try{
+            $investor = User::where('id',$request->id)->first();
+            if($investor){
+                return response()->json([
+                  'status'=>true,
+                  'message'=>'Investor data fetch successfully',
+                  'data'=>$investor
+
+
+                ],200);
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>'investor not fetch successfully',
+                    'data'=>''
+                ],400);
+            }
+            
+
+        }catch(\Exception $e){
+
+        }
+     }
+     
+     
 
     /**
      * Store a newly created resource in storage.

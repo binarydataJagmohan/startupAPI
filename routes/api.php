@@ -40,7 +40,13 @@ Route::group(['middleware' => 'api'], function () {
 Route::group(['middleware' => ['api']], function () {
     Route::post('personal-information',[App\Http\Controllers\Api\StartupController::class,'personal_information']);
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
+    Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
+    Route::post('business-information-update/{userid}',[App\Http\Controllers\Api\StartupController::class,'business_information_update']);
+    Route::get('single-startup/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_startup']);
+  
     Route::get('get-business-information/{id}',[App\Http\Controllers\Api\StartupController::class,'get_business_information']);
+   
+   
     Route::get('get-basic-information/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_basic_information']);
     Route::post('basic-information',[App\Http\Controllers\Api\DocumentsController::class,'basic_information']);
     Route::post('bank-details',[App\Http\Controllers\Api\BankDetailsController::class,'bank_details']);
@@ -56,13 +62,18 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-accredited-investor-terms/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_accredited_investor_terms']);
 
     Route::get('get-all-investors',[App\Http\Controllers\Api\InvestorController::class,'get_all_investors']);
+   
     Route::get('get-all-startup',[App\Http\Controllers\Api\StartupController::class,'get_all_startup']);
     Route::post('update-startup-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStatus']);
     Route::post('update-startup-stage/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStage']);
     Route::post('update-user-role/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserRole']);
     Route::post('update-user-country/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserCountry']);
+    Route::get('/download/{filename}', [App\Http\Controllers\Api\UserController::class, 'handleDownload'])->name('download');
+    Route::post('update-user/{id}', [App\Http\Controllers\Api\UserController::class, 'updateUser']);
 
     Route::post('update-investor-status/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateApprovalStatus']);
+
+    Route::post('update-investor-personal-info/{id}',[App\Http\Controllers\Api\InvestorController::class,'updateInvestorInformation']);
     
     Route::post('store-bank-details', [App\Http\Controllers\Api\UserController::class, 'store_bank_detail']);
     Route::post('update-bank-details/{id}', [App\Http\Controllers\Api\UserController::class, 'update_bank_detail']);
@@ -74,9 +85,9 @@ Route::group(['middleware' => ['api']], function () {
      // Countries route 
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
-     Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
+      Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
      Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
-     Route::delete('startups/{id}', [StartupController::class, 'destroy']);
+     Route::post('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
@@ -92,4 +103,7 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
      Route::get('fund-single/{id}',[App\Http\Controllers\Api\AdminController::class,'get_single_fund']);
     
+     Route::post('investor-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_investor_data']);
+     Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);
+     
     });
