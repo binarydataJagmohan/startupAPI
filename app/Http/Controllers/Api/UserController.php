@@ -172,7 +172,7 @@ public function updateUser(Request $request, $id)
         try {
             $user = User::find($request->id);
             $user->name =  $request->name;
-            $user->phone_no = $request->phone_no;
+            $user->phone = $request->phone;
             $user->gender =  $request->gender;
             $user->city = $request->city;
             $user->country = $request->country;
