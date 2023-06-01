@@ -53,9 +53,6 @@ class UserController extends Controller
             $data = $user->save();
            
             $token = JWTAuth::fromUser($user);
-
-    
-           
             return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
             
             $mailtoken = Str::random(40);
@@ -154,6 +151,15 @@ public function updateUser(Request $request, $id)
                     ], 200);
                 }
                 $user = Auth::user();
+
+                // Check if user's status is active
+            if ($user->status != 'active') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your Account has been Temporary Deactivated.',
+                ],200);
+            }
+
                 return response()->json([
                     'status' => true,
                     'message' => 'User logged in successfully',
@@ -583,6 +589,20 @@ public function updateUser(Request $request, $id)
                 'message' => 'Error occurred.',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+
+    public function check_user_approval_status(Request $request)
+    {
+        try {
+            $user = User::where('id', $request->id)->first();
+            if ($user) {
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $user], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 200);
+            }
+        } catch (\Exception $e) {
         }
     }
 }
