@@ -289,6 +289,27 @@ class InvestorController extends Controller
             ], 500);
         }
     }
+      
+    public function get_investor_count(Request $request){
+        try{            
+                $data = User::where(['role'=>'investor','is_profile_completed'=>'1'])->count();
+                if($data){
+                    return response()->json([
+
+                        'status'=>true,
+                        'message'=>'Investor Count get Successfully',
+                        'data' => $data
+                    ]);
+                }
+
+        }catch(\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function updateApprovalStatus(Request $request, $id)
     {

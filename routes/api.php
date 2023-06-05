@@ -55,6 +55,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-investor-type-information/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_investor_type_information']);
     Route::post('update-profile', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
     Route::get('single-user/{id}', [App\Http\Controllers\Api\UserController::class, 'get_single_user']);
+    Route::get('get-user-count', [App\Http\Controllers\Api\UserController::class, 'get_user_count']);
     Route::post('join_to_invest', [App\Http\Controllers\Api\UserController::class, 'join_to_invest']);
     Route::post('angel-investor-terms', [App\Http\Controllers\Api\InvestorController::class, 'angel_investor_terms']);
     Route::get('get-angel-investor-terms/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_angel_investor_terms']);
@@ -62,8 +63,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-accredited-investor-terms/{id}', [App\Http\Controllers\Api\InvestorController::class, 'get_accredited_investor_terms']);
 
     Route::get('get-all-investors',[App\Http\Controllers\Api\InvestorController::class,'get_all_investors']);
+    Route::get('get-investor-count', [App\Http\Controllers\Api\InvestorController::class, 'get_investor_count']);
    
     Route::get('get-all-startup',[App\Http\Controllers\Api\StartupController::class,'get_all_startup']);
+    Route::get('get-startup-count',[App\Http\Controllers\Api\StartupController::class,'get_startup_count']);
     Route::post('update-startup-status/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStatus']);
     Route::post('update-startup-stage/{id}',[App\Http\Controllers\Api\StartupController::class,'updateApprovalStage']);
     Route::post('update-user-role/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserRole']);

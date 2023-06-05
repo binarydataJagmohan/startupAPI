@@ -73,6 +73,36 @@ class UserController extends Controller
     }
 }
 
+public function get_user_count(Request $request){
+   try{
+
+        $count = User::count();
+        if($count){
+            return response()->json([
+                'status' => true,
+                'message' =>' User Count get Successfully',
+                'data' => $count
+            ],200);
+        }else{
+            return response()->json([
+             'status'=>false,
+             'message'=>'Something went wrong,Please Try Again',
+             'data' => 0
+
+            ],404);
+        }
+       
+
+   }catch(\Exception $e){
+    return response()->json([
+       'status'=>false,
+       'message'=>'An error occurred',
+       'error'=>$e->getMessage()
+
+
+    ],500);
+   } 
+}
 public function updateUser(Request $request, $id)
     {
         try {
