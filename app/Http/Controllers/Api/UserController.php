@@ -73,6 +73,25 @@ class UserController extends Controller
     }
 }
 
+
+public function get_front_user(Request $request ,$id){
+
+    try{
+
+        $user = User::where('id',$id)->first();
+         if($user){
+            return response()->json([
+                  'status' => true,
+                  'message'=>'Data get Successfully',
+                  'data'=>$user->name
+            ]);
+         }
+
+    }catch(\Exception $e ){
+
+    }
+}
+
 public function get_user_count(Request $request){
    try{
 
