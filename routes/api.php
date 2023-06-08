@@ -56,7 +56,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('update-profile', [App\Http\Controllers\Api\UserController::class, 'update_profile']);
     Route::get('single-user/{id}', [App\Http\Controllers\Api\UserController::class, 'get_single_user']);
     
-    Route::get('single-front-data/{id}', [App\Http\Controllers\Api\UserController::class, 'get_single_user']);
+    Route::get('single-front-data/{id}', [App\Http\Controllers\Api\UserController::class, 'get_front_user']);
     Route::get('get-user-count', [App\Http\Controllers\Api\UserController::class, 'get_user_count']);
     Route::post('join_to_invest', [App\Http\Controllers\Api\UserController::class, 'join_to_invest']);
     Route::post('angel-investor-terms', [App\Http\Controllers\Api\InvestorController::class, 'angel_investor_terms']);

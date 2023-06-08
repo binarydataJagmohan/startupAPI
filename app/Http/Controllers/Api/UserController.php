@@ -83,7 +83,7 @@ public function get_front_user(Request $request ,$id){
             return response()->json([
                   'status' => true,
                   'message'=>'Data get Successfully',
-                  'data'=>$user->name
+                  'data'=>$user
             ]);
          }
 

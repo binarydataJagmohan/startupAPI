@@ -111,8 +111,13 @@ class InvestorController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'category' => 'required',
-                'principal_residence'=>'required'
+                'category' => 'required', // Validate the "category" field
+            'principal_residence' => 'required_if:category,1',// Validate the "principal_residence" field if the "category" is 1
+            'prev_investment_exp' => 'required_if:category,1',// Validate the "prev_investment_exp" field if the "category" is 1
+            'cofounder' => 'required_if:category,1',// Validate the "cofounder" field if the "category" is 1
+            'experience' => 'required_if:category,1',// Validate the "experience" field if the "category" is 1
+            'net_worth' => 'required_if:category,2', // Validate the "net_worth" field if the "category" is 2
+            'no_requirements' => 'required_if:category,3', // Validate the "no_requirements" field if the "category" is 3
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -198,6 +203,24 @@ class InvestorController extends Controller
     public function accredited_investor_terms(Request $request)
     {
         try {
+           
+                $validator = Validator::make($request->all(), [
+                    'category' => 'required',
+                    'annual_income'=>'required_if:category,1',
+                    'financial_net_worth'=>'required_if:category,1',
+                    'financial_annual_net_worth'=>'required_if:category,1',
+                    'foreign_annual_income' =>'required_if:category,1',
+                    'foreign_net_worth' =>'required_if:category,2',
+                    'foreign_annual_net_worth'=>'required_if:category,3',
+                    'corporate_net_worth'=>'required_if:category,3'             
+                ]);
+                if ($validator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Please Select a Category.',
+                        'errors' => $validator->errors(),
+                    ], 200);
+                } else {
             $userId = $request->user_id;
             $data = InvestorTerms::where('user_id', $userId)->first();
             
@@ -245,6 +268,7 @@ class InvestorController extends Controller
                     'data' => ['data' => $data]
                 ], 200);
             }
+        }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -252,6 +276,7 @@ class InvestorController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    
     }
 
     public function get_accredited_investor_terms(Request $request)
