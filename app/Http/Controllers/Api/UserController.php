@@ -26,110 +26,112 @@ use App\Models\PasswordReset;
 
 class UserController extends Controller
 {
- public function userRegister(Request $request)
-{
-   try {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|max:255',
-            'lastname' => 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8|max:16',
-            'role' => 'required|string',
-        ]);
-        if ($validator->fails()) {
+    public function userRegister(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'firstname' => 'required|max:255',
+                'lastname' => 'required|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:8|max:16',
+                'role' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 200);
+            } else {
+                // Store the user in the database
+                $user = new User();
+                $user->name = $request->firstname . " " . $request->lastname;
+                $user->email = $request->email;
+                $user->password = Hash::make($request->password);
+                $user->role = $request->role;
+                $user->profile_pic = "default.png";
+                $data = $user->save();
+
+                $token = JWTAuth::fromUser($user);
+                return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
+
+                $mailtoken = Str::random(40);
+                $domain = env('NEXT_URL_LOGIN');
+                $url = $domain . '/?token=' . $mailtoken;
+                $mail['url'] = $url;
+                $mail['email'] = $request->email;
+                $mail['title'] = "Verify Your Account";
+                $mail['body'] = "Please click on below link to verify your Account";
+                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
+                Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json(['success' => true, 'msg' => 'User has not been Register Successfully.'], 500);
+        }
+    }
+
+
+    public function get_front_user(Request $request, $id)
+    {
+
+        try {
+
+            $user = User::where('id', $id)->first();
+            if ($user) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data get Successfully',
+                    'data' => $user
+                ]);
+            }
+
+        } catch (\Exception $e) {
+
+        }
+    }
+
+    public function get_user_count(Request $request)
+    {
+        try {
+
+            $count = User::count();
+            if ($count) {
+                return response()->json([
+                    'status' => true,
+                    'message' => ' User Count get Successfully',
+                    'data' => $count
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Something went wrong,Please Try Again',
+                    'data' => 0
+
+                ], 404);
+            }
+
+
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 200);
-        } else {
-            // Store the user in the database
-            $user = new User();
-            $user->name = $request->firstname . " " . $request->lastname;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->role     = $request->role;
-            $user->profile_pic=  "default.png";
-            $data = $user->save();
-           
-            $token = JWTAuth::fromUser($user);
-            return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
-            
-            $mailtoken = Str::random(40);
-            $domain = env('NEXT_URL_LOGIN');
-            $url = $domain . '/?token=' . $mailtoken;
-            $mail['url'] = $url;
-            $mail['email'] = $request->email;
-            $mail['title'] = "Verify Your Account";
-            $mail['body'] = "Please click on below link to verify your Account";
-            $user->where('id',$user->id)->update(['email_verification_token'=>$mailtoken,'email_verified_at'=>Carbon::now()]);
-            Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['title']);
-            });
+                'message' => 'An error occurred',
+                'error' => $e->getMessage()
+
+
+            ], 500);
         }
-    } catch (\Exception $e) {
-        throw new HttpException(500, $e->getMessage());
-        return response()->json(['success' => true, 'msg' => 'User has not been Register Successfully.'], 500);
     }
-}
-
-
-public function get_front_user(Request $request ,$id){
-
-    try{
-
-        $user = User::where('id',$id)->first();
-         if($user){
-            return response()->json([
-                  'status' => true,
-                  'message'=>'Data get Successfully',
-                  'data'=>$user
-            ]);
-         }
-
-    }catch(\Exception $e ){
-
-    }
-}
-
-public function get_user_count(Request $request){
-   try{
-
-        $count = User::count();
-        if($count){
-            return response()->json([
-                'status' => true,
-                'message' =>' User Count get Successfully',
-                'data' => $count
-            ],200);
-        }else{
-            return response()->json([
-             'status'=>false,
-             'message'=>'Something went wrong,Please Try Again',
-             'data' => 0
-
-            ],404);
-        }
-       
-
-   }catch(\Exception $e){
-    return response()->json([
-       'status'=>false,
-       'message'=>'An error occurred',
-       'error'=>$e->getMessage()
-
-
-    ],500);
-   } 
-}
-public function updateUser(Request $request, $id)
+    public function updateUser(Request $request, $id)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|max:255',
-                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,'.$id],
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,' . $id],
                 'phone' => 'required',
-                'linkedin_url' =>[
+                'linkedin_url' => [
                     'required',
                     'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
                 ],
@@ -139,7 +141,7 @@ public function updateUser(Request $request, $id)
                 'country' => 'required',
                 'role' => 'required|string',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -159,11 +161,11 @@ public function updateUser(Request $request, $id)
                 $user->country = $request->input('country');
                 $user->gender = $request->input('gender');
                 $user->role = $request->input('role');
-    
-                
+
+
                 $user->save();
-              
-    
+
+
                 return response()->json([
                     'status' => true,
                     'message' => 'User has been updated successfully.',
@@ -174,7 +176,7 @@ public function updateUser(Request $request, $id)
             throw new HttpException(500, $e->getMessage());
         }
     }
-    
+
 
     public function user_login(Request $request)
     {
@@ -202,12 +204,12 @@ public function updateUser(Request $request, $id)
                 $user = Auth::user();
 
                 // Check if user's status is active
-            if ($user->status != 'active') {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Your Account has been Temporary Deactivated.',
-                ],200);
-            }
+                if ($user->status != 'active') {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Your Account has been Temporary Deactivated.',
+                    ], 200);
+                }
 
                 return response()->json([
                     'status' => true,
@@ -224,14 +226,33 @@ public function updateUser(Request $request, $id)
             return response()->json(['success' => true, 'msg' => 'User is not authorized to log in successfully.'], 500);
         }
     }
-    
+
     public function update_profile(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'phone' => 'required',
+                'linkedin_url' => [
+                    'required',
+                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                ],
+                'gender' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
             $user = User::find($request->id);
-            $user->name =  $request->name;
+            $user->name = $request->name;
             $user->phone = $request->phone;
-            $user->gender =  $request->gender;
+            $user->gender = $request->gender;
             $user->city = $request->city;
             $user->country = $request->country;
             $user->linkedin_url = $request->linkedin_url;
@@ -252,7 +273,7 @@ public function updateUser(Request $request, $id)
             throw new HttpException(500, $e->getMessage());
         }
     }
- 
+
     public function update_bank_detail(Request $request)
     {
         try {
@@ -428,7 +449,7 @@ public function updateUser(Request $request, $id)
             }
             $user->phone = $request->phone;
             $user->save();
-            
+
             $otp = VerificationCode::where('user_id', $user->id)->first();
             if ($otp) {
                 $otp->otp = rand(1000, 9999);
@@ -481,14 +502,15 @@ public function updateUser(Request $request, $id)
         }
     }
 
-    public function reset_password(Request $request){
-          
+    public function reset_password(Request $request)
+    {
+
         try {
-            $user =  User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
             if ($user) {
                 $token = Str::random(40);
                 $domain = env('NEXT_URL');
-                $url = $domain . '/?userid='.$user->id.'&resettoken=' . $token;
+                $url = $domain . '/?userid=' . $user->id . '&resettoken=' . $token;
                 $data['url'] = $url;
                 $data['email'] = $request->email;
                 $data['title'] = "password reset";
@@ -518,15 +540,14 @@ public function updateUser(Request $request, $id)
         $resetData = PasswordReset::where('user_id', $request->id)->where('token', $request->token)->count();
 
         if ($resetData > 0) {
-            return response()->json(['status' => true, ]);
+            return response()->json(['status' => true,]);
         } else {
             return response()->json(['status' => false, 'message' => 'Invalid User Authoriztation']);
         }
     }
 
     public function updated_reset_password(Request $request)
-   
-     {
+    {
         try {
             $request->validate([
                 'password' => 'required|string|min:8',
