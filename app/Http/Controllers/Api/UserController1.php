@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -48,7 +48,6 @@ class UserController extends Controller
             $user->name = $request->firstname . " " . $request->lastname;
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
-            $user->new_password = $request->password;
             $user->role     = $request->role;
             $user->profile_pic=  "default.png";
             $data = $user->save();
@@ -608,4 +607,3 @@ public function updateUser(Request $request, $id)
         }
     }
 }
-
