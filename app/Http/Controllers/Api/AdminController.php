@@ -32,7 +32,8 @@ class AdminController extends Controller
      */
     public function get_all_users(Request $request){
         try {
-            $data = User::get();
+            $data = User::orderBy('created_at', 'desc')
+            ->get();;
 
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
