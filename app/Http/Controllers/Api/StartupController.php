@@ -16,6 +16,8 @@ use App\Models\About;
 use App\Models\BusinessUnit;
 use App\Models\Contact;
 use Mail;
+use Sse\SSE;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
@@ -66,6 +68,32 @@ class StartupController extends Controller
             return response()->json(['success' => true, 'message' => 'Error Occuring.'], 500);
         }
     }
+
+    public function get_fund_raise_count(Request $request){
+        $count = BusinessUnit::where('status', 'open')->whereNotNull('fund_id')->count();
+
+        try{
+            if($count){
+                return response()->json([
+    
+                    'status' =>true,
+                    'message'=>'Count get Successfully',
+                    'data' => $count,
+                ]);
+            }else{
+                return response()->json([
+    
+                    'status' =>false,
+                    'message'=>'Count not get Successfully',
+                    'data' => '',
+                ]);
+        }
+
+        }catch(\Exception $e){
+                throw new HttpException(500,$e->getMessage());
+        }
+    }
+        
     public function update_personal_information(Request $request)
     {
         try {

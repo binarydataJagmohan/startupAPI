@@ -26,54 +26,52 @@ use App\Models\PasswordReset;
 
 class UserController extends Controller
 {
- public function userRegister(Request $request)
-{
-   try {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|max:255',
-            'lastname' => 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8|max:16',
-            'role' => 'required|string',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 200);
-        } else {
-            // Store the user in the database
-            $user = new User();
-            $user->name = $request->firstname . " " . $request->lastname;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->new_password = $request->password;
-            $user->role     = $request->role;
-            $user->profile_pic=  "default.png";
-            $data = $user->save();
-           
-            $token = JWTAuth::fromUser($user);
-            $mailtoken = Str::random(40);
-            $domain = env('NEXT_URL_LOGIN');
-            $url = $domain . '/?token=' . $mailtoken;
-            $mail['url'] = $url;
-            $mail['email'] = $request->email;
-            $mail['title'] = "Verify Your Account";
-            $mail['body'] = "Please click on below link to verify your Account";
-            $user->where('id',$user->id)->update(['email_verification_token'=>$mailtoken,'email_verified_at'=>Carbon::now()]);
-            Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['title']);
-            });
-            return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
-            
-         
+    public function userRegister(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'firstname' => 'required|max:255',
+                'lastname' => 'required|max:255',
+                'email' => 'required|email|unique:users',
+                'password' => 'required|string|min:8|max:16',
+                'role' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 200);
+            } else {
+                // Store the user in the database
+                $user = new User();
+                $user->name = $request->firstname . " " . $request->lastname;
+                $user->email = $request->email;
+                $user->password = Hash::make($request->password);
+                $user->role = $request->role;
+                $user->profile_pic = "default.png";
+                $data = $user->save();
+
+                $token = JWTAuth::fromUser($user);
+                return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
+
+                $mailtoken = Str::random(40);
+                $domain = env('NEXT_URL_LOGIN');
+                $url = $domain . '/?token=' . $mailtoken;
+                $mail['url'] = $url;
+                $mail['email'] = $request->email;
+                $mail['title'] = "Verify Your Account";
+                $mail['body'] = "Please click on below link to verify your Account";
+                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
+                Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json(['success' => true, 'msg' => 'User has not been Register Successfully.'], 500);
         }
     }
-    catch (\Exception $e) {
-
-    }
-}
 
 
     public function get_front_user(Request $request, $id)

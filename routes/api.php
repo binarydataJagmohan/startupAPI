@@ -92,6 +92,8 @@ Route::group(['middleware' => ['api']], function () {
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
       Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
      Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
+     Route::get("fund-raise-count",[App\Http\Controllers\Api\StartupController::class,'get_fund_raise_count']);
+   
      Route::post('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
