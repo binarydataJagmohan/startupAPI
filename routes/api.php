@@ -119,4 +119,7 @@ Route::group(['middleware' => ['api','jwt.verify']], function () {
      Route::post('update-admin', [App\Http\Controllers\Api\AdminController::class, 'update_admin_data']);
 
      Route::get('check-user-approval-status',[App\Http\Controllers\Api\UserController::class,'check_user_approval_status']);
+     Route::post('send-notifications/{$notify_from_user}',[App\Http\Controllers\Api\NotificationController::class,'sendNotification']);
+     Route::get('get-all-notifications', [App\Http\Controllers\Api\NotificationController::class,'getAllNotifications']);
+     Route::get('get-notifications', [App\Http\Controllers\Api\NotificationController::class,'getNotifications']);
     });
