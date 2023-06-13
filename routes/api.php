@@ -37,7 +37,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/updated-reset-password',[App\Http\Controllers\Api\UserController::class,'updated_reset_password']);
 });
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => ['api','jwt.verify']], function () {
     Route::post('personal-information',[App\Http\Controllers\Api\StartupController::class,'personal_information']);
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
     Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
