@@ -52,7 +52,7 @@
                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                 <tr>
                                     <td style="text-align: center">
-                                         <a href="#" style="display: block;margin-bottom: 10px;"> <img src="{{asset('/public/img/logo.png')}}" height="50" alt="logo"/></a> <br/>
+                                         <a href="#" style="display: block;margin-bottom: 10px;"> <img src="{{ $message->embed(public_path('img/logo.png')) }}" height="50" alt="logo"/></a> <br/>
                                     </td>
                                 </tr>
             
