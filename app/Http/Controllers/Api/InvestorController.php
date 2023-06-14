@@ -301,7 +301,7 @@ class InvestorController extends Controller
     public function get_all_investors(Request $request){
          try {
             $data = User::where(['role'=>'investor','is_profile_completed'=>'1'])->orderBy('created_at', 'desc')
-            ->get();;
+            ->get();
 
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
