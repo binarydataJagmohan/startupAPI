@@ -109,7 +109,7 @@ class NotificationController extends Controller
 
     // getTotalCountOfNotifications
     public function getTotalCountOfNotifications($id){
-        $count = Notifications::where(['notify_to_user'=>$id])->count();
+        $count = Notifications::where('notify_to_user',$id)->count();
 
         // try{
             if($count){
@@ -136,7 +136,7 @@ class NotificationController extends Controller
 
      // getCountOfUnreadNotifications
      public function getCountOfUnreadNotifications($id){
-        $count = Notifications::where(['notify_to_user'=>$id,'each_read'=>'unread'])->count();
+        $count = Notifications::where('notify_to_user',$id)->where('each_read','unread')->count();
 
         // try{
             if($count){
