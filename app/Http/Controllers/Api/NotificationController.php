@@ -85,7 +85,7 @@ class NotificationController extends Controller
     }
 
     public function getNotifications($id) {
-        try {
+        // try {
             $notifications = Notifications::where('notify_to_user', $id)
                 ->where('status', '!=', 'deleted')
                 ->orderBy('id', 'desc')
@@ -96,13 +96,13 @@ class NotificationController extends Controller
                 'message' => 'Notifications fetched successfully.',
                 'data' => $notifications
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error Occurred.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'status' => false,
+        //         'message' => 'Error Occurred.',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
     }
     
 
@@ -111,7 +111,7 @@ class NotificationController extends Controller
     public function getTotalCountOfNotifications($id){
         $count = Notifications::where(['notify_to_user'=>$id])->count();
 
-        try{
+        // try{
             if($count){
                 return response()->json([
     
@@ -128,9 +128,9 @@ class NotificationController extends Controller
                 ]);
         }
 
-        }catch(\Exception $e){
-                throw new HttpException(500,$e->getMessage());
-        }
+        // }catch(\Exception $e){
+        //         throw new HttpException(500,$e->getMessage());
+        // }
     }
 
 
@@ -138,7 +138,7 @@ class NotificationController extends Controller
      public function getCountOfUnreadNotifications($id){
         $count = Notifications::where(['notify_to_user'=>$id,'each_read'=>'unread'])->count();
 
-        try{
+        // try{
             if($count){
                 return response()->json([
     
@@ -155,8 +155,8 @@ class NotificationController extends Controller
                 ]);
         }
 
-        }catch(\Exception $e){
-                throw new HttpException(500,$e->getMessage());
-        }
+        // }catch(\Exception $e){
+        //         throw new HttpException(500,$e->getMessage());
+        // }
     }
 }

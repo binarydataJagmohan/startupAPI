@@ -36,6 +36,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/check-user-reset-password-verfication',[App\Http\Controllers\Api\UserController::class,'check_user_reset_password_verfication']);
     Route::post('/updated-reset-password',[App\Http\Controllers\Api\UserController::class,'updated_reset_password']);
     Route::post('send-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendNotification']);
+    Route::get('notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getTotalCountOfNotifications']);
 });
 
 Route::group(['middleware' => ['api','jwt.verify']], function () {
@@ -123,7 +124,7 @@ Route::group(['middleware' => ['api','jwt.verify']], function () {
  
      Route::get('get-all-notifications', [App\Http\Controllers\Api\NotificationController::class,'getAllNotifications']);
      Route::get('get-notifications/{id}', [App\Http\Controllers\Api\NotificationController::class, 'getNotifications']);
-     Route::get('notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getTotalCountOfNotifications']);
+     
      Route::get('unread-notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getCountOfUnreadNotifications']);
      Route::post('update-notifications/{id}',[App\Http\Controllers\Api\NotificationController::class,'updateNotification']);
     });
