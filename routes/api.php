@@ -23,6 +23,7 @@ Route::group(['middleware' => 'api'], function () {
     
     Route::post('startup-register', [App\Http\Controllers\Api\UserController::class, 'startup_register']);
     Route::post('register', [App\Http\Controllers\Api\UserController::class, 'userRegister']);
+    Route::post('personal-information',[App\Http\Controllers\Api\StartupController::class,'personal_information']);
     Route::post('investor-register', [App\Http\Controllers\Api\UserController::class, 'investor_register']);
     Route::post('send-otp/{id}', [App\Http\Controllers\Api\UserController::class, 'send_otp']);
     Route::post('confirm-otp', [App\Http\Controllers\Api\UserController::class, 'confirm_otp']);
@@ -39,8 +40,8 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getTotalCountOfNotifications']);
 });
 
-Route::group(['middleware' => ['api','jwt.verify']], function () {
-    Route::post('personal-information',[App\Http\Controllers\Api\StartupController::class,'personal_information']);
+Route::group(['middleware' => ['api']], function () {
+   
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
     Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
     Route::post('business-information-update/{userid}',[App\Http\Controllers\Api\StartupController::class,'business_information_update']);

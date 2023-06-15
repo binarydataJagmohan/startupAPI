@@ -74,6 +74,7 @@ class UserController extends Controller
     }
 
 
+
     public function get_front_user(Request $request, $id)
     {
 

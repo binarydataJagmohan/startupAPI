@@ -255,7 +255,7 @@ class InvestorController extends Controller
                 $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
                 $data->save();
                 
-                $user=User::where("id",$userId);
+              $user=User::where("id",$userId)->first();
               $mail['email'] =$user->email;
               $mail['title'] = "Profile Completed";
               $mail['body'] =  "Profile has been Completed Successfully.";
