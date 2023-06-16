@@ -333,7 +333,7 @@ class StartupController extends Controller
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('/public/docs/');
+                    $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
