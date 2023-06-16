@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Notifications;
+use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Mail;
 class NotificationController extends Controller
 {
     //
@@ -158,5 +160,34 @@ class NotificationController extends Controller
         }catch(\Exception $e){
                 throw new HttpException(500,$e->getMessage());
         }
+    }
+
+    //Send Mail notifications to investors
+    public function sendMailNotification(){
+        try {
+          
+            $investors = User::where(['role' => 'investor'])->get();
+            foreach ($investors as $investor) {
+                $mail['domain'] = env('NEXT_URL_LOGIN');
+                $mail['email'] = $investor->email;
+                $mail['title'] = "Fund Raise Notification";
+                $mail['body'] = "New Fund Raised By Startup.";
+    
+                Mail::send('email.fundInvestorNotification', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Mail Notifications has been sent Successfully.',
+                'data' => $investors
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error Occurred: ' . $e->getMessage()
+            ], 500);
+        }
+
     }
 }

@@ -38,6 +38,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('/updated-reset-password',[App\Http\Controllers\Api\UserController::class,'updated_reset_password']);
     Route::post('send-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendNotification']);
     Route::get('notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getTotalCountOfNotifications']);
+    Route::post('send-mail-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendMailNotification']);
 });
 
 Route::group(['middleware' => ['api']], function () {
@@ -128,4 +129,7 @@ Route::group(['middleware' => ['api']], function () {
      
      Route::get('unread-notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getCountOfUnreadNotifications']);
      Route::post('update-notifications/{id}',[App\Http\Controllers\Api\NotificationController::class,'updateNotification']);
+
+    
+    
     });
