@@ -333,7 +333,7 @@ class StartupController extends Controller
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('/public/docs/');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
@@ -509,7 +509,7 @@ class StartupController extends Controller
         try {
             $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
                 ->select('business_details.*', 'business_units.*')
-                ->where(['business_details.id'=>$id,'business_units.status'=>'open'])
+                ->where(['business_details.id'=>$id])
                 ->first();
 
             if ($data) {
