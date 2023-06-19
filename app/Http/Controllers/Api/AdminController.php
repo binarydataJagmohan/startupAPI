@@ -32,8 +32,8 @@ class AdminController extends Controller
      */
     public function get_all_users(Request $request){
         try {
-            $data = User::orderBy('created_at', 'desc')
-            ->get();;
+            $data = User::where('role','!=', 'admin')->orderBy('created_at', 'desc')
+            ->get();
 
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
@@ -51,28 +51,28 @@ class AdminController extends Controller
 
      public function update_admin_data(Request $request){
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|max:255',
-                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i',],
-                'phone' => 'required',
-                'linkedin_url' =>[
-                    'required',
-                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
-                ],
+            // $validator = Validator::make($request->all(), [
+            //     'name' => 'required|max:255',
+            //     'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i',],
+            //     'phone' => 'required',
+            //     'linkedin_url' =>[
+            //         'required',
+            //         'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+            //     ],
                 
-                'gender' => 'required',
-                'city' => 'required',
-                'country' => 'required',
+            //     'gender' => 'required',
+            //     'city' => 'required',
+            //     'country' => 'required',
             
-            ]);
+            // ]);
     
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors(),
-                ], 422);
-            } else {
+            // if ($validator->fails()) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Validation error',
+            //         'errors' => $validator->errors(),
+            //     ], 422);
+            // } else {
                                         
                 $admin = User::where('role','admin')->first();
 
@@ -101,7 +101,7 @@ class AdminController extends Controller
                     'message' => 'Admin has been updated successfully.',
                     'data' => $admin,
                 ], 200);
-            }
+            // }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
