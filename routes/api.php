@@ -110,6 +110,13 @@ Route::group(['middleware' => ['api']], function () {
      Route::post('update-user-status/{id}',[App\Http\Controllers\Api\UserController::class,'updateUserStatus']);
 
      Route::get('get-all-users',[App\Http\Controllers\Api\AdminController::class,'get_all_users']);
+     Route::post('terms-and-conditions',[App\Http\Controllers\Api\AdminController::class,'terms_and_conditions']);
+     Route::post('privacy-policies',[App\Http\Controllers\Api\AdminController::class,'privacy_policies']);
+     Route::get('get-terms-and-conditions',[App\Http\Controllers\Api\AdminController::class,'get_terms_and_conditions']);
+     Route::get('get-privacy-policies',[App\Http\Controllers\Api\AdminController::class,'get_privacy_policies']);
+     
+    
+    
      Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
      Route::post('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
      Route::get('fund-single/{id}',[App\Http\Controllers\Api\AdminController::class,'get_single_fund']);

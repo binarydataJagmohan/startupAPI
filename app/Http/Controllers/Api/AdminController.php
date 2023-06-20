@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Models\User;
-
+use App\Models\TermsAndConditions;
+use App\Models\PrivacyPolicies;
 use App\Models\Business;
 use App\Models\BankDetails;
 use App\Models\CoFounder;
@@ -49,6 +50,189 @@ class AdminController extends Controller
 
      }
 
+     public function privacy_policies(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'privacy_policies' => [
+                    'required',
+                    'regex:/\S/', // Ensure there is at least one non-whitespace character
+                ],
+            ]);
+               if ($validator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Validation error',
+                       'errors' => $validator->errors(),
+                    ], 422);
+              } else {
+    
+    
+            $user = User::where('role', 'admin')->first()->id;
+            $checkforpresentdata = PrivacyPolicies::where('user_id',$user)->first();
+            if (trim($request->privacy_policies) === '<p><br></p>') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Privacy Policies cannot be empty',
+                ], 422);
+            }
+            if($checkforpresentdata){
+                $terms = $checkforpresentdata->update([
+                    'privacy_policies' => $request->privacy_policies,
+                    'user_id' =>$user
+                ]);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Privacy Policies updated successfully',
+                    'data' => $terms
+                ], 200);
+            }else{
+    
+                if (trim($request->privacy_policies) === '<p><br></p>') {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Privacy Policies cannot be empty',
+                    ], 422);
+                }else
+                if(!empty(trim($request->privacy_policies))){
+                    $terms =  new PrivacyPolicies();
+                    $terms->user_id = $user;
+                    $terms->privacy_policies = $request->privacy_policies;
+                    $terms->save();
+            
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Privacy Policies added successfully',
+                        'data' => $terms
+                    ], 200);
+                }else{
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Privacy Policies cannot be empty',
+                    ], 422);
+                }
+                
+            }
+            
+          
+        }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+     }
+
+    public function terms_and_conditions(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'terms_and_conditions' => [
+                'required',
+                'regex:/\S/', // Ensure there is at least one non-whitespace character
+            ],
+        ]);
+           if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                   'errors' => $validator->errors(),
+                ], 422);
+          } else {
+
+
+        $user = User::where('role', 'admin')->first()->id;
+        $checkforpresentdata = TermsAndConditions::where('user_id',$user)->first();
+        if (trim($request->terms_and_conditions) === '<p><br></p>') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Terms and conditions cannot be empty',
+            ], 422);
+        }
+        if($checkforpresentdata){
+            $terms = $checkforpresentdata->update([
+                'terms_and_conditions' => $request->terms_and_conditions,
+                'user_id' =>$user
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Terms and conditions updated successfully',
+                'data' => $terms
+            ], 200);
+        }else{
+
+            if (trim($request->terms_and_conditions) === '<p><br></p>') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terms and conditions cannot be empty',
+                ], 422);
+            }else
+            if(!empty(trim($request->terms_and_conditions))){
+                $terms =  new TermsAndConditions();
+                $terms->user_id = $user;
+                $terms->terms_and_conditions = $request->terms_and_conditions;
+                $terms->save();
+        
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Terms and conditions added successfully',
+                    'data' => $terms
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terms and conditions cannot be empty',
+                ], 422);
+            }
+            
+        }
+        
+      
+    }
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error occurred',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+public function get_privacy_policies(Request $request){
+    try{
+        $privacy_policies = PrivacyPolicies::where('user_id',1)->first()->privacy_policies;
+        return response()->json([
+            'status' => true,
+            'message' => 'Privacy Policies get successfully',
+            'data' => $privacy_policies
+        ], 200);
+         
+} catch (\Exception $e) {
+    return response()->json([
+        'status' => false,
+        'message' => 'Error occurred',
+        'error' => $e->getMessage()
+    ], 500);
+}
+}
+
+public function get_terms_and_conditions(Request $request){
+    try{
+            $termscondition = TermsAndConditions::where('user_id',1)->first()->terms_and_conditions;
+            return response()->json([
+                'status' => true,
+                'message' => 'Terms and conditions get successfully',
+                'data' => $termscondition
+            ], 200);
+             
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Error occurred',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
      public function update_admin_data(Request $request){
         try {
             // $validator = Validator::make($request->all(), [
