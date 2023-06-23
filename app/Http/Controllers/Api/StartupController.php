@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -272,7 +273,19 @@ class StartupController extends Controller
                 'tagline' => 'required',
                 'sector' => 'required',
                 'type'=> 'required',
-                // 'logo' => 'required',
+                'logo' => [
+                    Rule::requiredIf(function () use ($request) {
+                        // Check if proof_img is already present in the database
+                        $existingLogo = Business::where('user_id', $request->user_id)
+                            ->whereNotNull('logo')
+                            ->first();
+            
+                        return !$existingLogo;
+                    }),
+                    'image',
+                    'mimes:jpeg,png,jpg',
+                    'max:20480', // Adjust the file size limit if needed
+                ],
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -550,7 +563,8 @@ class StartupController extends Controller
                 'closed_in' => 'required',
                 'resource' => 'required',
                 // 'status' => 'required',
-                'xirr'  =>'required'
+                'xirr'  =>'required',
+                
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -617,43 +631,43 @@ class StartupController extends Controller
                         'data' => ''
                     ], 404);
                 }
-                    $fund_id = rand(100000, 999999);
-                    $data = new BusinessUnit();
-                    $data->business_id=$request->business_id;
-                    $data->fund_id='STARTUP-'.$fund_id;
-                    $data->total_units = $request->total_units;
-                    $data->minimum_subscription= $request->minimum_subscription;
-                    $data->avg_amt_per_person= $request->avg_amt_per_person;
-                    $data->tenure=$request->tenure;
-                    $data->repay_date= $request->repay_date;
-                    $data->closed_in=$request->closed_in;
-                    $data->resource=$request->resource;
-                    $data->status= 'open';
-                    $data->xirr=$request->xirr;
-                    $data->amount= $request->amount;
-                    $data->no_of_units=$request->total_units;
-                    $data->desc= $request->desc;
-                    if ($request->hasFile('agreement')) {
-                        $file = $request->file('agreement');
-                        $filename = time() . '_' . $file->getClientOriginalName();
-                        $filepath = public_path('pdf/');
-                        $file->move($filepath, $filename);
-                        $data->agreement = $filename;
-                    }
-                    if ($request->hasFile('invoice')) {
-                        $file = $request->file('invoice');
-                        $filename = time() . '_' . $file->getClientOriginalName();
-                        $filepath = public_path('pdf/');
-                        $file->move($filepath, $filename);
-                        $data->invoice = $filename;
-                    }
-                    if ($request->hasFile('pdc')) {
-                        $file = $request->file('pdc');
-                        $filename = time() . '_' . $file->getClientOriginalName();
-                        $filepath = public_path('pdf/');
-                        $file->move($filepath, $filename);
-                        $data->pdc = $filename;
-                    }
+                $fund_id = rand(100000, 999999);
+                $data = new BusinessUnit();
+                $data->business_id=$request->business_id;
+                $data->fund_id='STARTUP-'.$fund_id;
+                $data->total_units = $request->total_units;
+                $data->minimum_subscription= $request->minimum_subscription;
+                $data->avg_amt_per_person= $request->avg_amt_per_person;
+                $data->tenure=$request->tenure;
+                $data->repay_date= $request->repay_date;
+                $data->closed_in=$request->closed_in;
+                $data->resource=$request->resource;
+                $data->status= 'open';
+                $data->xirr=$request->xirr;
+                $data->amount= $request->amount;
+                $data->no_of_units=$request->total_units;
+                $data->desc= $request->desc;
+                if ($request->hasFile('agreement')) {
+                    $file = $request->file('agreement');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->agreement = $filename;
+                }
+                if ($request->hasFile('invoice')) {
+                    $file = $request->file('invoice');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->invoice = $filename;
+                }
+                if ($request->hasFile('pdc')) {
+                    $file = $request->file('pdc');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('pdf/');
+                    $file->move($filepath, $filename);
+                    $data->pdc = $filename;
+                }
                     $data->save();
                   
                  return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
