@@ -13,6 +13,7 @@ use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\Contact;
 use App\Models\Documents;
+use Illuminate\Validation\Rule;
 use Mail;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
@@ -30,6 +31,29 @@ class DocumentsController extends Controller
     {
         try {
             $userId = $request->user_id;
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'pan_number' => 'required',
+                'uid' => 'required',
+                'dob' => 'required',
+                'proof_img' => [
+                    Rule::requiredIf(function () use ($request) {
+                        // Check if proof_img is already present in the database
+                        $existingProofImg = Documents::where('user_id', $request->user_id)
+                            ->whereNotNull('proof_img')
+                            ->first();
+            
+                        return !$existingProofImg;
+                    }),
+                    'image',
+                    'mimes:jpeg,png,jpg',
+                    'max:20480', // Adjust the file size limit if needed
+                ],
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => 'Validation error', 'errors' => $validator->errors()], 400);
+            }
             $data  = Documents::where('user_id', $userId)->first();
             if($data){
                 $data ->update(['user_id'=>$request->user_id,
