@@ -261,7 +261,7 @@ class UserController extends Controller
                 $randomNumber = mt_rand(1000000000, 9999999999);
                 $imagePath = $request->file('profile_pic');
                 $imageName = $randomNumber . $imagePath->getClientOriginalName();
-                $imagePath->move('images/profile', $imageName);
+                $imagePath->move(public_path('images/profile'), $imageName);
                 $user->profile_pic = $imageName;
             }
             $savedata = $user->save();
