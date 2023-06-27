@@ -41,7 +41,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('send-mail-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendMailNotification']);
 });
 
-Route::group(['middleware' => ['api']], function () {
+Route::group(['middleware' => ['api','jwt.verify']], function () {
    
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
     Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
@@ -137,6 +137,6 @@ Route::group(['middleware' => ['api']], function () {
      Route::get('unread-notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getCountOfUnreadNotifications']);
      Route::post('update-notifications/{id}',[App\Http\Controllers\Api\NotificationController::class,'updateNotification']);
 
-    
-    
+    Route::post('notification-config-store',[App\Http\Controllers\Api\OptionController::class,'notificationConfigStore']);
+    Route::get('get-options/{id}',[App\Http\Controllers\Api\OptionController::class,'getOptions']);
     });

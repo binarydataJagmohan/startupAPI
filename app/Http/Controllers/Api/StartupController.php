@@ -574,9 +574,10 @@ class StartupController extends Controller
                 ], 422);
             } else {
                 // return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $request->all()], 200);
-              if($request->id){
+             
+                if($request->id){
                 $data = BusinessUnit::where('id',$request->id)->first();
-                // $data->business_id=$request->business_id;
+                $data->business_id=$request->business_id;
                 // $data->fund_id='STARTUP-'.$fund_id;
                 $data->total_units = $request->total_units;
                 $data->minimum_subscription= $request->minimum_subscription;
