@@ -272,7 +272,7 @@ public function get_terms_and_conditions(Request $request){
                     $randomNumber = mt_rand(1000000000, 9999999999);
                     $imagePath = $request->file('profile_pic');
                     $imageName = $randomNumber . $imagePath->getClientOriginalName();
-                    $imagePath->move('images/profile', $imageName);
+                    $imagePath->move(public_path('images/profile'), $imageName);
                     $admin->profile_pic = $imageName;
                 }
     
