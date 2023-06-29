@@ -190,4 +190,23 @@ class NotificationController extends Controller
         }
 
     }
+
+    public function destroy_notifications(Request $request,$id){
+
+        try {
+            $data = Notifications::where(['notify_to_user'=>$id,'each_read'=>'read'])->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Notifications Deleted Successfully.','data'=>$data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+     }
 }

@@ -39,6 +39,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('send-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendNotification']);
     Route::get('notifications-count/{id}',[App\Http\Controllers\Api\NotificationController::class,'getTotalCountOfNotifications']);
     Route::post('send-mail-notifications',[App\Http\Controllers\Api\NotificationController::class,'sendMailNotification']);
+    Route::post('notifications-delete/{id}',[App\Http\Controllers\Api\NotificationController::class,'destroy_notifications']);
 });
 
 Route::group(['middleware' => ['api','jwt.verify']], function () {
@@ -98,7 +99,7 @@ Route::group(['middleware' => ['api','jwt.verify']], function () {
      Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
      Route::get("fund-raise-count",[App\Http\Controllers\Api\StartupController::class,'get_fund_raise_count']);
    
-     Route::post('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
+     Route::delete('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
@@ -118,13 +119,13 @@ Route::group(['middleware' => ['api','jwt.verify']], function () {
     
     
      Route::post('user-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_user_data']);
-     Route::post('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
+     Route::delete('fund-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_fund']);
      Route::get('fund-single/{id}',[App\Http\Controllers\Api\AdminController::class,'get_single_fund']);
 
      Route::get('get-all-active-funds',[\App\Http\Controllers\Api\AdminController::class,'get_all_active_funds']);
      Route::get('totalcount-active-funds',[\App\Http\Controllers\Api\AdminController::class,'total_count_active_funds']);
     
-     Route::post('investor-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_investor_data']);
+     Route::delete('investor-delete/{id}',[App\Http\Controllers\Api\AdminController::class,'destroy_investor_data']);
      Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);
      Route::get('get-admin-data', [App\Http\Controllers\Api\AdminController::class, 'get_admin_data']);
      Route::post('update-admin', [App\Http\Controllers\Api\AdminController::class, 'update_admin_data']);
@@ -139,4 +140,6 @@ Route::group(['middleware' => ['api','jwt.verify']], function () {
 
     Route::post('notification-config-store',[App\Http\Controllers\Api\OptionController::class,'notificationConfigStore']);
     Route::get('get-options/{id}',[App\Http\Controllers\Api\OptionController::class,'getOptions']);
+   
+   
     });

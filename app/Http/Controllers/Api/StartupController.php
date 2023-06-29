@@ -485,17 +485,25 @@ class StartupController extends Controller
      */
     public function destroy(Request $request,$id)
     {
+        try {
         $startup = User::find($id)->delete();
         if (!$startup) {
             
             return response()->json([
                 'status'=>false,
-                'message' => 'Business not found.'], 404);
+                'message' => 'Startup not found.'], 404);
         }
         
         return response()->json([
             'status'=>true,
-            'message' => 'Business deleted successfully.']);
+            'message' => 'Startup deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -577,7 +585,7 @@ class StartupController extends Controller
              
                 if($request->id){
                 $data = BusinessUnit::where('id',$request->id)->first();
-                $data->business_id=$request->business_id;
+                // $data->business_id=$request->business_id;
                 // $data->fund_id='STARTUP-'.$fund_id;
                 $data->total_units = $request->total_units;
                 $data->minimum_subscription= $request->minimum_subscription;
