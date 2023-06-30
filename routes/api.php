@@ -42,7 +42,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('notifications-delete/{id}',[App\Http\Controllers\Api\NotificationController::class,'destroy_notifications']);
 });
 
-Route::group(['middleware' => ['api','jwt.verify']], function () {
+Route::group(['middleware' => ['api']], function () {
    
     Route::post('business-information',[App\Http\Controllers\Api\StartupController::class,'business_information']);
     Route::post('update-startup-personal-info/{id}',[App\Http\Controllers\Api\StartupController::class,'update_personal_information']);
