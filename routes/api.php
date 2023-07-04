@@ -141,5 +141,6 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('notification-config-store',[App\Http\Controllers\Api\OptionController::class,'notificationConfigStore']);
     Route::get('get-options/{id}',[App\Http\Controllers\Api\OptionController::class,'getOptions']);
    
-   
+    Route::get('total-raised-funds/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfFund']);
+    Route::get('total-units/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfUnits']);   
     });

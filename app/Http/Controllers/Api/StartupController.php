@@ -535,11 +535,9 @@ class StartupController extends Controller
                 ->select('business_details.*', 'business_units.*')
                 ->where(['business_details.id'=>$id])
                 ->first();
-
-            if ($data) {
-                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-            }
-        } catch (\Exception $e) {
+                    return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
+                
+      } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -716,6 +714,7 @@ class StartupController extends Controller
         try {
             $data = BusinessUnit::where(['id' => $id])->firstOrFail();
             $data->status = $request->input('status');
+            $data->closed_in = Carbon::now();
             $data->save();
             return response()->json([
                 'status' => true,
@@ -751,7 +750,43 @@ class StartupController extends Controller
         }
     }
 
-    
+    public function getTotalCountOfFund(Request $request, $id){
+        try {
+            $data = BusinessUnit::where(['business_id' => $id])->count();
+            // echo $data;
+            // die;
+            return response()->json([
+                'status' => true,
+                'message' => 'Count Fetched Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getTotalCountOfUnits(Request $request, $id){
+        try {
+            $data = BusinessUnit::where(['business_id' => $id,'status'=>'open'])->first();
+            // echo $data;
+            // die;
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Fetched Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     
 
  
