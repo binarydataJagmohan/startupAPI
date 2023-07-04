@@ -63,7 +63,7 @@
                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                 <tr>
                                     <td style="text-align: center">
-                                         <a href="#" style="display: block;margin-bottom: 10px;"> <img src="{{asset('/public/img/logo.png')}}" height="50" alt="logo"/></a> <br/>
+                                         <a href="#" style="display: block;margin-bottom: 10px;"> <img src="{{ $message->embed(public_path('img/logo.png')) }}" height="50" alt="logo"/></a> <br/>
                                     </td>
                                 </tr>
             
@@ -88,7 +88,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
                                         <a href="{{ $data['url'] }}" class="btn-primary" itemprop="url"
-                                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #10dce8; margin: 0; border-color: #10dce8; border-style: solid; border-width: 8px 16px;">Click here to reset password</a>
+                                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #9fe870; margin: 0; border-color: #9fe870; border-style: solid; border-width: 8px 16px;">Click here to reset password</a>
                                            <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Thanks,<br>
                                               Startup - IT Startups &amp; Digital Services</p>
                                         </td>

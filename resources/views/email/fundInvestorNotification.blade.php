@@ -60,9 +60,20 @@
                                     <td class="content-block"
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
-                                        Hi Dear,<br>
+                                      <!--   Hi Dear,<br>
                                                New Fund has been raised by startup you have to invest in that campign if you are interested to invest.
-                                              <a href="{{$mail['domain']}}"> Click here:</a>
+                                              <a href="{{$mail['domain']}}"> Click here:</a> -->
+
+                                            Dear {{$mail['username']}},<br>
+                                            We are delighted to inform you that our startup, IT Startups & Digital Services, has successfully raised new funds for an exciting campaign. We would like to extend an invitation for you to participate in this investment opportunity, should you be interested.<br>
+                                            <br>
+                                            To learn more and make your investment, please click on the following link:<br>
+                                           <a href="{{$mail['domain']}}">{{$mail['domain']}}</a><br>
+                                           <br>
+                                            Thank you for considering this opportunity to support our startup. We value your partnership and look forward to the potential growth and success this campaign can bring.<br>
+                                            <br>
+                                            Should you have any questions or require further information, please do not hesitate to reach out to us.
+
                                     </td>
                                 </tr>
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -71,7 +82,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
                                         
-                                           <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Thanks,<br>
+                                           <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Best Regards,<br>
                                               Startup - IT Startups &amp; Digital Services</p>
                                         </td>
                                 </tr>

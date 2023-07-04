@@ -60,8 +60,17 @@
                                     <td class="content-block"
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
-                                        Hi Dear,<br>
-                                               Congratulations Your Account has been approved by Adminstrative Department.Now you can access the Dashboard.
+                                        <!-- Hi Dear,<br>
+                                               Congratulations Your Account has been approved by Adminstrative Department.Now you can access the Dashboard. -->
+                                               Dear {{$mail['user']->name}},<br>
+                                                We are pleased to inform you that your account has been approved by the Administrative Department. You can now access the Dashboard and begin utilizing our services.<br>
+                                                <br>
+                                                We appreciate your patience throughout the account approval process and we are confident that our platform will provide you with the tools and resources necessary for your success.<br>
+                                                <br>
+                                                If you have any questions or require assistance, please don't hesitate to reach out to our support team. We are here to ensure your experience with our startup, IT Startups & Digital Services, is seamless and productive.<br>
+                                                <br>
+                                                Thank you for joining us, and we look forward to working with you.
+
                                     </td>
                                 </tr>
                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
@@ -70,7 +79,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
                                         
-                                           <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Thanks,<br>
+                                           <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Best Regards,<br>
                                               Startup - IT Startups &amp; Digital Services</p>
                                         </td>
                                 </tr>

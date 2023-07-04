@@ -428,14 +428,17 @@ class StartupController extends Controller
             $startup->save();
 
             // $mail['name']= $startup->name;
-            $mail['email'] = $startup->email;
-            $mail['title'] = "Approval Mail";
-            $mail['body'] =  "Your Account has been approved Successfully. ";
-
-            Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['title']);
-            });
-
+             if($startup->approval_status=== "approved")
+            {
+                $mail['user']  = $startup;
+                $mail['email'] = $startup->email;
+                $mail['title'] = "Approval Mail";
+                $mail['body'] =  "Your Account has been approved Successfully. ";
+    
+                Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Status Updated Successfully.',

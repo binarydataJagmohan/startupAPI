@@ -235,7 +235,7 @@ class InvestorController extends Controller
                 $data->corporate_net_worth= $request->category == "3" ? $request->corporate_net_worth: 0;
                 $data->save();
 
-                $user=User::where('id',$userId)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
+                $user=User::where('id',$request->user_id)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
                 
                 return response()->json([
                     'status' => true,
@@ -254,7 +254,7 @@ class InvestorController extends Controller
                 $data->foreign_annual_net_worth = $request->category == "3" ? $request->foreign_annual_net_worth : 0;
                 $data->corporate_net_worth = $request->category == "3" ? $request->corporate_net_worth : 0;
                 $data->save();
-                
+                User::where('id',$userId)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
               $user=User::where("id",$userId)->first();
               $mail['email'] =$user->email;
               $mail['title'] = "Profile Completed";
@@ -343,14 +343,16 @@ class InvestorController extends Controller
             $data = User::where(['id' => $id, 'role' => 'investor'])->firstOrFail();
             $data->approval_status = $request->input('approval_status');
             $data->save();
-            $mail['email'] = $data->email;
-            $mail['title'] = "Approval Mail";
-            $mail['body'] =  "Your Account has been approved Successfully. ";
-
-            Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
-                $message->to($mail['email'])->subject($mail['title']);
-            });
-
+           if($data->approval_status === 'approved')
+            {
+                $mail['user']  = $data;
+                $mail['email'] = $data->email;
+                $mail['title'] = "Approval Mail";
+                $mail['body'] =  "Your Account has been approved Successfully. ";
+                Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Status Updated Successfully.',
