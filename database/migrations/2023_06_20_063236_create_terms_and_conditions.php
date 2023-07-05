@@ -16,8 +16,7 @@ return new class extends Migration
         Schema::create('terms_and_conditions', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->string('terms_and_conditions')->nullable();
-            $table->timestamp('updated_at')->nullable();
+            $table->longText('terms_and_conditions')->nullable();
             $table->timestamps();
         });
     }

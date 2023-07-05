@@ -112,6 +112,17 @@ class InvestorBookingController extends Controller
 
 
 
+    // get the latest data from InvestorBooking
+    public function getBookingDetails(Request $request,$id){
+        try {
+            $data= InvestorBooking::where('user_id',$id)->latest()->first();
+            return response()->json(['status' => true, 'message' => 'Data fetched successfully.','data'=>$data], 200);
+        }  catch (\Exception $e) {
+            // Other error occurred
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
+
+    }
 
     /**
      * Display the specified resource.

@@ -50,7 +50,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('single-startup/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_startup']);
   
     Route::get('get-business-information/{id}',[App\Http\Controllers\Api\StartupController::class,'get_business_information']);
-   
+    Route::get('get-business-information-bid/{id}',[App\Http\Controllers\Api\StartupController::class,'get_business_information_business_id']);
    
     Route::get('get-basic-information/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_basic_information']);
     Route::post('basic-information',[App\Http\Controllers\Api\DocumentsController::class,'basic_information']);
@@ -101,6 +101,7 @@ Route::group(['middleware' => ['api']], function () {
    
      Route::delete('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);
+     Route::get('get-booking-details/{id}',[App\Http\Controllers\Api\InvestorBookingController::class,'getBookingDetails']);
 
      Route::post('fund-raise-store',[App\Http\Controllers\Api\StartupController::class,'fund_raise_information_store']);
      Route::get('get-all-funds/{id}',[App\Http\Controllers\Api\StartupController::class,'get_all_funds']);
@@ -142,5 +143,6 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-options/{id}',[App\Http\Controllers\Api\OptionController::class,'getOptions']);
    
     Route::get('total-raised-funds/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfFund']);
-    Route::get('total-units/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfUnits']);   
+    Route::get('total-units/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfUnits']);  
+    Route::post('campign-payment',[App\Http\Controllers\Api\PaymentController::class,'savePayment']);
     });

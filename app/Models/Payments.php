@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Option extends Model
+class Payments extends Model
 {
     use HasFactory;
-    public $table = 'options';
+    public $table = 'payments';
     protected $fillable = 
     [
         'user_id',
-        'option_name',
-        'option_value'
+        'repayment',
+        'card_number',
+        'expiry_date',
+        'cvc',
+        'zip_code',
+        'status'
     ];
 }
