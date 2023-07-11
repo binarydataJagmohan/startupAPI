@@ -788,6 +788,23 @@ class StartupController extends Controller
         }
     }
     
+    public function get_business_information_business_id(Request $request){
+        try{
+            $data =Business::where(['id'=>$request->id])->first();
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Fetched Successfully.',
+                'data' => $data
+            ], 200);
+
+        }catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
  
 }

@@ -144,5 +144,5 @@ Route::group(['middleware' => ['api']], function () {
    
     Route::get('total-raised-funds/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfFund']);
     Route::get('total-units/{id}',[App\Http\Controllers\Api\StartupController::class,'getTotalCountOfUnits']);  
-    Route::post('campign-payment',[App\Http\Controllers\Api\PaymentController::class,'savePayment']);
+    Route::post('payment',[App\Http\Controllers\Api\PaymentController::class,'savePayment']);
     });

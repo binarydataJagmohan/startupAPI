@@ -11,9 +11,12 @@ use Stripe\Customer;
 use Stripe\Token;
 use Stripe\Charge;
 use Stripe\Exception\CardException;
-use App\Models\User;
 use Illuminate\Http\Exceptions\HttpException;
 use Carbon\Carbon;
+use Stripe\PaymentIntent;
+use App\Models\User;
+use App\Models\Business;
+use Mail;
 
 class PaymentController extends Controller
 {
@@ -26,36 +29,67 @@ class PaymentController extends Controller
     {
 
         try {
-      
+
             Stripe::setApiKey(env('STRIPE_SECRET'));
-           
 
-            $customer = Customer::create([
-              'name' => 'kamal',
-              'email' => 'customer@email.com'
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $request[1]['subscription_value'], // amount in cents
+                'currency' => 'usd',
+                'payment_method' => $request[0]['id'],
+                'confirm' => true,
             ]);
 
-            
-            // Create a token for the payment source
-            $token = Token::create([
-              'card' => [
-                'name' => request('cardholder_name'),
-                'number' => request('card_number'),
-                'exp_month' => request('exp_month'),
-                'exp_year' => request('exp_year'),
-                'cvc' => request('cvc')
-              ]
-            ]);
-            $customer->sources->create(['source' => $token->id]);
-            $charge = Charge::create([
-              'amount' => 1000,
-              'currency' => 'usd',
-              'customer' => $customer->id,
-              'source' => $customer->default_source
-            ]);
+            $data = new Payments();
+            $data->user_id =  $request[1]['user_id'];
+            $data->business_id = $request[2]['id'];
+            $data->payment_id = $request[0]['id'];
+            $data->amount = $request[1]['repayment_value'];
+            $data->card_number = $request[0]['card']['last4'];
+            $data->zip_code = $request[0]['billing_details']['address']['postal_code'];
+            $data->expiry_date = $request[0]['card']['exp_month'] . '/' . $request[0]['card']['exp_year'];
+            $data->status = "success";
+            $data->save();
 
-            
-            return response()->json(['status' => true, 'message' => 'Payment successful'], 200);
+            $user = User::where('id', $request[1]['user_id'])->first();
+            $business = Business::where('id', $request[2]['id'])->first();
+            $mail['username'] = $user->name;
+            $mail['email'] = $user->email;
+            $mail['user'] = $user;
+            $mail['booking'] = $request[1];
+            $mail['businessUnit'] = $request[2];
+            $mail['business'] = $business;
+            $mail['title'] = "Payment Success";
+            $mail['body'] = "Your Payment has done successfully. ";
+            $timestamp = Carbon::parse($mail['booking']['repayment_date']);
+            $mail['date'] = $timestamp->format('Y-m-d');
+    
+            Mail::send('email.paymentSuccess', ['mail' => $mail], function ($message) use ($mail) {
+                $message->to($mail['email'])->subject($mail['title']);
+            });
+    
+    
+    
+            $startup = User::find($business->user_id);
+    
+            $mail1Data = [
+                'startup' => $startup,
+                'email' => $startup->email,
+                'user' => $user,
+                'booking' => $request[1],
+                'businessUnit' => $request[2],
+                'business' => $business,
+                'title' => "Fund Occupied",
+                'body' => "Your raised fund has been occupied successfully.",
+                'date' => Carbon::parse($request[1]['repayment_date'])->format('Y-m-d'),
+            ];
+        
+            Mail::send('email.StartupFundNotification', ['mail' => $mail1Data], function ($message) use ($mail1Data) {
+                $message->to($mail1Data['email'])->subject($mail1Data['title']);
+            });
+
+
+
+            return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
         } catch (CardException $e) {
             // Card error occurred
             $body = $e->getJsonBody();
