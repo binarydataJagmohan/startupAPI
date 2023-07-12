@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
+use App\Models\Payments;
 
 class StartupController extends Controller
 {
@@ -70,43 +71,43 @@ class StartupController extends Controller
         }
     }
 
-    public function get_fund_raise_count(Request $request){
+    public function get_fund_raise_count(Request $request)
+    {
         $count = BusinessUnit::where('status', 'open')->whereNotNull('fund_id')->count();
 
-        try{
-            if($count){
+        try {
+            if ($count) {
                 return response()->json([
-    
-                    'status' =>true,
-                    'message'=>'Count get Successfully',
+
+                    'status' => true,
+                    'message' => 'Count get Successfully',
                     'data' => $count,
                 ]);
-            }else{
+            } else {
                 return response()->json([
-    
-                    'status' =>false,
-                    'message'=>'Count not get Successfully',
+
+                    'status' => false,
+                    'message' => 'Count not get Successfully',
                     'data' => '',
                 ]);
-        }
-
-        }catch(\Exception $e){
-                throw new HttpException(500,$e->getMessage());
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
-        
+
     public function update_personal_information(Request $request)
     {
         try {
 
             $validator = Validator::make($request->all(), [
                 // 'country_code' => 'required|string',
-                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,'.$request->id],
+                'email' => ['required', 'email', 'regex:/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/i', 'unique:users,email,' . $request->id],
                 'phone' => 'required',
                 'gender' => 'required',
                 'city' => 'required',
                 'country' => 'required',
-                'linkedin_url' =>[
+                'linkedin_url' => [
                     'required',
                     'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
                 ],
@@ -133,7 +134,7 @@ class StartupController extends Controller
 
                 ]);
 
-              
+
                 $user->save();
 
                 return response()->json(['status' => true, 'message' => 'Profile updated successfully', 'data' => ['user' => $user]], 200);
@@ -159,9 +160,9 @@ class StartupController extends Controller
                 'sector' => 'required',
                 'type' => 'required',
                 'logo' => 'required',
-                
+
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -169,10 +170,10 @@ class StartupController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             }
-    
+
             $userId = $userid;
             $data = Business::where('user_id', $userId)->first();
-    
+
             if ($data) {
                 $data->business_name = $request->business_name;
                 $data->reg_businessname = $request->reg_businessname;
@@ -186,18 +187,18 @@ class StartupController extends Controller
                 $data->sector = $request->sector;
                 $data->type = $request->type;
                 $data->updated_at = Carbon::now();
-                
-    
+
+
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
-                    $filename =time() . '_' . $file->getClientOriginalName();
+                    $filename = time() . '_' . $file->getClientOriginalName();
                     $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
-    
+
                 $data->save();
-    
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Business Details Updated successfully',
@@ -214,50 +215,48 @@ class StartupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function get_single_startup(Request $request,$id){
-       
+    public function get_single_startup(Request $request, $id)
+    {
+
         try {
-            $user = User::where(['id'=> $request->id,'role' => 'startup'])->firstOrFail();
+            $user = User::where(['id' => $request->id, 'role' => 'startup'])->firstOrFail();
             if ($user) {
                 return response()->json(['status' => true, 'message' => "single startup data fetching successfully", 'data' => $user], 200);
-            } 
+            }
             //  {
             //     return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             // }
         } catch (\Exception $e) {
         }
-  
-
-   } 
-
-   public function get_startup_count(Request $request){
-
-    try{
-          $data = User::where('role','startup')->count();
-          if($data){
-          return response()->json([
-            'status' => true,
-            'message'=>'Startups Count get Succcessfully ',
-            'data'=> $data
-          ],200);
-          }else{
-            return response()->json([
-                'status' => false,
-                'message'=>'Startups Count does not get Succcessfully ',
-                'data'=> 0
-              ],404);
-          }
-
-    }catch(\Exception $e){
-        return response()->json([
-          'status'=>false,
-          'message'=>'error occurred',
-          'error'=>$e->getMessage()
-
-        ],500);
     }
 
-   }
+    public function get_startup_count(Request $request)
+    {
+
+        try {
+            $data = User::where('role', 'startup')->count();
+            if ($data) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Startups Count get Succcessfully ',
+                    'data' => $data
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Startups Count does not get Succcessfully ',
+                    'data' => 0
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'error occurred',
+                'error' => $e->getMessage()
+
+            ], 500);
+        }
+    }
     public function business_information(Request $request)
     {
         try {
@@ -272,14 +271,14 @@ class StartupController extends Controller
                 'kyc_purposes' => 'required',
                 'tagline' => 'required',
                 'sector' => 'required',
-                'type'=> 'required',
+                'type' => 'required',
                 'logo' => [
                     Rule::requiredIf(function () use ($request) {
                         // Check if proof_img is already present in the database
                         $existingLogo = Business::where('user_id', $request->user_id)
                             ->whereNotNull('logo')
                             ->first();
-            
+
                         return !$existingLogo;
                     }),
                     'image',
@@ -309,7 +308,7 @@ class StartupController extends Controller
                     'kyc_purposes' => $request->kyc_purposes,
                     'tagline' => $request->tagline,
                     'sector' => $request->sector,
-                    'type' => $request->type, 
+                    'type' => $request->type,
                     'updated_at' => Carbon::now(),
                 ]);
                 if ($request->hasFile('logo')) {
@@ -380,10 +379,9 @@ class StartupController extends Controller
             $userId = $request->id;
             $data  = Business::where('user_id', $userId)->first();
             if ($data) {
-               
+
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
-           
         } catch (\Exception $e) {
         }
     }
@@ -428,13 +426,12 @@ class StartupController extends Controller
             $startup->save();
 
             // $mail['name']= $startup->name;
-             if($startup->approval_status=== "approved")
-            {
+            if ($startup->approval_status === "approved") {
                 $mail['user']  = $startup;
                 $mail['email'] = $startup->email;
                 $mail['title'] = "Approval Mail";
                 $mail['body'] =  "Your Account has been approved Successfully. ";
-    
+
                 Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
                 });
@@ -486,20 +483,22 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         try {
-        $startup = User::find($id)->delete();
-        if (!$startup) {
-            
+            $startup = User::find($id)->delete();
+            if (!$startup) {
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Startup not found.'
+                ], 404);
+            }
+
             return response()->json([
-                'status'=>false,
-                'message' => 'Startup not found.'], 404);
-        }
-        
-        return response()->json([
-            'status'=>true,
-            'message' => 'Startup deleted successfully.']);
+                'status' => true,
+                'message' => 'Startup deleted successfully.'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -515,7 +514,7 @@ class StartupController extends Controller
         try {
             $data = Business::leftJoin('business_units', 'business_details.id', '=', 'business_units.business_id')
                 ->select('business_details.*', 'business_units.*')
-              ->get();
+                ->get();
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
@@ -533,11 +532,11 @@ class StartupController extends Controller
         try {
             $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
                 ->select('business_details.*', 'business_units.*')
-                ->where(['business_details.id'=>$id])
+                ->where(['business_details.id' => $id])
+                ->latest('business_units.created_at')
                 ->first();
-                    return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
-                
-      } catch (\Exception $e) {
+            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -546,11 +545,15 @@ class StartupController extends Controller
         }
     }
 
-    public function get_buisness_id($id)
+    public function get_single_closed_business_details($id)
     {
         try {
-            $data = Business::where('user_id',$id)->first();
-                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
+                ->select('business_details.*', 'business_units.*')
+                ->where('business_details.id', $id)
+                ->first();
+
+            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -561,19 +564,35 @@ class StartupController extends Controller
     }
 
 
-    public function fund_raise_information_store(Request $request){
+    public function get_buisness_id($id)
+    {
+        try {
+            $data = Business::where('user_id', $id)->first();
+            return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function fund_raise_information_store(Request $request)
+    {
         try {
             $validator = Validator::make($request->all(), [
                 'total_units' => 'required',
                 'minimum_subscription' => 'required',
-                'avg_amt_per_person' => 'required',
+                // 'avg_amt_per_person' => 'required',
                 'tenure' => 'required',
                 'repay_date' => 'required',
                 'closed_in' => 'required',
                 'resource' => 'required',
                 // 'status' => 'required',
-                'xirr'  =>'required',
-                
+                'xirr'  => 'required',
+
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -583,107 +602,105 @@ class StartupController extends Controller
                 ], 422);
             } else {
                 // return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $request->all()], 200);
-             
-                if($request->id){
-                $data = BusinessUnit::where('id',$request->id)->first();
-                // $data->business_id=$request->business_id;
-                // $data->fund_id='STARTUP-'.$fund_id;
-                $data->total_units = $request->total_units;
-                $data->minimum_subscription= $request->minimum_subscription;
-                $data->avg_amt_per_person= $request->avg_amt_per_person;
-                $data->tenure=$request->tenure;
-                $data->repay_date= $request->repay_date;
-                $data->closed_in=$request->closed_in;
-                $data->resource=$request->resource;
-                $data->status= 'open';
-                $data->xirr=$request->xirr;
-                $data->amount= $request->amount;
-                $data->no_of_units=$request->total_units;
-                $data->desc= $request->desc;
-                if ($request->hasFile('agreement')) {
-                    $file = $request->file('agreement');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->agreement = $filename;
-                }
-                if ($request->hasFile('invoice')) {
-                    $file = $request->file('invoice');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->invoice = $filename;
-                }
-                if ($request->hasFile('pdc')) {
-                    $file = $request->file('pdc');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->pdc = $filename;
-                }
-                $data->save();
-                return response()->json(['status' => true, 'message' => "Data Updated Successfully.","data"=>$data], 200);
-              }else{
-                $data = BusinessUnit::where('business_id', $request->business_id)->get();
 
-                // Check if any existing data has a status of 'open'
-                // $hasOpenStatus = $data->contains(function ($item) {
-                //     return $item->status === 'open';
-                // });
-                
-                $hasOpenStatus = $data->contains(function($item){
-                   return $item->status ==='open';
-                });
-                if ($hasOpenStatus) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Sorry, you have already rasied funds.',
-                        'data' => ''
-                    ], 404);
-                }
-                $fund_id = rand(100000, 999999);
-                $data = new BusinessUnit();
-                $data->business_id=$request->business_id;
-                $data->fund_id='STARTUP-'.$fund_id;
-                $data->total_units = $request->total_units;
-                $data->minimum_subscription= $request->minimum_subscription;
-                $data->avg_amt_per_person= $request->avg_amt_per_person;
-                $data->tenure=$request->tenure;
-                $data->repay_date= $request->repay_date;
-                $data->closed_in=$request->closed_in;
-                $data->resource=$request->resource;
-                $data->status= 'open';
-                $data->xirr=$request->xirr;
-                $data->amount= $request->amount;
-                $data->no_of_units=$request->total_units;
-                $data->desc= $request->desc;
-                if ($request->hasFile('agreement')) {
-                    $file = $request->file('agreement');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->agreement = $filename;
-                }
-                if ($request->hasFile('invoice')) {
-                    $file = $request->file('invoice');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->invoice = $filename;
-                }
-                if ($request->hasFile('pdc')) {
-                    $file = $request->file('pdc');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('pdf/');
-                    $file->move($filepath, $filename);
-                    $data->pdc = $filename;
-                }
+                if ($request->id) {
+                    $data = BusinessUnit::where('id', $request->id)->first();
+                    // $data->business_id=$request->business_id;
+                    // $data->fund_id='STARTUP-'.$fund_id;
+                    $data->total_units = $request->total_units;
+                    $data->minimum_subscription = $request->minimum_subscription;
+                    $data->avg_amt_per_person = $request->avg_amt_per_person;
+                    $data->tenure = $request->tenure;
+                    $data->repay_date = $request->repay_date;
+                    $data->closed_in = $request->closed_in;
+                    $data->resource = $request->resource;
+                    $data->status = 'open';
+                    $data->xirr = $request->xirr;
+                    $data->amount = $request->amount;
+                    $data->no_of_units = $request->total_units;
+                    $data->desc = $request->desc;
+                    if ($request->hasFile('agreement')) {
+                        $file = $request->file('agreement');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->agreement = $filename;
+                    }
+                    if ($request->hasFile('invoice')) {
+                        $file = $request->file('invoice');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->invoice = $filename;
+                    }
+                    if ($request->hasFile('pdc')) {
+                        $file = $request->file('pdc');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->pdc = $filename;
+                    }
                     $data->save();
-                  
-                 return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
-                
-               
-              }
+                    return response()->json(['status' => true, 'message' => "Data Updated Successfully.", "data" => $data], 200);
+                } else {
+                    $data = BusinessUnit::where('business_id', $request->business_id)->get();
+
+                    // Check if any existing data has a status of 'open'
+                    // $hasOpenStatus = $data->contains(function ($item) {
+                    //     return $item->status === 'open';
+                    // });
+
+                    $hasOpenStatus = $data->contains(function ($item) {
+                        return $item->status === 'open';
+                    });
+                    if ($hasOpenStatus) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Sorry, you have already rasied funds.',
+                            'data' => ''
+                        ], 404);
+                    }
+                    $fund_id = rand(100000, 999999);
+                    $data = new BusinessUnit();
+                    $data->business_id = $request->business_id;
+                    $data->fund_id = 'STARTUP-' . $fund_id;
+                    $data->total_units = $request->total_units;
+                    $data->minimum_subscription = $request->minimum_subscription;
+                    $data->avg_amt_per_person = $request->avg_amt_per_person;
+                    $data->tenure = $request->tenure;
+                    $data->repay_date = $request->repay_date;
+                    $data->closed_in = $request->closed_in;
+                    $data->resource = $request->resource;
+                    $data->status = 'open';
+                    $data->xirr = $request->xirr;
+                    $data->amount = $request->amount;
+                    $data->no_of_units = $request->total_units;
+                    $data->desc = $request->desc;
+                    if ($request->hasFile('agreement')) {
+                        $file = $request->file('agreement');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->agreement = $filename;
+                    }
+                    if ($request->hasFile('invoice')) {
+                        $file = $request->file('invoice');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->invoice = $filename;
+                    }
+                    if ($request->hasFile('pdc')) {
+                        $file = $request->file('pdc');
+                        $filename = time() . '_' . $file->getClientOriginalName();
+                        $filepath = public_path('pdf/');
+                        $file->move($filepath, $filename);
+                        $data->pdc = $filename;
+                    }
+                    $data->save();
+
+                    return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
+                }
             }
         } catch (\Exception $e) {
             return response()->json([
@@ -697,8 +714,8 @@ class StartupController extends Controller
     public function get_all_funds($id)
     {
         try {
-            $data = BusinessUnit::where('business_id',$id)->get();
-                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            $data = BusinessUnit::where('business_id', $id)->get();
+            return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -750,7 +767,8 @@ class StartupController extends Controller
         }
     }
 
-    public function getTotalCountOfFund(Request $request, $id){
+    public function getTotalCountOfFund(Request $request, $id)
+    {
         try {
             $data = BusinessUnit::where(['business_id' => $id])->count();
             // echo $data;
@@ -769,9 +787,10 @@ class StartupController extends Controller
         }
     }
 
-    public function getTotalCountOfUnits(Request $request, $id){
+    public function getTotalCountOfUnits(Request $request, $id)
+    {
         try {
-            $data = BusinessUnit::where(['business_id' => $id,'status'=>'open'])->first();
+            $data = BusinessUnit::where(['business_id' => $id, 'status' => 'open'])->first();
             // echo $data;
             // die;
             return response()->json([
@@ -787,17 +806,17 @@ class StartupController extends Controller
             ], 500);
         }
     }
-    
-    public function get_business_information_business_id(Request $request){
-        try{
-            $data =Business::where(['id'=>$request->id])->first();
+
+    public function get_business_information_business_id(Request $request)
+    {
+        try {
+            $data = Business::where(['id' => $request->id])->first();
             return response()->json([
                 'status' => true,
                 'message' => 'Data Fetched Successfully.',
                 'data' => $data
             ], 200);
-
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -806,5 +825,35 @@ class StartupController extends Controller
         }
     }
 
- 
+    public function get_all_invested_fund_details()
+    {
+        try {
+            $data = Payments::join('business_details', 'payments.business_id', '=', 'business_details.id')
+                ->join('investor_bookings', 'payments.business_id', '=', 'investor_bookings.business_id')
+                ->join('business_units', 'business_details.id', '=', 'business_units.business_id')
+                ->select(
+                    'payments.*',
+                    'business_details.*',
+                    'investor_bookings.*',
+                    'business_units.*',
+                    'payments.amount as amount',
+                    'payments.id as id',
+                    'business_units.id as business_units_id',
+                    'investor_bookings.id as bookings_id',
+                    'business_details.id as bid',
+                    'business_units.amount as business_units_amount',
+                    'investor_bookings.no_of_units as investor_no_of_units',
+                    'business_units.no_of_units as business_no_of_units'
+                )->get();
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

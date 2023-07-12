@@ -95,9 +95,12 @@ Route::group(['middleware' => ['api']], function () {
      // Countries route 
      Route::get('country/{id}',[App\Http\Controllers\Api\CountryController::class,'single_country']);
      Route::get('get-all-business-details',[App\Http\Controllers\Api\StartupController::class,'get_all_business_details']);
+     Route::get('get-all-invested-fund-details',[App\Http\Controllers\Api\StartupController::class,'get_all_invested_fund_details']);
       Route::get('get-single-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_business_details']);
+      Route::get('get-single-closed-business-details/{id}',[App\Http\Controllers\Api\StartupController::class,'get_single_closed_business_details']);
      Route::get("get-buisness-id/{id}",[App\Http\Controllers\Api\StartupController::class,'get_buisness_id']);
      Route::get("fund-raise-count",[App\Http\Controllers\Api\StartupController::class,'get_fund_raise_count']);
+     Route::get("total-subscriber-count",[App\Http\Controllers\Api\InvestorController::class,'get_total_subscriber_count']);
    
      Route::delete('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
      Route::post('booking',[App\Http\Controllers\Api\InvestorBookingController::class,'booking']);

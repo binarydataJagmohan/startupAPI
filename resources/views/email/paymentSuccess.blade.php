@@ -103,17 +103,17 @@
                                             <td style="padding: 8px; border: 1px solid #ddd;">
                                              Total Units :
                                           </td><br>
-                                            <td style="padding: 8px; border: 1px solid #ddd;"> {{$mail['booking']->no_of_units}}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;"> {{$mail['booking']['no_of_units']}}</td>
                                           </tr>
                                           <tr>
                                             <td style="padding: 8px; border: 1px solid #ddd;">
                                              Subscription Value :
                                           </td><br>
-                                            <td style="padding: 8px; border: 1px solid #ddd;"> {{$mail['booking']->subscription_value}}</td>
+                                            <td style="padding: 8px; border: 1px solid #ddd;"> {{$mail['booking']['subscription_value']}}</td>
                                           </tr>
                                         <tr>
                                           <td  style="padding: 8px; border: 1px solid #ddd; text-align: right;">Grand Total:</td>
-                                          <td style="padding: 8px; border: 1px solid #ddd;">${{$mail['booking']->repayment_value}}</td>
+                                          <td style="padding: 8px; border: 1px solid #ddd;">${{$mail['booking']['repayment_value']}}</td>
                                         </tr>
                                       </table>
                                     </td>

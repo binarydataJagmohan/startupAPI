@@ -13,6 +13,8 @@ use App\Models\Business;
 use App\Models\BankDetails;
 use Mail;
 use App\Models\InvestorTerms;
+use App\Models\Payments;
+
 class InvestorController extends Controller
 {
 
@@ -386,5 +388,29 @@ class InvestorController extends Controller
             ], 500);
         }
     }
+    // get_total_subscriber_count
+    public function get_total_subscriber_count(Request $request){
+        $count = Payments::where('id',$request->id)->count();
 
+        try{
+            if($count){
+                return response()->json([
+    
+                    'status' =>true,
+                    'message'=>'Count get Successfully',
+                    'data' => $count,
+                ]);
+            }else{
+                return response()->json([
+    
+                    'status' =>false,
+                    'message'=>'Count not get Successfully',
+                    'data' => '',
+                ]);
+        }
+
+        }catch(\Exception $e){
+                throw new HttpException(500,$e->getMessage());
+        }
+    }
 }

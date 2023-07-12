@@ -49,7 +49,7 @@ class PaymentController extends Controller
             $data->expiry_date = $request[0]['card']['exp_month'] . '/' . $request[0]['card']['exp_year'];
             $data->status = "success";
             $data->save();
-
+            return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
             $user = User::where('id', $request[1]['user_id'])->first();
             $business = Business::where('id', $request[2]['id'])->first();
             $mail['username'] = $user->name;
@@ -89,13 +89,13 @@ class PaymentController extends Controller
 
 
 
-            return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
+          
         } catch (CardException $e) {
             // Card error occurred
             $body = $e->getJsonBody();
             $error = $body['error'];
 
-            return response()->json(['status' => false, 'message' => $error['message']], 422);
+            return response()->json(['status' => false, 'message' => $error['message']], 200);
         } catch (\Exception $e) {
             // Other error occurred
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
