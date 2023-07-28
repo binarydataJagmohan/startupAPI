@@ -28,7 +28,7 @@ class UserController extends Controller
 {
     public function userRegister(Request $request)
     {
-       try {
+        try {
             $validator = Validator::make($request->all(), [
                 'firstname' => 'required|max:255',
                 'lastname' => 'required|max:255',
@@ -48,25 +48,25 @@ class UserController extends Controller
                 $user->name = $request->firstname . " " . $request->lastname;
                 $user->email = $request->email;
                 $user->password = Hash::make($request->password);
-                $user->new_password = $request->password;
-                $user->role     = $request->role;
-                $user->profile_pic    = 'default.png';
+                $user->role = $request->role;
+                $user->profile_pic = "default.png";
                 $data = $user->save();
-                $token = Str::random(40);
+
+                $token = JWTAuth::fromUser($user);
+
+                $mailtoken = Str::random(40);
                 $domain = env('NEXT_URL_LOGIN');
-                $url = $domain . '/?token=' . $token;
+                $url = $domain . '/?token=' . $mailtoken;
                 $mail['url'] = $url;
                 $mail['email'] = $request->email;
                 $mail['title'] = "Verify Your Account";
                 $mail['body'] = "Please click on below link to verify your Account";
-                $user->where('id',$user->id)->update(['email_verification_token'=>$token,'email_verified_at'=>Carbon::now()]);
-    
+                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
                 Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
                 });
-                $token = JWTAuth::fromUser($user);
-               
                 return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
+                
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());

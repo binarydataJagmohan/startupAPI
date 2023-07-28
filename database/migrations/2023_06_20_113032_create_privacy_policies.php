@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('privacy_policies')->nullable();
-            $table->timestamp('updated_at')->nullable();
             $table->timestamps();
         });
     }
