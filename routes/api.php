@@ -150,6 +150,6 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('payment',[App\Http\Controllers\Api\PaymentController::class,'savePayment']);
 
     Route::post('upload-documents',[App\Http\Controllers\Api\DocumentsController::class,'upload_documents']);
-
+    Route::get('get-documents/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_documents']);  
     });
     

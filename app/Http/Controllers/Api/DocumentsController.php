@@ -117,47 +117,103 @@ class DocumentsController extends Controller
     public function upload_documents(Request $request)
     {
         try {
-            $documents = new DocumentUpload();
-            $documents->user_id = $request->user_id;
-    
-            if ($request->hasFile('pan_card_front')) {
-                $file = $request->file('pan_card_front');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $filepath = public_path('docs/');
-                $file->move($filepath, $filename);
-                $documents->pan_card_front = $filename;
+
+
+            $user_id = $request->user_id;
+
+            $checkuserid = DocumentUpload::where('user_id', $request->user_id)->count();
+
+            if ($checkuserid > 0) {
+
+                $documents = DocumentUpload::where('user_id', $user_id)->first();
+
+                if ($request->hasFile('pan_card_front')) {
+                    $file = $request->file('pan_card_front');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->pan_card_front = $filename;
+                }
+
+                if ($request->hasFile('pan_card_back')) {
+                    $file = $request->file('pan_card_back');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->pan_card_back = $filename;
+                }
+
+                if ($request->hasFile('adhar_card_front')) {
+                    $file = $request->file('adhar_card_front');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->adhar_card_front = $filename;
+                }
+
+                if ($request->hasFile('adhar_card_back')) {
+                    $file = $request->file('adhar_card_back');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->adhar_card_back = $filename;
+                }
+                $documents->save();
+
+                return response()->json(['status' => true, 'message' => 'Basic Details updated successfully', 'data' => ['documents_details' => $documents]], 200);
+            } else {
+
+                $documents = new DocumentUpload();
+                $documents->user_id = $request->user_id;
+                if ($request->hasFile('pan_card_front')) {
+                    $file = $request->file('pan_card_front');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->pan_card_front = $filename;
+                }
+
+                if ($request->hasFile('pan_card_back')) {
+                    $file = $request->file('pan_card_back');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->pan_card_back = $filename;
+                }
+
+                if ($request->hasFile('adhar_card_front')) {
+                    $file = $request->file('adhar_card_front');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->adhar_card_front = $filename;
+                }
+
+                if ($request->hasFile('adhar_card_back')) {
+                    $file = $request->file('adhar_card_back');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->adhar_card_back = $filename;
+                }
+
+                $documents->save();
+
+                return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $documents]], 200);
             }
-    
-            if ($request->hasFile('pan_card_back')) {
-                $file = $request->file('pan_card_back');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $filepath = public_path('docs/');
-                $file->move($filepath, $filename);
-                $documents->pan_card_back = $filename;
-            }
-    
-            if ($request->hasFile('adhar_card_front')) {
-                $file = $request->file('adhar_card_front');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $filepath = public_path('docs/');
-                $file->move($filepath, $filename);
-                $documents->adhar_card_front = $filename;
-            }
-    
-            if ($request->hasFile('adhar_card_back')) {
-                $file = $request->file('adhar_card_back');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $filepath = public_path('docs/');
-                $file->move($filepath, $filename);
-                $documents->adhar_card_back = $filename;
-            }
-    
-            $documents->save();
-    
-            return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $documents]], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
     }
-    
+    public function get_documents(Request $request)
+    {
+        try {
+            $data  = DocumentUpload::where('user_id', $request->id)->first();
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
 }
