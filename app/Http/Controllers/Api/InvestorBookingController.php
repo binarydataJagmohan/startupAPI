@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Business;
 use Mail;
 use Carbon\Carbon;
+use App\Models\Notifications;
 
 class InvestorBookingController extends Controller
 {
@@ -64,6 +65,20 @@ class InvestorBookingController extends Controller
         $businessUnit->save();
 
         $booking->save();
+
+        $investorData = User::where('id',$request->user_id)->first();
+        $businessData = Business::where('id',$request->business_id)->first();
+
+        if ($booking) {
+            $notification = new Notifications();
+            $notification->notify_from_user = $request->user_id;
+            $notification->notify_to_user =  $businessData->user_id;
+            $notification->notification_type = 'Fund Raised';
+            $notification->notify_msg = 'Congrats! ' . $investorData->name .' has successfully invested on your '  .$businessData->business_name . '.';
+            $notification->each_read = 'unread';
+            $notification->status = 'active';
+            $notification->save();
+        }
 
         // $user = User::where('id', $request->user_id)->first();
         // $business = Business::where('id', $request->business_id)->first();

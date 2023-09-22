@@ -151,5 +151,8 @@ Route::group(['middleware' => ['api']], function () {
 
     Route::post('upload-documents',[App\Http\Controllers\Api\DocumentsController::class,'upload_documents']);
     Route::get('get-documents/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_documents']);  
+
+    Route::post('investor-viewer/{business_id}/{user_id}', [App\Http\Controllers\Api\NotificationController::class, 'investor_viewer']);
+
     });
     

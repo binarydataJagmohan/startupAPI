@@ -8,6 +8,8 @@ use App\Models\Notifications;
 use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Mail;
+use App\Models\Business;
+
 class NotificationController extends Controller
 {
     //
@@ -207,6 +209,31 @@ class NotificationController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-
      }
+      public function investor_viewer(Request $request)
+    {
+        try {
+            $data = Business::where('id', $request->business_id)->first();
+            $user = User::where('id',$request->user_id)->first();
+            if ($data) {
+                $notification = new Notifications();
+                $notification->notify_from_user = $request->user_id;
+                $notification->notify_to_user = '1';
+                $notification->notification_type = 'Viewer Notification';
+                $notification->notify_msg = 'Great news! ' . $user->name .' is showing interest in the ' .$data->business_name .' Company.';
+                $notification->each_read = 'unread';
+                $notification->status = 'active';
+                $notification->save();
+                return response()->json([
+                    'status' => true
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

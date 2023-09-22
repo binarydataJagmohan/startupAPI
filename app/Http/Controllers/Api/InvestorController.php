@@ -162,9 +162,9 @@ class InvestorController extends Controller
               $mail['email'] = $data->email;
               $mail['title'] = "Profile Completed";
               $mail['body'] =  "Profile has been Completed Successfully.";
-              Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
-                  $message->to($mail['email'])->subject($mail['title']);
-              });
+            //   Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
+            //       $message->to($mail['email'])->subject($mail['title']);
+            //   });
                 
                 return response()->json([
                     'status' => true,

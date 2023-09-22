@@ -398,7 +398,7 @@ class StartupController extends Controller
                 ->join('business_details', 'users.id', '=', 'business_details.user_id')
                 ->where(['role' => 'startup', 'is_profile_completed' => '1'])
                 ->orderBy('created_at', 'desc')
-                ->get();;
+                ->get();
 
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
