@@ -109,7 +109,7 @@ class StartupController extends Controller
                 'country' => 'required',
                 'linkedin_url' => [
                     'required',
-                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                    'regex:/^(https:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9_-]+|company\/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+\/?)\/?$/'
                 ],
             ]);
             if ($validator->fails()) {

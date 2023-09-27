@@ -90,9 +90,11 @@ class NotificationController extends Controller
 
     public function getNotifications($id) {
         try {
-            $notifications = Notifications::where('notify_to_user', $id)
-                ->where('status', '!=', 'deleted')
-                ->orderBy('id', 'desc')
+            $notifications = Notifications::select('notifications.notify_msg','notifications.created_at','users.name')
+                ->leftJoin('users','notifications.notify_from_user','users.id')
+                ->where('notifications.notify_to_user', $id)
+                ->where('notifications.status', '!=', 'deleted')
+                ->orderBy('notifications.id', 'desc')
                 ->get();
             
             return response()->json([
