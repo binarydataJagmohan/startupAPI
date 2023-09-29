@@ -35,6 +35,6 @@ class Business extends Model
 
     public function getLogoAttribute()
     {
-        return url('docs/'.$this->attributes['logo']);
+        return ($this->attributes['logo']);
     }
 }
