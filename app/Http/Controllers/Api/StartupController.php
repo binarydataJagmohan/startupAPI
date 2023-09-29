@@ -109,7 +109,7 @@ class StartupController extends Controller
                 'country' => 'required',
                 'linkedin_url' => [
                     'required',
-                    'regex:/^(https:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9_-]+|company\/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+\/?)\/?$/'
+                    // 'regex:/^(https:\/\/)?(www\.)?linkedin\.com\/(in\/[a-zA-Z0-9_-]+|company\/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+\/?)\/?$/'
                 ],
             ]);
             if ($validator->fails()) {
@@ -825,26 +825,13 @@ class StartupController extends Controller
         }
     }
 
-    public function get_all_invested_fund_details()
+    public function get_all_invested_fund_details(Request $request)
     {
         try {
-            $data = Payments::join('business_details', 'payments.business_id', '=', 'business_details.id')
-                ->join('investor_bookings', 'payments.business_id', '=', 'investor_bookings.business_id')
-                ->join('business_units', 'business_details.id', '=', 'business_units.business_id')
-                ->select(
-                    'payments.*',
-                    'business_details.*',
-                    'investor_bookings.*',
-                    'business_units.*',
-                    'payments.amount as amount',
-                    'payments.id as id',
-                    'business_units.id as business_units_id',
-                    'investor_bookings.id as bookings_id',
-                    'business_details.id as bid',
-                    'business_units.amount as business_units_amount',
-                    'investor_bookings.no_of_units as investor_no_of_units',
-                    'business_units.no_of_units as business_no_of_units'
-                )->get();
+           $data = Payments::join('business_details','payments.business_id','business_details.id')
+           ->join('business_units','business_details.id','business_units.business_id')
+           ->where('payments.user_id',$request->id)
+           ->get();
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }

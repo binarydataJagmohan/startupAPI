@@ -31,10 +31,10 @@ class Business extends Model
         'business_file'
     ];
 
-    protected $appends = ['logo'];
+    // protected $appends = ['logo'];
 
-    public function getLogoAttribute()
-    {
-        return url('docs/'.$this->attributes['logo']);
-    }
+    // public function getLogoAttribute()
+    // {
+    //     return ($this->attributes['logo']);
+    // }
 }
