@@ -89,7 +89,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                         valign="top">
                                         <a href="{{ $data['url'] }}" class="btn-primary" itemprop="url"
-                                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #9fe870; margin: 0; border-color: #9fe870; border-style: solid; border-width: 8px 16px;">Click here to reset password</a>
+                                           style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background-color: #088395; margin: 0; border-color: #088395; border-style: solid; border-width: 8px 16px;">Click here to reset password</a>
                                            <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px; text-align: left;">Thanks,<br>
                                               Startup - IT Startups &amp; Digital Services</p>
                                         </td>
