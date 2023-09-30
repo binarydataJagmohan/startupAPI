@@ -35,6 +35,15 @@ class InvestorController extends Controller
                 $investor->experience = $request->experience == "1" ? $request->experience : 0;
                 $investor->net_worth = $request->net_worth == "2" ? $request->net_worth : 0;
                 $investor->no_requirements = $request->no_requirements == "3" ? $request->no_requirements : 0;
+
+                $investor->annual_income = $request->annual_income == "4" ? $request->annual_income : 0;
+                $investor->financial_net_worth = $request->financial_net_worth == "5" ? $request->financial_net_worth : 0;
+                $investor->financial_annual_net_worth = $request->financial_annual_net_worth == "6" ? $request->financial_annual_net_worth : 0;
+                $investor->foreign_annual_income = $request->foreign_annual_income == "7" ? $request->foreign_annual_income : 0;
+                $investor->foreign_net_worth = $request->foreign_net_worth == "8" ? $request->foreign_net_worth : 0;
+                $investor->foreign_annual_net_worth = $request->foreign_annual_net_worth == "9" ? $request->foreign_annual_net_worth : 0;
+                $investor->corporate_net_worth = $request->corporate_net_worth == "10" ? $request->corporate_net_worth : 0;
+
                 $investor->save();
                 
                 return response()->json([
@@ -52,6 +61,15 @@ class InvestorController extends Controller
                 $investor->experience = $request->experience == "1" ? $request->experience : 0;
                 $investor->net_worth = $request->net_worth == "2" ? $request->net_worth : 0;
                 $investor->no_requirements = $request->no_requirements == "3" ? $request->no_requirements : 0;
+
+                $investor->annual_income = $request->annual_income == "4" ? $request->annual_income : 0;
+                $investor->financial_net_worth = $request->financial_net_worth == "5" ? $request->financial_net_worth : 0;
+                $investor->financial_annual_net_worth = $request->financial_annual_net_worth == "6" ? $request->financial_annual_net_worth : 0;
+                $investor->foreign_annual_income = $request->foreign_annual_income == "7" ? $request->foreign_annual_income : 0;
+                $investor->foreign_net_worth = $request->foreign_net_worth == "8" ? $request->foreign_net_worth : 0;
+                $investor->foreign_annual_net_worth = $request->foreign_annual_net_worth == "9" ? $request->foreign_annual_net_worth : 0;
+                $investor->corporate_net_worth = $request->corporate_net_worth == "10" ? $request->corporate_net_worth : 0;
+
                 $investor->save();
 
               $user=User::where('id',$request->id)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
