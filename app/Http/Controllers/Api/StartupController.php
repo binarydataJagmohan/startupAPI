@@ -699,7 +699,7 @@ class StartupController extends Controller
                     }
                     $data->save();
 
-                    return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
+                    return response()->json(['status' => true, 'message' => "Fund raised successfully.", 'data' => $data], 200);
                 }
             }
         } catch (\Exception $e) {

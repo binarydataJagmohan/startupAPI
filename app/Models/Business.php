@@ -33,15 +33,8 @@ class Business extends Model
 
     // protected $appends = ['logo'];
 
-<<<<<<< HEAD
-    public function getLogoAttribute()
-    {
-        return ($this->attributes['logo']);
-    }
-=======
     // public function getLogoAttribute()
     // {
     //     return ($this->attributes['logo']);
     // }
->>>>>>> af4c7f1b3bcdcc2e0c63652774f7f4dcade763a9
 }

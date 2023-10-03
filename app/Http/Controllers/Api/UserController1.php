@@ -185,6 +185,7 @@ public function updateUser(Request $request, $id)
             $user->phone = $request->phone;
             $user->gender =  $request->gender;
             $user->city = $request->city;
+            $user->email = $request->email;
             $user->country = $request->country;
             $user->linkedin_url = $request->linkedin_url;
             if ($request->hasFile('profile_pic')) {
