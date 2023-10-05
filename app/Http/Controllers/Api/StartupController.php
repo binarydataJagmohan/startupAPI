@@ -271,20 +271,20 @@ class StartupController extends Controller
                 'kyc_purposes' => 'required',
                 'tagline' => 'required',
                 'sector' => 'required',
-                'type' => 'required',
-                'logo' => [
-                    Rule::requiredIf(function () use ($request) {
-                        // Check if proof_img is already present in the database
-                        $existingLogo = Business::where('user_id', $request->user_id)
-                            ->whereNotNull('logo')
-                            ->first();
+                // 'type' => 'required',
+                // 'logo' => [
+                //     Rule::requiredIf(function () use ($request) {
+                //         // Check if proof_img is already present in the database
+                //         $existingLogo = Business::where('user_id', $request->user_id)
+                //             ->whereNotNull('logo')
+                //             ->first();
 
-                        return !$existingLogo;
-                    }),
-                    'image',
-                    'mimes:jpeg,png,jpg',
-                    'max:20480', // Adjust the file size limit if needed
-                ],
+                //         return !$existingLogo;
+                //     }),
+                //     'image',
+                //     'mimes:jpeg,png,jpg',
+                //     'max:20480', // Adjust the file size limit if needed
+                // ],
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -699,7 +699,7 @@ class StartupController extends Controller
                     }
                     $data->save();
 
-                    return response()->json(['status' => true, 'message' => "Data Store successfully", 'data' => $data], 200);
+                    return response()->json(['status' => true, 'message' => "Fund raised successfully.", 'data' => $data], 200);
                 }
             }
         } catch (\Exception $e) {
