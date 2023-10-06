@@ -630,6 +630,7 @@ class StartupController extends Controller
                     $data->amount = $request->amount;
                     $data->no_of_units = $request->total_units;
                     $data->desc = $request->desc;
+                    $data->type = $request->type;
                     if ($request->hasFile('agreement')) {
                         $file = $request->file('agreement');
                         $filename = time() . '_' . $file->getClientOriginalName();
@@ -687,6 +688,7 @@ class StartupController extends Controller
                     $data->amount = $request->amount;
                     $data->no_of_units = $request->total_units;
                     $data->desc = $request->desc;
+                    $data->type = $request->type;
                     if ($request->hasFile('agreement')) {
                         $file = $request->file('agreement');
                         $filename = time() . '_' . $file->getClientOriginalName();
