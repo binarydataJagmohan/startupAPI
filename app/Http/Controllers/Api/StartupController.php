@@ -271,20 +271,18 @@ class StartupController extends Controller
                 'kyc_purposes' => 'required',
                 'tagline' => 'required',
                 'sector' => 'required',
-                // 'type' => 'required',
-                // 'logo' => [
-                //     Rule::requiredIf(function () use ($request) {
-                //         // Check if proof_img is already present in the database
-                //         $existingLogo = Business::where('user_id', $request->user_id)
-                //             ->whereNotNull('logo')
-                //             ->first();
-
-                //         return !$existingLogo;
-                //     }),
-                //     'image',
-                //     'mimes:jpeg,png,jpg',
-                //     'max:20480', // Adjust the file size limit if needed
-                // ],
+                'pitch_deck' => [
+                    Rule::requiredIf(function () use ($request) {                        
+                        $existingPitchDeck = Business::where('user_id', $request->user_id)
+                            ->whereNotNull('pitch_deck')
+                            ->first();
+                    
+                        return !$existingPitchDeck;
+                    }),
+                    'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'max:20480',
+                ],
+                
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -308,7 +306,7 @@ class StartupController extends Controller
                     'kyc_purposes' => $request->kyc_purposes,
                     'tagline' => $request->tagline,
                     'sector' => $request->sector,
-                    'type' => $request->type,
+                    // 'type' => $request->type,
                     'updated_at' => Carbon::now(),
                 ]);
                 if ($request->hasFile('logo')) {
@@ -317,6 +315,14 @@ class StartupController extends Controller
                     $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
+                    $data->save();
+                }
+                if ($request->hasFile('pitch_deck')) {
+                    $file = $request->file('pitch_deck');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->pitch_deck = $filename;
                     $data->save();
                 }
                 return response()->json([
@@ -338,8 +344,7 @@ class StartupController extends Controller
                 $data->cofounder = $request->cofounder;
                 $data->kyc_purposes = $request->kyc_purposes;
                 $data->tagline = $request->tagline;
-                $data->sector = $request->sector;
-                $data->type = $request->type; // add this line
+                $data->sector = $request->sector;               
                 $data->updated_at = Carbon::now();
 
                 if ($request->hasFile('logo')) {
@@ -349,7 +354,13 @@ class StartupController extends Controller
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
-
+                if ($request->hasFile('pitch_deck')) {
+                    $file = $request->file('pitch_deck');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->pitch_deck = $filename;                    
+                }
                 $data->save();
 
                 $user = User::where('id', $userId)->update(['reg_step_2' => '1']);
@@ -828,10 +839,10 @@ class StartupController extends Controller
     public function get_all_invested_fund_details(Request $request)
     {
         try {
-           $data = Payments::join('business_details','payments.business_id','business_details.id')
-           ->join('business_units','business_details.id','business_units.business_id')
-           ->where('payments.user_id',$request->id)
-           ->get();
+            $data = Payments::join('business_details', 'payments.business_id', 'business_details.id')
+                ->join('business_units', 'business_details.id', 'business_units.business_id')
+                ->where('payments.user_id', $request->id)
+                ->get();
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
