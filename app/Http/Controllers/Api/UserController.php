@@ -237,12 +237,11 @@ class UserController extends Controller
                 'phone' => 'required',
                 'linkedin_url' => [
                     'required',
-                    'regex:/^(https?:\/\/)?([a-z]{2,3}\.)?linkedin\.com\/(in|company)\/[\w-]+$/'
+                    // 'regex:/^(https?:\/\/)?(www\.)?linkedin\.com\/(in|pub|company)\/[\w-]+\/?$/i',
                 ],
                 'gender' => 'required',
                 'city' => 'required',
                 'country' => 'required',
-
             ]);
             if ($validator->fails()) {
                 return response()->json([
