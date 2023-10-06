@@ -46,8 +46,8 @@ class DocumentsController extends Controller
 
                         return !$existingProofImg;
                     }),
-                    'image',
-                    'mimes:jpeg,png,jpg',
+                    'file',
+                    'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     'max:20480', // Adjust the file size limit if needed
                 ],
             ]);
