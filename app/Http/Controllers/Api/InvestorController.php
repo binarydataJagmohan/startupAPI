@@ -28,7 +28,8 @@ class InvestorController extends Controller
             
             $investor = InvestorTerms::where('user_id', $request->id)->first();
             if ($investor) {
-                $investor->category = $request->category == "1" ? $request->category : 0;
+                //$investor->category = $request->category == "1" ? $request->category : 0;
+                $investor->category = $request->category ? $request->category : 0;
                 $investor->principal_residence = $request->principal_residence == "1" ? $request->principal_residence : 0;
                 $investor->cofounder = $request->cofounder == "1" ? $request->cofounder : 0;
                 $investor->prev_investment_exp = $request->prev_investment_exp == "1" ? $request->prev_investment_exp : 0;
@@ -54,7 +55,8 @@ class InvestorController extends Controller
             } else {
                 $investor = new InvestorTerms();
                 $investor->user_id = $request->id;
-                $investor->category = $request->category == "1" ? $request->category : 0;
+                //$investor->category = $request->category == "1" ? $request->category : 0;
+                $investor->category = $request->category ? $request->category : 0;
                 $investor->principal_residence = $request->principal_residence == "1" ? $request->principal_residence : 0;
                 $investor->cofounder = $request->cofounder == "1" ? $request->cofounder : 0;
                 $investor->prev_investment_exp = $request->prev_investment_exp == "1" ? $request->prev_investment_exp : 0;

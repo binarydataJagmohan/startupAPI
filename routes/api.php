@@ -150,7 +150,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('payment',[App\Http\Controllers\Api\PaymentController::class,'savePayment']);
 
     Route::post('upload-documents',[App\Http\Controllers\Api\DocumentsController::class,'upload_documents']);
-    Route::get('get-documents/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_documents']);  
+    Route::get('get-documents/{id}',[App\Http\Controllers\Api\DocumentsController::class,'get_documents']); 
+    
+    Route::post('selected-options-document-upload',[App\Http\Controllers\Api\DocumentsController::class,'SelectedOptionsDocumentUpload']);
+    Route::get('get-upload-documents-by-documenttype',[App\Http\Controllers\Api\DocumentsController::class,'getUploadDocumentsByDocumentType']); 
 
     Route::post('investor-viewer/{business_id}/{user_id}', [App\Http\Controllers\Api\NotificationController::class, 'investor_viewer']);
 
