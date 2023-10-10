@@ -11,6 +11,7 @@ use App\Models\BankDetails;
 use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\Contact;
+use Illuminate\Support\Facades\Validator;
 use Mail;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
@@ -26,6 +27,23 @@ class BankDetailsController extends Controller
     public function bank_details(Request $request)
     {
          try {
+
+            $validator = Validator::make($request->all(), [
+                'bank_name' => 'required',
+                'account_holder' => 'required',
+                'account_no' => 'required',                
+                'ifsc_code' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+
             $userId = $request->id;
              $data  = BankDetails::where('user_id', $userId)->first();
              if ($data ) {

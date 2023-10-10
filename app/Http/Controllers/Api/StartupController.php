@@ -152,11 +152,11 @@ class StartupController extends Controller
                 'business_name' => 'required',
                 'reg_businessname' => 'required',
                 'stage' => 'required',
-                'kyc_purposes' => 'required|gt:0',
+                'kyc_purposes' => 'required',
                 'startup_date' => 'required',
                 'website_url' => 'required',
                 'description' => 'required',
-                'tagline' => 'required',
+                // 'tagline' => 'required',
                 'sector' => 'required',
                 'type' => 'required',
                 'logo' => 'required',
@@ -268,8 +268,7 @@ class StartupController extends Controller
                 'website_url' => 'required',
                 'description' => 'required',
                 // 'cofounder' => 'required',
-                'kyc_purposes' => 'required',
-                'tagline' => 'required',
+                'kyc_purposes' => 'required',                
                 'sector' => 'required',
                 'pitch_deck' => [
                     Rule::requiredIf(function () use ($request) {                        
@@ -803,7 +802,7 @@ class StartupController extends Controller
     public function getTotalCountOfUnits(Request $request, $id)
     {
         try {
-            $data = BusinessUnit::where(['business_id' => $id, 'status' => 'open'])->first();
+            $data = BusinessUnit::where(['business_id' => $id, 'status' => 'open'])->get();
             // echo $data;
             // die;
             return response()->json([

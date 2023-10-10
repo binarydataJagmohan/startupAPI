@@ -430,7 +430,7 @@ public function get_terms_and_conditions(Request $request){
     public function get_all_active_funds(Request $request)
     {
         try {
-            $funds= BusinessUnit::where('status','open')->orderBy('created_at', 'desc')->get();
+            $funds= BusinessUnit::orderBy('created_at', 'desc')->get();
             return response()->json([
                 'status' => true,
                 'message' => 'test',
