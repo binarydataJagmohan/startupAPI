@@ -16,13 +16,13 @@ use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\BusinessUnit;
 use App\Models\Contact;
-use Mail;
 use Sse\SSE;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use App\Models\Payments;
+use Illuminate\Support\Facades\Mail;
 
 class StartupController extends Controller
 {
@@ -156,11 +156,9 @@ class StartupController extends Controller
                 'startup_date' => 'required',
                 'website_url' => 'required',
                 'description' => 'required',
-                // 'tagline' => 'required',
                 'sector' => 'required',
-                'type' => 'required',
-                'logo' => 'required',
-
+                'pitch_deck' => 'required',
+                  
             ]);
 
             if ($validator->fails()) {
@@ -184,8 +182,7 @@ class StartupController extends Controller
                 $data->cofounder = $request->cofounder;
                 $data->kyc_purposes = $request->kyc_purposes;
                 $data->tagline = $request->tagline;
-                $data->sector = $request->sector;
-                $data->type = $request->type;
+                $data->sector = $request->sector;                
                 $data->updated_at = Carbon::now();
 
 
@@ -196,7 +193,14 @@ class StartupController extends Controller
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
-
+                if ($request->hasFile('pitch_deck')) {
+                    $file = $request->file('pitch_deck');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $data->pitch_deck = $filename;
+                    $data->save();
+                }
                 $data->save();
 
                 return response()->json([
@@ -268,20 +272,20 @@ class StartupController extends Controller
                 'website_url' => 'required',
                 'description' => 'required',
                 // 'cofounder' => 'required',
-                'kyc_purposes' => 'required',                
+                'kyc_purposes' => 'required',
                 'sector' => 'required',
                 'pitch_deck' => [
-                    Rule::requiredIf(function () use ($request) {                        
+                    Rule::requiredIf(function () use ($request) {
                         $existingPitchDeck = Business::where('user_id', $request->user_id)
                             ->whereNotNull('pitch_deck')
                             ->first();
-                    
+
                         return !$existingPitchDeck;
                     }),
                     'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                     'max:20480',
                 ],
-                
+
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -343,7 +347,7 @@ class StartupController extends Controller
                 $data->cofounder = $request->cofounder;
                 $data->kyc_purposes = $request->kyc_purposes;
                 $data->tagline = $request->tagline;
-                $data->sector = $request->sector;               
+                $data->sector = $request->sector;
                 $data->updated_at = Carbon::now();
 
                 if ($request->hasFile('logo')) {
@@ -358,7 +362,7 @@ class StartupController extends Controller
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
-                    $data->pitch_deck = $filename;                    
+                    $data->pitch_deck = $filename;
                 }
                 $data->save();
 
@@ -602,6 +606,7 @@ class StartupController extends Controller
                 'resource' => 'required',
                 // 'status' => 'required',
                 'xirr'  => 'required',
+                'desc' => 'required',
 
             ]);
             if ($validator->fails()) {
@@ -615,7 +620,7 @@ class StartupController extends Controller
 
                 if ($request->id) {
                     $data = BusinessUnit::where('id', $request->id)->first();
-                    // $data->business_id=$request->business_id;
+                    $data->business_id=$request->business_id;
                     // $data->fund_id='STARTUP-'.$fund_id;
                     $data->total_units = $request->total_units;
                     $data->minimum_subscription = $request->minimum_subscription;
