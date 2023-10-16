@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Option;
 use App\Models\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OptionController extends Controller
 {
@@ -64,7 +65,7 @@ class OptionController extends Controller
                     'message' => 'Options not saved successfully'
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error Occurred: ' . $e->getMessage()

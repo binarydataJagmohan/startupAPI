@@ -96,7 +96,7 @@ class PaymentController extends Controller
             $error = $body['error'];
 
             return response()->json(['status' => false, 'message' => $error['message']], 200);
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {throw new HttpException(500, $e->getMessage());
             // Other error occurred
             return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         }

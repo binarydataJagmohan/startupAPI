@@ -20,42 +20,41 @@ use App\Models\BankDetails;
 
 class StripeController extends Controller
 {
-    
+
     public function savePayment(Request $request)
     {
 
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         // try {
-            $amount = $request->amount * 100;
-            $customer = Customer::create([
+        $amount = $request->amount * 100;
+        $customer = Customer::create([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        $token = \Stripe\Token::create([
+            'card' => [
                 'name' => $request->name,
-                'email' => $request->email,
-            ]);
+                'number' => $request->card_number,
+                'exp_month' => $request->exp_month,
+                'exp_year' => $request->exp_year,
+                'cvc' => $request->cvc
+            ],
+        ]);
+        $customer->sources->create(['source' => $token->id]);
 
-            $token = \Stripe\Token::create([
-                'card' => [
-                    'name' => $request->name,
-                    'number' => $request->card_number,
-                    'exp_month' => $request->exp_month,
-                    'exp_year' => $request->exp_year,
-                    'cvc' => $request->cvc
-                ],
-            ]);
-            $customer->sources->create(['source' => $token->id]);
+        $charge = Charge::create([
+            'amount' => $amount,
+            'currency' => 'aed',
+            'customer' => $customer->id,
+            'source' => $customer->default_source
+        ]);
 
-            $charge = Charge::create([
-                'amount' => $amount,
-                'currency' => 'aed',
-                'customer' => $customer->id,
-                'source' => $customer->default_source
-            ]);
-            
-            return response()->json(['status' => true, 'message' => 'Payment successful'], 200);
+        return response()->json(['status' => true, 'message' => 'Payment successful'], 200);
         // }  catch (\Exception $e) {
         //     // Other error occurred
         //     return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
         // }
     }
-
 }

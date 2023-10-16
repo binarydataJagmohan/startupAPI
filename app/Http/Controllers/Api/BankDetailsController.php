@@ -26,12 +26,12 @@ class BankDetailsController extends Controller
      */
     public function bank_details(Request $request)
     {
-         try {
+        try {
 
             $validator = Validator::make($request->all(), [
                 'bank_name' => 'required',
                 'account_holder' => 'required',
-                'account_no' => 'required',                
+                'account_no' => 'required',
                 'ifsc_code' => 'required',
             ]);
 
@@ -45,10 +45,10 @@ class BankDetailsController extends Controller
 
 
             $userId = $request->id;
-             $data  = BankDetails::where('user_id', $userId)->first();
-             if ($data ) {
-                 $data ->update($request->all());
-                 return response()->json(['status' => true, 'message' => 'Details updated successfully', 'data' => ['data' => $data]], 200);
+            $data  = BankDetails::where('user_id', $userId)->first();
+            if ($data) {
+                $data->update($request->all());
+                return response()->json(['status' => true, 'message' => 'Details updated successfully', 'data' => ['data' => $data]], 200);
             } else {
                 $data = new BankDetails();
                 $data->user_id = $userId;
@@ -57,35 +57,34 @@ class BankDetailsController extends Controller
                 $data->account_no = $request->account_no;
                 $data->ifsc_code = $request->ifsc_code;
                 $data->save();
-                
+
                 $user = User::find($request->id);
                 $user->reg_step_4 = '1';
                 $user->is_profile_completed = '1';
                 $user->save();
-            
+
                 $pdf_file_path = public_path('/pdf/file.pdf');
-                
-                $mail['username']= $user->name;
+
+                $mail['username'] = $user->name;
                 $mail['email'] = $user->email;
                 $mail['title'] = "Profile Completed";
                 $mail['body'] = "Profile has been Completed Successfully. ";
-                $mail['pdf_file'] = $pdf_file_path; 
+                $mail['pdf_file'] = $pdf_file_path;
 
                 Mail::send('email.ProfileCompletedMail', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
                     $message->attach($mail['pdf_file']);
                 });
 
-        
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Bank details stored successfully',
                     'data' => ['bank_details' => $request->id]
                 ], 200);
-             
             }
-
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -93,7 +92,7 @@ class BankDetailsController extends Controller
             ], 500);
         }
     }
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -107,9 +106,10 @@ class BankDetailsController extends Controller
             $data  = BankDetails::where('user_id', $userId)->first();
             if ($data) {
                 $data  = BankDetails::where('user_id', $userId)->first();
-                    return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-                }
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
     /**

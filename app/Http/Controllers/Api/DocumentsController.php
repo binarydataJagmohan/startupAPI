@@ -71,7 +71,7 @@ class DocumentsController extends Controller
                 }
 
                 $data->save();
-                return response()->json(['status' => true, 'message' => 'Basic Details updated successfully', 'data' => ['data' => $data]], 200);
+                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['data' => $data]], 200);
             } else {
                 $data                  = new Documents();
                 $data->user_id         = $userId;
@@ -90,7 +90,7 @@ class DocumentsController extends Controller
 
                 $data->save();
                 $user = User::where('id', $userId)->update(['reg_step_3' => '1']);
-                return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $data]], 200);
+                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $data]], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -112,6 +112,7 @@ class DocumentsController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -161,7 +162,7 @@ class DocumentsController extends Controller
                 }
                 $documents->save();
 
-                return response()->json(['status' => true, 'message' => 'Basic Details updated successfully', 'data' => ['documents_details' => $documents]], 200);
+                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
             } else {
 
                 $documents = new DocumentUpload();
@@ -200,7 +201,7 @@ class DocumentsController extends Controller
 
                 $documents->save();
 
-                return response()->json(['status' => true, 'message' => 'Basic Details stored successfully', 'data' => ['documents_details' => $documents]], 200);
+                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -300,7 +301,7 @@ class DocumentsController extends Controller
                 if ($request->hasFile('incorporation_certificate')) {
                     $file = $request->file('incorporation_certificate');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/'); 
+                    $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
                     $Input = [];
                     $Input['filename'] = $filename;
@@ -417,12 +418,12 @@ class DocumentsController extends Controller
     public function getUploadDocumentsByDocumentType(Request $request)
     {
         try {
-            if($request->document_type){
+            if ($request->document_type) {
                 $data  = DocumentsUpload::where('user_id', $request->user_id)->where('type', $request->document_type)->first();
             } else {
                 $data  = DocumentsUpload::where('user_id', $request->user_id)->get();
             }
-            
+
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
