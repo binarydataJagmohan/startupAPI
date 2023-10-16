@@ -158,7 +158,7 @@ class StartupController extends Controller
                 'description' => 'required',
                 'sector' => 'required',
                 'pitch_deck' => 'required',
-                  
+
             ]);
 
             if ($validator->fails()) {
@@ -182,7 +182,7 @@ class StartupController extends Controller
                 $data->cofounder = $request->cofounder;
                 $data->kyc_purposes = $request->kyc_purposes;
                 $data->tagline = $request->tagline;
-                $data->sector = $request->sector;                
+                $data->sector = $request->sector;
                 $data->updated_at = Carbon::now();
 
 
@@ -231,6 +231,7 @@ class StartupController extends Controller
             //     return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             // }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -253,6 +254,7 @@ class StartupController extends Controller
                 ], 404);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'error occurred',
@@ -274,17 +276,17 @@ class StartupController extends Controller
                 // 'cofounder' => 'required',
                 'kyc_purposes' => 'required',
                 'sector' => 'required',
-                'pitch_deck' => [
-                    Rule::requiredIf(function () use ($request) {
-                        $existingPitchDeck = Business::where('user_id', $request->user_id)
-                            ->whereNotNull('pitch_deck')
-                            ->first();
+                // 'pitch_deck' => [
+                //     Rule::requiredIf(function () use ($request) {
+                //         $existingPitchDeck = Business::where('user_id', $request->user_id)
+                //             ->whereNotNull('pitch_deck')
+                //             ->first();
 
-                        return !$existingPitchDeck;
-                    }),
-                    'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'max:20480',
-                ],
+                //         return !$existingPitchDeck;
+                //     }),
+                //     'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                //     'max:20480',
+                // ],
 
             ]);
             if ($validator->fails()) {
@@ -397,6 +399,7 @@ class StartupController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
     /**
@@ -418,6 +421,7 @@ class StartupController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -456,6 +460,7 @@ class StartupController extends Controller
                 'data' => $startup
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -484,6 +489,7 @@ class StartupController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -514,6 +520,7 @@ class StartupController extends Controller
                 'message' => 'Startup deleted successfully.'
             ]);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -533,6 +540,7 @@ class StartupController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -551,6 +559,7 @@ class StartupController extends Controller
                 ->first();
             return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -569,6 +578,7 @@ class StartupController extends Controller
 
             return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -584,6 +594,7 @@ class StartupController extends Controller
             $data = Business::where('user_id', $id)->first();
             return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -620,7 +631,7 @@ class StartupController extends Controller
 
                 if ($request->id) {
                     $data = BusinessUnit::where('id', $request->id)->first();
-                    $data->business_id=$request->business_id;
+                    $data->business_id = $request->business_id;
                     // $data->fund_id='STARTUP-'.$fund_id;
                     $data->total_units = $request->total_units;
                     $data->minimum_subscription = $request->minimum_subscription;
@@ -720,6 +731,7 @@ class StartupController extends Controller
                 }
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -734,6 +746,7 @@ class StartupController extends Controller
             $data = BusinessUnit::where('business_id', $id)->get();
             return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -756,6 +769,7 @@ class StartupController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -776,6 +790,7 @@ class StartupController extends Controller
                 'data' => $startup
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -796,6 +811,7 @@ class StartupController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -816,6 +832,7 @@ class StartupController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -834,6 +851,7 @@ class StartupController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -853,6 +871,7 @@ class StartupController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',

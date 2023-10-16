@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ErrorLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +17,7 @@ use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\Contact;
 use Mail;
+use Exception;
 use App\Mail\EmailVerification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
@@ -66,7 +69,6 @@ class UserController extends Controller
                     $message->to($mail['email'])->subject($mail['title']);
                 });
                 return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
-                
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -89,9 +91,8 @@ class UserController extends Controller
                     'data' => $user
                 ]);
             }
-
         } catch (\Exception $e) {
-
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -114,9 +115,8 @@ class UserController extends Controller
 
                 ], 404);
             }
-
-
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'An error occurred',
@@ -370,6 +370,7 @@ class UserController extends Controller
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
     public function save_contact(Request $request)
@@ -429,6 +430,7 @@ class UserController extends Controller
                 return response()->json(['status' => true, 'message' => "valid email", 'data' => $request->all()], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
     public function send_otp(Request $request)
@@ -479,6 +481,7 @@ class UserController extends Controller
                 'data' => $otp->otp,
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error sending OTP',
@@ -500,6 +503,7 @@ class UserController extends Controller
 
             return response()->json(['status' => true, 'message' => "otp successfully confirmed", 'data' => ''], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -533,17 +537,22 @@ class UserController extends Controller
                 return response()->json(['status' => false, 'message' => 'Mail doesn`t not exist'], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 200);
         }
     }
     public function check_user_reset_password_verfication(Request $request)
     {
-        $resetData = PasswordReset::where('user_id', $request->id)->where('token', $request->token)->count();
+        try {
+            $resetData = PasswordReset::where('user_id', $request->id)->where('token', $request->token)->count();
 
-        if ($resetData > 0) {
-            return response()->json(['status' => true,]);
-        } else {
-            return response()->json(['status' => false, 'message' => 'Invalid User Authoriztation']);
+            if ($resetData > 0) {
+                return response()->json(['status' => true,]);
+            } else {
+                return response()->json(['status' => false, 'message' => 'Invalid User Authoriztation']);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -563,6 +572,7 @@ class UserController extends Controller
             PasswordReset::where('user_id', $request->user_id)->delete();
             return response()->json(['status' => true, 'message' => 'Password reset successful'], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json(['success' => true, 'message' => 'Password reset failed'], 500);
         }
     }
@@ -592,6 +602,7 @@ class UserController extends Controller
                 return response()->json(['message' => "Email verfication failed", 'status' => false], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json(['success' => true, 'msg' => 'Password reset failed'], 200);
         }
     }
@@ -611,6 +622,7 @@ class UserController extends Controller
                 'data' => $startup
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -633,6 +645,7 @@ class UserController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -655,6 +668,7 @@ class UserController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -668,12 +682,13 @@ class UserController extends Controller
     {
         try {
             $user = User::where('id', $request->id)->first();
-            if ($user                                                           ) {
+            if ($user) {
                 return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $user], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 }

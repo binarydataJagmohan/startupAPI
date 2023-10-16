@@ -25,7 +25,7 @@ class InvestorController extends Controller
             $data->investorType = $request->investorType;
             $data->reg_step_2 = '1';
             $data->save();
-            
+
             $investor = InvestorTerms::where('user_id', $request->id)->first();
             if ($investor) {
                 //$investor->category = $request->category == "1" ? $request->category : 0;
@@ -46,7 +46,7 @@ class InvestorController extends Controller
                 $investor->corporate_net_worth = $request->corporate_net_worth == "10" ? $request->corporate_net_worth : 0;
 
                 $investor->save();
-                
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Profile has been Updated Successfully',
@@ -74,10 +74,10 @@ class InvestorController extends Controller
 
                 $investor->save();
 
-              $user=User::where('id',$request->id)->update(['reg_step_3' => '1','reg_step_4' => '1','is_profile_completed' =>'1']);
-              $mail['email'] = $data->email;
-              $mail['title'] = "Profile Completed";
-              $mail['body'] =  "Profile has been Completed Successfully.";
+                $user = User::where('id', $request->id)->update(['reg_step_3' => '1', 'reg_step_4' => '1', 'is_profile_completed' => '1']);
+                $mail['email'] = $data->email;
+                $mail['title'] = "Profile Completed";
+                $mail['body'] =  "Profile has been Completed Successfully.";
                 return response()->json([
                     'status' => true,
                     'message' => 'Profile has been Completed Successfully.',
@@ -91,6 +91,7 @@ class InvestorController extends Controller
                 'data' => ['data' => $data]
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -110,6 +111,7 @@ class InvestorController extends Controller
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 400);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
@@ -165,6 +167,7 @@ class InvestorController extends Controller
                     ->header('Content-Type', 'application/json');
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
     public function angel_investor_terms(Request $request)
@@ -232,6 +235,7 @@ class InvestorController extends Controller
                 }
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred',
@@ -250,6 +254,7 @@ class InvestorController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -328,6 +333,7 @@ class InvestorController extends Controller
                 }
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred',
@@ -345,6 +351,7 @@ class InvestorController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -363,6 +370,7 @@ class InvestorController extends Controller
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -384,6 +392,7 @@ class InvestorController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error Occurred.',
@@ -413,6 +422,7 @@ class InvestorController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
@@ -433,6 +443,7 @@ class InvestorController extends Controller
                 'data' => $data
             ], 200);
         } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error occurred.',
