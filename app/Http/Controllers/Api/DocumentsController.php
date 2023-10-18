@@ -38,19 +38,19 @@ class DocumentsController extends Controller
                 'pan_number' => 'required',
                 'uid' => 'required',
                 'dob' => 'required',
-                'proof_img' => [
-                    Rule::requiredIf(function () use ($request) {
-                        // Check if proof_img is already present in the database
-                        $existingProofImg = Documents::where('user_id', $request->user_id)
-                            ->whereNotNull('proof_img')
-                            ->first();
+                // 'proof_img' => [
+                //     Rule::requiredIf(function () use ($request) {
+                //         // Check if proof_img is already present in the database
+                //         $existingProofImg = Documents::where('user_id', $request->user_id)
+                //             ->whereNotNull('proof_img')
+                //             ->first();
 
-                        return !$existingProofImg;
-                    }),
-                    'file',
-                    'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                    'max:20480', // Adjust the file size limit if needed
-                ],
+                //         return !$existingProofImg;
+                //     }),
+                //     'file',
+                //     'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                //     'max:20480', // Adjust the file size limit if needed
+                // ],
             ]);
 
             if ($validator->fails()) {
