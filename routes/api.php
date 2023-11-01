@@ -133,6 +133,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);
     Route::get('get-admin-data', [App\Http\Controllers\Api\AdminController::class, 'get_admin_data']);
     Route::post('update-admin', [App\Http\Controllers\Api\AdminController::class, 'update_admin_data']);
+    Route::post('terms-and-conditions-by-admin', [App\Http\Controllers\Api\AdminController::class, 'terms_and_conditions']);
 
     Route::get('check-user-approval-status', [App\Http\Controllers\Api\UserController::class, 'check_user_approval_status']);
 
