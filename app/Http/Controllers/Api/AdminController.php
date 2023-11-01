@@ -56,7 +56,7 @@ class AdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'privacy_policies' => [
                     'required',
-                    'regex:/\S/', // Ensure there is at least one non-whitespace character
+                    'regex:/\S/', 
                 ],
             ]);
             if ($validator->fails()) {
@@ -129,7 +129,7 @@ class AdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'terms_and_conditions' => [
                     'required',
-                    'regex:/\S/', // Ensure there is at least one non-whitespace character
+                    'regex:/\S/',
                 ],
             ]);
             if ($validator->fails()) {
@@ -139,9 +139,7 @@ class AdminController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
-
-
-                $user = User::where('role', 'admin')->first()->id;
+               $user = User::where('role', 'admin')->first()->id;
                 $checkforpresentdata = TermsAndConditions::where('user_id', $user)->first();
                 if (trim($request->terms_and_conditions) === '<p><br></p>') {
                     return response()->json([
@@ -166,8 +164,7 @@ class AdminController extends Controller
                             'status' => false,
                             'message' => 'Terms and conditions cannot be empty',
                         ], 422);
-                    } else
-            if (!empty(trim($request->terms_and_conditions))) {
+                    } else if (!empty(trim($request->terms_and_conditions))) {
                         $terms =  new TermsAndConditions();
                         $terms->user_id = $user;
                         $terms->terms_and_conditions = $request->terms_and_conditions;
