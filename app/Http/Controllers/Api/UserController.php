@@ -57,17 +57,31 @@ class UserController extends Controller
 
                 $token = JWTAuth::fromUser($user);
 
-                $mailtoken = Str::random(40);
-                $domain = env('NEXT_URL_LOGIN');
-                $url = $domain . '/?token=' . $mailtoken;
-                $mail['url'] = $url;
-                $mail['email'] = $request->email;
-                $mail['title'] = "Verify Your Account";
-                $mail['body'] = "Please click on below link to verify your Account";
-                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
-                Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
-                    $message->to($mail['email'])->subject($mail['title']);
-                });
+                // $otp = VerificationCode::where('user_id', $user->id)->where('otp_type', 'email')->first();
+                // if ($otp) {
+                //     $otp->otp = rand(1000, 9999);
+                //     $otp->expire_at = Carbon::now()->addMinutes(1);
+                //     $otp->save();
+                // } else {
+                //     $otp = VerificationCode::create([
+                //         'user_id' => $user->id,
+                //         'otp' => rand(1000, 9999),
+                //         'otp_type' => 'email',
+                //         'expire_at' => Carbon::now()->addMinutes(1),
+                //     ]);
+                // }
+                // $mailtoken = Str::random(40);
+                // $domain = env('NEXT_URL_LOGIN');
+                // $url = $domain . '/?token=' . $mailtoken;
+                // $mail['url'] = $url;
+                // $mail['email'] = $request->email;
+                // $mail['otp'] = $otp->otp;
+                // $mail['title'] = "Verify Your Account";
+                // $mail['body'] = "Please click on below link to verify your Account";
+                // $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
+                // Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                //     $message->to($mail['email'])->subject($mail['title']);
+                // });
                 return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
             }
         } catch (\Exception $e) {
@@ -352,6 +366,19 @@ class UserController extends Controller
                 $savedata = $update->save();
             }
             if ($savedata) {
+                $otp = VerificationCode::where('user_id', $user->id)->where('otp_type', 'email')->first();
+                if ($otp) {
+                    $otp->otp = rand(1000, 9999);
+                    $otp->expire_at = Carbon::now()->addMinutes(1);
+                    $otp->save();
+                } else {
+                    $otp = VerificationCode::create([
+                        'user_id' => $user->id,
+                        'otp' => rand(1000, 9999),
+                        'otp_type' => 'email',
+                        'expire_at' => Carbon::now()->addMinutes(1),
+                    ]);
+                }
                 return response()->json(['status' => true, 'message' => "Document  has been uploaded succesfully", 'data' => $savedata], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for uploading the document", 'data' => ""], 400);
@@ -453,7 +480,7 @@ class UserController extends Controller
             $user->phone = $request->phone;
             $user->save();
 
-            $otp = VerificationCode::where('user_id', $user->id)->first();
+            $otp = VerificationCode::where('user_id', $user->id)->where('otp_type', 'phone')->first();
             if ($otp) {
                 $otp->otp = rand(1000, 9999);
                 $otp->expire_at = Carbon::now()->addMinutes(1);
@@ -462,6 +489,7 @@ class UserController extends Controller
                 $otp = VerificationCode::create([
                     'user_id' => $user->id,
                     'otp' => rand(1000, 9999),
+                    'otp_type' => 'phone',
                     'expire_at' => Carbon::now()->addMinutes(1),
                 ]);
             }
@@ -687,6 +715,64 @@ class UserController extends Controller
             } else {
                 return response()->json(['status' => false, 'message' => "There has been error for fetching the single", 'data' => ""], 200);
             }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function ResendOtp(Request $request)
+    {
+        try {
+            $otp = VerificationCode::where('user_id', $request->user_id)->where('otp_type', 'email')->first();
+            if ($otp) {
+                $otp->otp = rand(1000, 9999);
+                $otp->expire_at = Carbon::now()->addMinutes(1);
+                $otp->save();
+            } else {
+                $otp = VerificationCode::create([
+                    'user_id' => $request->user_id,
+                    'otp' => rand(1000, 9999),
+                    'otp_type' => 'email',
+                    'expire_at' => Carbon::now()->addMinutes(1),
+                ]);
+            }
+            $user = User::find($request->user_id);
+            $data = [
+                'name' => $user->name,
+                'otp' => $otp->otp,
+            ];
+            Mail::send('email.resendOtpMail', ['mail' => $data], function ($message) use ($user) {
+                $message->from('demo93119@gmail.com', "StartUp");
+                $message->subject('Resend Otp Verification Code');
+                $message->to($user['email']);
+            });
+            return response()->json([
+                'status' => true,
+                'message' => 'OTP sent successfully',
+                'data' => $otp->otp,
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error sending OTP',
+                'data' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function confirmEmailOtp(Request $request)
+    {
+        try {
+            $verificationCode = VerificationCode::where('user_id', $request->user_id)->where('otp', $request->otp)->where('otp_type', 'email')->first();
+            $now = Carbon::now();
+            if (!$verificationCode) {
+                return response()->json(['status' => false, 'message' => "Your OTP is not correct", 'data' => ''], 200);
+            } elseif ($verificationCode && $now->isAfter($verificationCode->expire_at)) {
+                return response()->json(['status' => false, 'message' => "Your OTP has been expired", 'data' => ''], 200);
+            }
+            $user = User::where('id', $request->user_id)->update(['is_email_verification_complete' => '1']);
+            return response()->json(['status' => true, 'message' => "Otp successfully confirmed", 'data' => ''], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }

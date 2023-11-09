@@ -161,4 +161,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('/delete-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteErrorLog']);
     Route::post('/delete-all-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteAllErorlog']);
 
+    Route::post('confirm-email-otp', [App\Http\Controllers\Api\UserController::class, 'confirmEmailOtp']);
+    Route::post('resend-otp', [App\Http\Controllers\Api\UserController::class, 'ResendOtp']);
+
 });

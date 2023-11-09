@@ -17,6 +17,7 @@ use App\Models\Documents;
 use App\Models\DocumentsUpload;
 use Illuminate\Validation\Rule;
 use Mail;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
@@ -122,7 +123,7 @@ class DocumentsController extends Controller
 
 
             $user_id = $request->user_id;
-
+            $user = User::findOrFail($user_id);
             $checkuserid = DocumentUpload::where('user_id', $request->user_id)->count();
 
             if ($checkuserid > 0) {
@@ -164,7 +165,6 @@ class DocumentsController extends Controller
 
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
             } else {
-
                 $documents = new DocumentUpload();
                 $documents->user_id = $request->user_id;
                 if ($request->hasFile('pan_card_front')) {
@@ -200,7 +200,31 @@ class DocumentsController extends Controller
                 }
 
                 $documents->save();
-
+                $otp = VerificationCode::where('user_id', $user->id)->where('otp_type', 'email')->first();
+                if ($otp) {
+                    $otp->otp = rand(1000, 9999);
+                    $otp->expire_at = Carbon::now()->addMinutes(1);
+                    $otp->save();
+                } else {
+                    $otp = VerificationCode::create([
+                        'user_id' => $user->id,
+                        'otp' => rand(1000, 9999),
+                        'otp_type' => 'email',
+                        'expire_at' => Carbon::now()->addMinutes(1),
+                    ]);
+                }
+                $mailtoken = Str::random(40);
+                $domain = env('NEXT_URL_LOGIN');
+                $url = $domain . '/?token=' . $mailtoken;
+                $mail['url'] = $url;
+                $mail['email'] = $user->email;
+                $mail['otp'] = $otp->otp;
+                $mail['title'] = "Verify Your Account";
+                $mail['body'] = "Please click on below link to verify your Account";
+                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
+                Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
             }
         } catch (\Exception $e) {
@@ -223,6 +247,7 @@ class DocumentsController extends Controller
     {
         try {
             $user_id = $request->user_id;
+            $user = User::findOrFail($user_id);
             $checkuserid = DocumentsUpload::where('user_id', $request->user_id)->count();
             if ($checkuserid > 0) {
                 $documents = DocumentsUpload::where('user_id', $user_id)->where('status', '1')->first();
@@ -309,7 +334,6 @@ class DocumentsController extends Controller
                     $Input['type'] = 'incorporation_certificate';
                     $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
                 }
-
                 return response()->json(['status' => true, 'message' => 'Documents updated successfully', 'data' => ''], 200);
             } else {
 
@@ -407,7 +431,31 @@ class DocumentsController extends Controller
                 }
                 $documents = DocumentsUpload::where('user_id', $user_id)->where('status', '1')->first();
                 //$documents->save();
-
+                $otp = VerificationCode::where('user_id', $user->id)->where('otp_type', 'email')->first();
+                if ($otp) {
+                    $otp->otp = rand(1000, 9999);
+                    $otp->expire_at = Carbon::now()->addMinutes(1);
+                    $otp->save();
+                } else {
+                    $otp = VerificationCode::create([
+                        'user_id' => $user->id,
+                        'otp' => rand(1000, 9999),
+                        'otp_type' => 'email',
+                        'expire_at' => Carbon::now()->addMinutes(1),
+                    ]);
+                }
+                $mailtoken = Str::random(40);
+                $domain = env('NEXT_URL_LOGIN');
+                $url = $domain . '/?token=' . $mailtoken;
+                $mail['url'] = $url;
+                $mail['email'] = $user->email;
+                $mail['otp'] = $otp->otp;
+                $mail['title'] = "Verify Your Account";
+                $mail['body'] = "Please click on below link to verify your Account";
+                $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
+                Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->to($mail['email'])->subject($mail['title']);
+                });
                 return response()->json(['status' => true, 'message' => 'Documents stored successfully', 'data' => ''], 200);
             }
         } catch (\Exception $e) {
