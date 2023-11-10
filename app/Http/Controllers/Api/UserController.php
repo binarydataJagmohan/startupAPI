@@ -562,7 +562,7 @@ class UserController extends Controller
                 );
                 return response()->json(['status' => true, 'message' => 'Mail has been sent please check your email!'], 200);
             } else {
-                return response()->json(['status' => false, 'message' => 'Mail doesn`t not exist'], 200);
+                return response()->json(['status' => false, 'message' => "Mail doesn't not exist"], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
