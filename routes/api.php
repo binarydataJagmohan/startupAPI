@@ -164,4 +164,8 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('confirm-email-otp', [App\Http\Controllers\Api\UserController::class, 'confirmEmailOtp']);
     Route::post('resend-otp', [App\Http\Controllers\Api\UserController::class, 'ResendOtp']);
 
+
+    Route::post('admin-add-campaign-detail', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_detail']);
+
+
 });

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Models\User;
+use App\Models\CampaignDetail;
 use App\Models\TermsAndConditions;
 use App\Models\PrivacyPolicies;
 use App\Models\Business;
@@ -56,7 +57,7 @@ class AdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'privacy_policies' => [
                     'required',
-                    'regex:/\S/', 
+                    'regex:/\S/',
                 ],
             ]);
             if ($validator->fails()) {
@@ -94,23 +95,23 @@ class AdminController extends Controller
                             'message' => 'Privacy Policies cannot be empty',
                         ], 422);
                     } else
-                if (!empty(trim($request->privacy_policies))) {
-                        $terms =  new PrivacyPolicies();
-                        $terms->user_id = $user;
-                        $terms->privacy_policies = $request->privacy_policies;
-                        $terms->save();
+                        if (!empty(trim($request->privacy_policies))) {
+                            $terms = new PrivacyPolicies();
+                            $terms->user_id = $user;
+                            $terms->privacy_policies = $request->privacy_policies;
+                            $terms->save();
 
-                        return response()->json([
-                            'status' => true,
-                            'message' => 'Privacy Policies added successfully',
-                            'data' => $terms
-                        ], 200);
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Privacy Policies cannot be empty',
-                        ], 422);
-                    }
+                            return response()->json([
+                                'status' => true,
+                                'message' => 'Privacy Policies added successfully',
+                                'data' => $terms
+                            ], 200);
+                        } else {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Privacy Policies cannot be empty',
+                            ], 422);
+                        }
                 }
             }
         } catch (\Exception $e) {
@@ -139,7 +140,7 @@ class AdminController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
-               $user = User::where('role', 'admin')->first()->id;
+                $user = User::where('role', 'admin')->first()->id;
                 $checkforpresentdata = TermsAndConditions::where('user_id', $user)->first();
                 if (trim($request->terms_and_conditions) === '<p><br></p>') {
                     return response()->json([
@@ -165,7 +166,7 @@ class AdminController extends Controller
                             'message' => 'Terms and conditions cannot be empty',
                         ], 422);
                     } else if (!empty(trim($request->terms_and_conditions))) {
-                        $terms =  new TermsAndConditions();
+                        $terms = new TermsAndConditions();
                         $terms->user_id = $user;
                         $terms->terms_and_conditions = $request->terms_and_conditions;
                         $terms->save();
@@ -483,4 +484,58 @@ class AdminController extends Controller
     {
         //
     }
+
+    public function admin_add_campaign_detail(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+    
+            if (!$id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID is required for updating a campaign detail.',
+                ], 400);
+            }
+    
+            $campaignDetail = BusinessUnit::find($id);
+    
+            if (!$campaignDetail) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Campaign detail not found.',
+                ], 404);
+            }
+    
+            // Check and update individual fields if the request contains non-empty values
+            if ($request->filled('company_overview')) {
+                $campaignDetail->company_overview = $request->input('company_overview');
+            }
+    
+            if ($request->filled('product_description')) {
+                $campaignDetail->product_description = $request->input('product_description');
+            }
+    
+            if ($request->filled('historical_financials_desc')) {
+                $campaignDetail->historical_financials_desc = $request->input('historical_financials_desc');
+            }
+    
+            if ($request->filled('past_financing_desc')) {
+                $campaignDetail->past_financing_desc = $request->input('past_financing_desc');
+            }
+    
+            // Save the updated record
+            $campaignDetail->save();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Campaign detail has been updated successfully.',
+                'data' => $campaignDetail // Optional: Return the updated data in the response
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+    
+
+
 }
