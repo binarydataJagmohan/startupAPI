@@ -16,6 +16,7 @@ use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\BusinessUnit;
 use App\Models\Contact;
+use App\Models\Ifinworth;
 use Sse\SSE;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -189,14 +190,14 @@ class StartupController extends Controller
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
                 if ($request->hasFile('pitch_deck')) {
                     $file = $request->file('pitch_deck');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->pitch_deck = $filename;
                     $data->save();
@@ -213,7 +214,134 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
+    // public function insert_ifinworth_details(Request $request)
+    // {        
+    //     try {
+    //         $ifinworth = new Ifinworth();
 
+    //         $ifinworth->startup_id = $request->startup_id;
+    //         $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
+    //         $ifinworth->ifinworth_currency = $request->ifinworth_currency;
+    //         $ifinworth->ifinworth_amount = $request->ifinworth_amount;
+    //         $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
+    //         $ifinworth->pre_committed_ifinworth_amount = $request->pre_committed_ifinworth_amount;
+    //         $ifinworth->pre_committed_investor = $request->pre_committed_investor;
+    //         $ifinworth->accredited_investors = $request->accredited_investors;
+    // $ifinworth->angel_investors = $request->angel_investors;
+    // $ifinworth->regular_investors = $request->regular_investors;
+    //         $ifinworth->other_funding_detail = $request->other_funding_detail;
+
+    //         if ($request->hasFile('pitch_deck')) {
+    //             $randomNumber = mt_rand(1000000000, 9999999999);
+    //             $imagePath = $request->file('pitch_deck');
+    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
+    //             $imagePath->move(public_path('docs'), $imageName);
+    //             $ifinworth->pitch_deck = $imageName;
+    //         }
+
+    //         if ($request->hasFile('one_pager')) {
+    //             $randomNumber = mt_rand(1000000000, 9999999999);
+    //             $imagePath = $request->file('one_pager');
+    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
+    //             $imagePath->move(public_path('docs'), $imageName);
+    //             $ifinworth->one_pager = $imageName;
+    //         }          
+    //         if ($request->hasFile('previous_financials')) {
+    //             $randomNumber = mt_rand(1000000000, 9999999999);
+    //             $imagePath = $request->file('previous_financials');
+    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
+    //             $imagePath->move(public_path('docs'), $imageName);
+    //             $ifinworth->previous_financials = $imageName;
+    //         }
+
+    //         if ($request->hasFile('latest_cap_table')) {
+    //             $randomNumber = mt_rand(1000000000, 9999999999);
+    //             $imagePath = $request->file('latest_cap_table');
+    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
+    //             $imagePath->move(public_path('docs'), $imageName);
+    //             $ifinworth->latest_cap_table = $imageName;
+    //         }
+
+    //         if ($request->hasFile('other_documents')) {
+    //             $randomNumber = mt_rand(1000000000, 9999999999);
+    //             $imagePath = $request->file('other_documents');
+    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
+    //             $imagePath->move(public_path('docs'), $imageName);
+    //             $ifinworth->other_documents = $imageName;
+    //         }
+    //         $savedata = $ifinworth->save();
+
+    //         if ($savedata) {
+    //             return response()->json(['status' => true, 'message' => "Data storred successfully", 'data' => $savedata], 200);
+    //         } else {
+    //             return response()->json(['status' => false, 'message' => "There has been an error ", 'data' => ""], 200);
+    //         }
+    //     } catch (\Exception $e) {
+    //         throw new HttpException(500, $e->getMessage());
+    //     }
+    // }
+    public function insert_ifinworth_details(Request $request)
+    {
+        try {
+            $startupId = $request->startup_id;
+            $ifinworth = Ifinworth::where('startup_id', $startupId)->first();
+
+            if (!$ifinworth) {
+                $ifinworth = new Ifinworth();
+            }
+
+            $ifinworth->startup_id = $startupId;
+            $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
+            $ifinworth->ifinworth_currency = $request->ifinworth_currency;
+            $ifinworth->ifinworth_amount = $request->ifinworth_amount;
+            $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
+            $ifinworth->pre_committed_ifinworth_amount = $request->pre_committed_ifinworth_amount;
+            $ifinworth->pre_committed_investor = $request->pre_committed_investor;
+            $ifinworth->accredited_investors = $request->accredited_investors;
+            $ifinworth->angel_investors = $request->angel_investors;
+            $ifinworth->regular_investors = $request->regular_investors;
+            $ifinworth->other_funding_detail = $request->other_funding_detail;
+            $this->processFileUpload($request, 'pitch_deck', $ifinworth, 'pitch_deck');
+            $this->processFileUpload($request, 'one_pager', $ifinworth, 'one_pager');
+            $this->processFileUpload($request, 'previous_financials', $ifinworth, 'previous_financials');
+            $this->processFileUpload($request, 'latest_cap_table', $ifinworth, 'latest_cap_table');
+            $this->processFileUpload($request, 'other_documents', $ifinworth, 'other_documents');
+
+            $savedata = $ifinworth->save();
+
+            if ($savedata) {
+                return response()->json(['status' => true, 'message' => "Data stored successfully", 'data' => $savedata], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    private function processFileUpload(Request $request, $fieldName, $model, $attribute)
+    {
+        if ($request->hasFile($fieldName)) {
+            $randomNumber = mt_rand(1000000000, 9999999999);
+            $imagePath = $request->file($fieldName);
+            $imageName = $randomNumber . $imagePath->getClientOriginalName();
+            $imagePath->move(public_path('docs'), $imageName);
+            $model->$attribute = $imageName;
+        }
+    }
+
+    public function get_startup_ifinworth_detail(Request $request)
+    {
+
+        try {
+            $ifinworth = Ifinworth::where('startup_id', $request->id)->first();
+            if ($ifinworth) {
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -317,7 +445,7 @@ class StartupController extends Controller
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                     $data->save();
@@ -325,7 +453,7 @@ class StartupController extends Controller
                 if ($request->hasFile('pitch_deck')) {
                     $file = $request->file('pitch_deck');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->pitch_deck = $filename;
                     $data->save();
@@ -355,14 +483,14 @@ class StartupController extends Controller
                 if ($request->hasFile('logo')) {
                     $file = $request->file('logo');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->logo = $filename;
                 }
                 if ($request->hasFile('pitch_deck')) {
                     $file = $request->file('pitch_deck');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->pitch_deck = $filename;
                 }
