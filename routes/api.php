@@ -164,4 +164,9 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('confirm-email-otp', [App\Http\Controllers\Api\UserController::class, 'confirmEmailOtp']);
     Route::post('resend-otp', [App\Http\Controllers\Api\UserController::class, 'ResendOtp']);
 
+    Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
+    Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
+
+    
+
 });
