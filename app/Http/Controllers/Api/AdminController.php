@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -745,11 +746,14 @@ class AdminController extends Controller
             // Retrieve teams with the given fund_id
             $teams = Team::where('fund_id', $fund_id)->get();
 
+            $products = Product::where('fund_id', $fund_id)->get();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data retrieved successfully',
                 'competitors' => $competitors,
-                'teams' => $teams
+                'teams' => $teams,
+                'products' => $products
             ], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -758,5 +762,140 @@ class AdminController extends Controller
     }
 
 
+    public function admin_add_round_details(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+
+            if (!$id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'ID is required for updating a campaign detail.',
+                ], 400);
+            }
+
+            $roundDetail = BusinessUnit::find($id);
+
+            if (!$roundDetail) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Campaign detail not found.',
+                ], 404);
+            }
+            if ($request->filled('dilution_percentage')) {
+                $roundDetail->dilution_percentage = $request->input('dilution_percentage');
+            }
+
+            if ($request->filled('min_commitment')) {
+                $roundDetail->min_commitment = $request->input('min_commitment');
+            }
+
+            if ($request->filled('max_commitment')) {
+                $roundDetail->max_commitment = $request->input('max_commitment');
+            }
+
+            if ($request->filled('valuation_cap')) {
+                $roundDetail->valuation_cap = $request->input('valuation_cap');
+            }
+
+            if ($request->filled('amount_raised')) {
+                $roundDetail->amount_raised = $request->input('amount_raised');
+            }
+
+            if ($request->filled('round_name')) {
+                $roundDetail->round_name = $request->input('round_name');
+            }
+
+            // Save the updated record
+            $roundDetail->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Round detail has been updated successfully.',
+                'data' => $roundDetail // Optional: Return the updated data in the response
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function admin_add_products(Request $request)
+    {
+        try {
+            $product = new Product();
+
+            $product->fund_id = $request->input('fund_id');
+            $product->product_description = $request->input('product_description');
+            $product->product_overview = $request->input('product_overview');
+
+
+
+            if ($request->hasFile('product_image')) {
+                $randomNumber = mt_rand(1000000000, 9999999999);
+                $imagePath = $request->file('product_image');
+                $imageName = $randomNumber . $imagePath->getClientOriginalName();
+                $imagePath->move(public_path('images/products'), $imageName);
+                $product->product_image = $imageName;
+            }
+
+            $product->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Product Added successfully.',
+                'data' => $product,
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function admin_update_product(Request $request)
+    {
+        try {
+            $id = $request->input('product_id'); // Assuming the ID is sent as 'competitor_id' in the request
+
+            // Find the Competitor by ID
+            $product = product::findOrFail($id);
+
+            $product->fund_id = $request->input('fund_id');
+            $product->product_description = $request->input('product_description');
+            $product->product_overview = $request->input('product_overview');
+
+
+            if ($request->hasFile('product_image')) {
+                $randomNumber = mt_rand(1000000000, 9999999999);
+                $imagePath = $request->file('product_image');
+                $imageName = $randomNumber . $imagePath->getClientOriginalName();
+                $imagePath->move(public_path('images/products'), $imageName);
+                $product->product_image = $imageName;
+            }
+
+            $product->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Product Data updated successfully.',
+                'data' => $product,
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function get_all_product_data(Request $request)
+    {
+        try {
+            $product = Product::orderBy('created_at', 'desc')->get();
+            return response()->json([
+                'status' => true,
+                'message' => 'test',
+                "data" => $product
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+
+        }
+    }
 
 }
