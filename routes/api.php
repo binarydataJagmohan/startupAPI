@@ -172,6 +172,8 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('admin-add-campaign-detail', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_detail']);
     Route::post('admin-add-campaign', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_details']);
 
+    Route::post('pan-verification', [App\Http\Controllers\Api\DocumentsController::class, 'panCardVerification']);
+
 
 
 });

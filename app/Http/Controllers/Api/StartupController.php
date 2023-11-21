@@ -283,6 +283,23 @@ class StartupController extends Controller
     public function insert_ifinworth_details(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'round_of_ifinworth' => 'required',
+                'ifinworth_currency' => 'required',
+                'ifinworth_amount' => 'required',
+                'pre_committed_ifinworth_currency' => 'required',
+                'pre_committed_ifinworth_amount' => 'required',
+                'pre_committed_investor' => 'required',
+                'accredited_investors' => 'required',                
+                'other_funding_detail' => 'required',               
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
             $startupId = $request->startup_id;
             $ifinworth = Ifinworth::where('startup_id', $startupId)->first();
 
