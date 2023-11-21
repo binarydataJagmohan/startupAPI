@@ -66,11 +66,11 @@ class DocumentsController extends Controller
                 if ($request->hasFile('proof_img')) {
                     $file = $request->file('proof_img');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
                     $data->proof_img = $filename;
                 }
-
+              
                 $data->save();
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['data' => $data]], 200);
             } else {

@@ -27,6 +27,9 @@ class Ifinworth extends Model
         'one_pager',
         'previous_financials',
         'latest_cap_table',
-        'other_documents',        
+        'other_documents',  
+        'status',
+        'approval_status',
+
     ];    
 }
