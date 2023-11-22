@@ -28,20 +28,20 @@ class BankDetailsController extends Controller
     {
         try {
 
-            $validator = Validator::make($request->all(), [
-                'bank_name' => 'required',
-                'account_holder' => 'required',
-                'account_no' => 'required',
-                'ifsc_code' => 'required',
-            ]);
+            // $validator = Validator::make($request->all(), [
+            //     'bank_name' => 'required',
+            //     'account_holder' => 'required',
+            //     'account_no' => 'required',
+            //     'ifsc_code' => 'required',
+            // ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors(),
-                ], 422);
-            }
+            // if ($validator->fails()) {
+            //     return response()->json([
+            //         'status' => false,
+            //         'message' => 'Validation error',
+            //         'errors' => $validator->errors(),
+            //     ], 422);
+            // }
 
 
             $userId = $request->id;
