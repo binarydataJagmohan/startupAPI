@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\InvestorBookingController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -167,7 +168,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
 
-    
+
 
     Route::post('admin-add-campaign-detail', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_detail']);
     Route::post('admin-add-campaign', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_details']);
@@ -186,12 +187,21 @@ Route::group(['middleware' => ['api']], function () {
 
     Route::get('/get-investor-page-data', [App\Http\Controllers\Api\AdminController::class, 'get_investor_page_data']);
     Route::get('/get-team-and-company-data', [App\Http\Controllers\Api\AdminController::class, 'get_team_and_company_data']);
-    
+
     Route::get('/get-all-product-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_product_data']);
 
     Route::post('admin-add-round-details', [App\Http\Controllers\Api\AdminController::class, 'admin_add_round_details']);
     Route::post('admin-add-products', [App\Http\Controllers\Api\AdminController::class, 'admin_add_products']);
     Route::post('admin-update-products', [App\Http\Controllers\Api\AdminController::class, 'admin_update_product']);
+
+
+    Route::post('company-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_company_data']);
+
+    Route::post('update-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'updateCampignStatus']);
+    Route::post('delete-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'deleteCampign']);
+
+    Route::get('get-all-campaign', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign']);
+
 
     Route::group(['prefix' => 'pan'], function () {	   		 					
         Route::post('/verification', [App\Http\Controllers\Api\PanVerificationController::class, 'panVerification']);
