@@ -44,6 +44,7 @@ return new class extends Migration
             $table->boolean('reg_step_4')->default(0);
             $table->boolean('is_profile_completed')->default(0);
             $table->boolean('is_email_verification_complete')->default(0);
+            $table->boolean('is_phone_verification_complete')->default(0);
             $table->rememberToken();
             $table->timestamps();
 
