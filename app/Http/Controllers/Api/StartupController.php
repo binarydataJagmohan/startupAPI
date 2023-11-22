@@ -290,8 +290,8 @@ class StartupController extends Controller
                 'pre_committed_ifinworth_currency' => 'required',
                 'pre_committed_ifinworth_amount' => 'required',
                 'pre_committed_investor' => 'required',
-                'accredited_investors' => 'required',                
-                'other_funding_detail' => 'required',               
+                'accredited_investors' => 'required',
+                'other_funding_detail' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -308,6 +308,11 @@ class StartupController extends Controller
             }
 
             $ifinworth->startup_id = $startupId;
+
+            $fund_id = rand(100000, 999999);
+            $ifinworth->ccsp_fund_id = 'CCSP-' . $fund_id;
+
+
             $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
             $ifinworth->ifinworth_currency = $request->ifinworth_currency;
             $ifinworth->ifinworth_amount = $request->ifinworth_amount;
@@ -442,7 +447,7 @@ class StartupController extends Controller
                 ], 422);
             }
             $userId = $request->user_id;
-            $data  = Business::where('user_id', $userId)->first();
+            $data = Business::where('user_id', $userId)->first();
             if ($data) {
                 // $data ->update($request->all());
                 $data->update([
@@ -538,7 +543,7 @@ class StartupController extends Controller
     {
         try {
             $userId = $request->id;
-            $data  = Business::where('user_id', $userId)->first();
+            $data = Business::where('user_id', $userId)->first();
             if ($data) {
 
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
@@ -590,10 +595,10 @@ class StartupController extends Controller
 
             // $mail['name']= $startup->name;
             if ($startup->approval_status === "approved") {
-                $mail['user']  = $startup;
+                $mail['user'] = $startup;
                 $mail['email'] = $startup->email;
                 $mail['title'] = "Approval Mail";
-                $mail['body'] =  "Your Account has been approved Successfully. ";
+                $mail['body'] = "Your Account has been approved Successfully. ";
 
                 Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
@@ -761,7 +766,7 @@ class StartupController extends Controller
                 'closed_in' => 'required',
                 'resource' => 'required',
                 // 'status' => 'required',
-                'xirr'  => 'required',
+                'xirr' => 'required',
                 'desc' => 'required',
 
             ]);

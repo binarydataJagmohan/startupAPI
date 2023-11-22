@@ -195,5 +195,12 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('admin-update-products', [App\Http\Controllers\Api\AdminController::class, 'admin_update_product']);
 
 
+    Route::post('company-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_company_data']);
+
+    Route::post('update-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'updateCampignStatus']);
+    Route::post('delete-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'deleteCampign']);
+
+    Route::get('get-all-campaign', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign']);
+
 
 });
