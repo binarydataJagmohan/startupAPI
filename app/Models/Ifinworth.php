@@ -13,6 +13,7 @@ class Ifinworth extends Model
 
     protected $fillable = [
         'startup_id',
+        'ccsp_fund_id',
         'round_of_ifinworth',
         'ifinworth_currency',
         'ifinworth_amount',
@@ -29,7 +30,8 @@ class Ifinworth extends Model
         'latest_cap_table',
         'other_documents',  
         'status',
-        'approval_status',
+        'approval_status'
+       
 
     ];    
 }
