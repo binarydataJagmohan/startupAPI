@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use App\Models\User;
 use App\Models\Competitor;
 use App\Models\Team;
+use App\Models\Ifinworth;
 use App\Models\CampaignDetail;
 use App\Models\TermsAndConditions;
 use App\Models\PrivacyPolicies;
@@ -477,65 +478,33 @@ class AdminController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 
     public function admin_add_campaign_detail(Request $request)
     {
         try {
             $id = $request->input('id');
+            $campaignDetail = ($id) ? CampaignDetail::find($id) : new CampaignDetail();
 
-            if (!$id) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'ID is required for updating a campaign detail.',
-                ], 400);
-            }
+            $campaignDetail->ccsp_fund_id = $request->input('ccsp_fund_id');
+            $campaignDetail->company_overview = $request->input('company_overview');
+            $campaignDetail->product_description = $request->input('product_description');
+            $campaignDetail->historical_financials_desc = $request->input('historical_financials_desc');
+            $campaignDetail->past_financing_desc = $request->input('past_financing_desc');
 
-            $campaignDetail = BusinessUnit::find($id);
-
-            if (!$campaignDetail) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Campaign detail not found.',
-                ], 404);
-            }
-
-            // Check and update individual fields if the request contains non-empty values
-            if ($request->filled('company_overview')) {
-                $campaignDetail->company_overview = $request->input('company_overview');
-            }
-
-            if ($request->filled('product_description')) {
-                $campaignDetail->product_description = $request->input('product_description');
-            }
-
-            if ($request->filled('historical_financials_desc')) {
-                $campaignDetail->historical_financials_desc = $request->input('historical_financials_desc');
-            }
-
-            if ($request->filled('past_financing_desc')) {
-                $campaignDetail->past_financing_desc = $request->input('past_financing_desc');
-            }
-
-            // Save the updated record
             $campaignDetail->save();
+
+            $message = ($id) ? 'Campaign detail has been updated successfully.' : 'Campaign detail has been added successfully.';
 
             return response()->json([
                 'status' => true,
-                'message' => 'Campaign detail has been updated successfully.',
-                'data' => $campaignDetail // Optional: Return the updated data in the response
+                'message' => $message,
+                'data' => $campaignDetail
             ], 200);
         } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -740,13 +709,11 @@ class AdminController extends Controller
         try {
             $fund_id = $request->input('fund_id');
 
-            // Retrieve competitors with the given fund_id
-            $competitors = Competitor::where('fund_id', $fund_id)->get();
+            $competitors = Competitor::where('fund_id', $fund_id)->where('status', 'active')->get();
 
-            // Retrieve teams with the given fund_id
-            $teams = Team::where('fund_id', $fund_id)->get();
+            $teams = Team::where('fund_id', $fund_id)->where('status', 'active')->get();
 
-            $products = Product::where('fund_id', $fund_id)->get();
+            $products = Product::where('fund_id', $fund_id)->where('status', 'active')->get();
 
             return response()->json([
                 'status' => true,
@@ -886,7 +853,7 @@ class AdminController extends Controller
     public function get_all_product_data(Request $request)
     {
         try {
-            $product = Product::orderBy('created_at', 'desc')->get();
+            $product = Product::orderBy('created_at', 'desc')->where('status', 'active')->get();
             return response()->json([
                 'status' => true,
                 'message' => 'test',
@@ -895,6 +862,106 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
 
+        }
+    }
+
+
+    public function destroy_admin_company_data(Request $request, $id)
+    {
+
+        try {
+            $data = Competitor::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Company Deleted Successfully.',
+                "data" => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
+    public function get_all_campaign(Request $request)
+    {
+        try {
+            $data = User::select(
+                'users.id as user_id',
+                'users.name',
+                'ifinworth_details.ccsp_fund_id',
+                'ifinworth_details.round_of_ifinworth',
+                'ifinworth_details.ifinworth_amount',
+                'ifinworth_details.pre_committed_ifinworth_amount',
+                'ifinworth_details.approval_status',
+                'ifinworth_details.id'
+            )
+                ->join('ifinworth_details', 'users.id', '=', 'ifinworth_details.startup_id')
+                ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
+                ->where('ifinworth_details.status', '=', 'active')
+                ->get();
+
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+
+        }
+    }
+
+
+    public function updateCampignStatus(Request $request, $id)
+    {
+        try {
+            $data = Ifinworth::find($id);
+
+            if (!$data) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Record not found.',
+                ], 404);
+            }
+
+            $data->approval_status = $request->input('approval_status');
+            $data->updated_at = Carbon::now();
+            $data->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
+    public function deleteCampign(Request $request, $id)
+    {
+        try {
+            $campign = Ifinworth::find($id);
+
+            if (!$campign) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Record not found.',
+                ], 404);
+            }
+
+            $campign->update(['status' => 'deactive']);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status updated successfully.',
+                'data' => $campign
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

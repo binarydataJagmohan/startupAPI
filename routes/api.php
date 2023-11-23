@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\InvestorBookingController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -40,6 +41,9 @@ Route::group(['middleware' => 'api'], function () {
     Route::get('notifications-count/{id}', [App\Http\Controllers\Api\NotificationController::class, 'getTotalCountOfNotifications']);
     Route::post('send-mail-notifications', [App\Http\Controllers\Api\NotificationController::class, 'sendMailNotification']);
     Route::post('notifications-delete/{id}', [App\Http\Controllers\Api\NotificationController::class, 'destroy_notifications']);
+    Route::post('confirm-email-otp', [App\Http\Controllers\Api\UserController::class, 'confirmEmailOtp']);
+    Route::post('resend-otp', [App\Http\Controllers\Api\UserController::class, 'ResendOtp']);
+    Route::post('phone-verify', [App\Http\Controllers\Api\StartupController::class, 'PhoneVerify']);
 });
 
 Route::group(['middleware' => ['api']], function () {
@@ -101,6 +105,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get("get-buisness-id/{id}", [App\Http\Controllers\Api\StartupController::class, 'get_buisness_id']);
     Route::get("fund-raise-count", [App\Http\Controllers\Api\StartupController::class, 'get_fund_raise_count']);
     Route::get("total-subscriber-count", [App\Http\Controllers\Api\InvestorController::class, 'get_total_subscriber_count']);
+    Route::get("get-single-buisness-unit/{id}", [App\Http\Controllers\Api\StartupController::class, 'getSingleBusinessUnitInfo']);
 
     Route::delete('startups/{id}', [App\Http\Controllers\Api\StartupController::class, 'destroy']);
     Route::post('booking', [App\Http\Controllers\Api\InvestorBookingController::class, 'booking']);
@@ -160,15 +165,12 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('/get-all-errorlog', [App\Http\Controllers\Api\ErrorLogController::class, 'getErrorLog']);
     Route::post('/delete-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteErrorLog']);
     Route::post('/delete-all-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteAllErorlog']);
-
-    Route::post('confirm-email-otp', [App\Http\Controllers\Api\UserController::class, 'confirmEmailOtp']);
-    Route::post('resend-otp', [App\Http\Controllers\Api\UserController::class, 'ResendOtp']);
-
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
     Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
     Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
     Route::get('get-pre-commited-investors/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
+
 
 
     Route::post('admin-add-campaign-detail', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_detail']);
@@ -188,7 +190,7 @@ Route::group(['middleware' => ['api']], function () {
 
     Route::get('/get-investor-page-data', [App\Http\Controllers\Api\AdminController::class, 'get_investor_page_data']);
     Route::get('/get-team-and-company-data', [App\Http\Controllers\Api\AdminController::class, 'get_team_and_company_data']);
-    
+
     Route::get('/get-all-product-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_product_data']);
 
     Route::post('admin-add-round-details', [App\Http\Controllers\Api\AdminController::class, 'admin_add_round_details']);
@@ -196,5 +198,37 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('admin-update-products', [App\Http\Controllers\Api\AdminController::class, 'admin_update_product']);
 
 
+    Route::post('company-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_company_data']);
 
+    Route::post('update-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'updateCampignStatus']);
+    Route::post('delete-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'deleteCampign']);
+
+    Route::get('get-all-campaign', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign']);
+
+
+    Route::group(['prefix' => 'pan'], function () {	   		 					
+        Route::post('/verification', [App\Http\Controllers\Api\PanVerificationController::class, 'panVerification']);
+    });
+    Route::post('/get-admin-message-data', [App\Http\Controllers\Api\AdminChatController::class, 'get_admin_message_data']);
+    Route::post('/contact-by-admin-to-user-and-chef', [App\Http\Controllers\Api\AdminChatController::class, 'contact_by_admin_to_user_and_chef']);
+    Route::post('/get-click-admin-chef-user-chat-data', [App\Http\Controllers\Api\AdminChatController::class, 'get_click_admin_chef_user_chat_data']);
+    Route::post('/contact-by-admin-to-user-and-chef-with-share-file', [App\Http\Controllers\Api\AdminChatController::class, 'contact_by_admin_to_user_and_chef_with_share_file']);
+    Route::get('get-all-user-data', [App\Http\Controllers\Api\AdminChatController::class, 'get_all_user_data']);
+    Route::post('/send-message-to-user-by-admin', [App\Http\Controllers\Api\AdminChatController::class, 'send_message_to_user_by_admin']);
+    Route::post('/create-group-by-admin', [App\Http\Controllers\Api\AdminChatController::class, 'create_group_by_admin']);
+
+
+    Route::post('/get-startup-message-data', [App\Http\Controllers\Api\StartupChatController::class, 'get_startup_message_data']);
+    Route::post('/contact-user-by-startup', [App\Http\Controllers\Api\StartupChatController::class, 'contact_user_by_startup']);
+    Route::post('/get-click-startup-user-chat-data', [App\Http\Controllers\Api\StartupChatController::class, 'get_click_startup_user_chat_data']);
+    Route::post('/contact-user-by-startup-with-share-file', [App\Http\Controllers\Api\StartupChatController::class, 'contact_user_by_startup_with_share_file']);
+    Route::get('/get-admin-data', [App\Http\Controllers\Api\StartupChatController::class, 'get_admin_data']);
+
+    Route::post('/get-investor-message-data', [App\Http\Controllers\Api\InvestorChatController::class, 'get_investor_message_data']);
+    Route::post('/contact-user-by-investor', [App\Http\Controllers\Api\InvestorChatController::class, 'contact_user_by_investor']);
+    Route::post('/get-click-investor-user-chat-data', [App\Http\Controllers\Api\InvestorChatController::class, 'get_click_investor_user_chat_data']);
+    Route::post('/contact-user-by-investor-with-share-file', [App\Http\Controllers\Api\InvestorChatController::class, 'contact_user_by_investor_with_share_file']);
+    Route::get('/get-admin-data-investor', [App\Http\Controllers\Api\InvestorChatController::class, 'get_admin_data_investor']);
+    Route::post('/create-group-by-investor', [App\Http\Controllers\Api\InvestorChatController::class, 'create_group_by_investor']);
+    Route::get('/get-single-group-data', [App\Http\Controllers\Api\InvestorChatController::class, 'get_single_group_data']);
 });

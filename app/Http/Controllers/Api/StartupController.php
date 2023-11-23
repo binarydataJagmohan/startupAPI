@@ -25,6 +25,7 @@ use Carbon\Carbon;
 use App\Models\Payments;
 use App\Models\PreCommitedInvestor;
 use Illuminate\Support\Facades\Mail;
+use Twilio\Rest\Client;
 
 class StartupController extends Controller
 {
@@ -52,6 +53,13 @@ class StartupController extends Controller
                     'errors' => $validator->errors(),
                 ], 422);
             } else {
+                // $token = getenv("TWILIO_AUTH_TOKEN");
+                // $twilio_sid = getenv("TWILIO_SID");
+                // $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+                // $twilio = new Client($twilio_sid, $token);
+                // $twilio->verify->v2->services($twilio_verify_sid)
+                //     ->verifications
+                //     ->create($request->phone, "sms");
                 // Store the user in the database
                 $user = User::find($request->id);
                 $user->email = $request->email;
@@ -226,8 +234,8 @@ class StartupController extends Controller
                 'pre_committed_ifinworth_currency' => 'required',
                 'pre_committed_ifinworth_amount' => 'required',
                 'pre_committed_investor' => 'required',
-                'accredited_investors' => 'required',                
-                'other_funding_detail' => 'required',               
+                'accredited_investors' => 'required',
+                'other_funding_detail' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -244,6 +252,11 @@ class StartupController extends Controller
             }
 
             $ifinworth->startup_id = $startupId;
+
+            $fund_id = rand(100000, 999999);
+            $ifinworth->ccsp_fund_id = 'CCSP-' . $fund_id;
+
+
             $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
             $ifinworth->ifinworth_currency = $request->ifinworth_currency;
             $ifinworth->ifinworth_amount = $request->ifinworth_amount;
@@ -468,7 +481,7 @@ public function delete_pre_commited_investor($id)
                 ], 422);
             }
             $userId = $request->user_id;
-            $data  = Business::where('user_id', $userId)->first();
+            $data = Business::where('user_id', $userId)->first();
             if ($data) {
                 // $data ->update($request->all());
                 $data->update([
@@ -564,7 +577,7 @@ public function delete_pre_commited_investor($id)
     {
         try {
             $userId = $request->id;
-            $data  = Business::where('user_id', $userId)->first();
+            $data = Business::where('user_id', $userId)->first();
             if ($data) {
 
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
@@ -616,10 +629,10 @@ public function delete_pre_commited_investor($id)
 
             // $mail['name']= $startup->name;
             if ($startup->approval_status === "approved") {
-                $mail['user']  = $startup;
+                $mail['user'] = $startup;
                 $mail['email'] = $startup->email;
                 $mail['title'] = "Approval Mail";
-                $mail['body'] =  "Your Account has been approved Successfully. ";
+                $mail['body'] = "Your Account has been approved Successfully. ";
 
                 Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
                     $message->to($mail['email'])->subject($mail['title']);
@@ -787,7 +800,7 @@ public function delete_pre_commited_investor($id)
                 'closed_in' => 'required',
                 'resource' => 'required',
                 // 'status' => 'required',
-                'xirr'  => 'required',
+                'xirr' => 'required',
                 'desc' => 'required',
 
             ]);
@@ -1040,6 +1053,62 @@ public function delete_pre_commited_investor($id)
                 ->get();
             if ($data) {
                 return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function PhoneVerify(Request $request)
+    {
+        try {
+            $data = $request->validate([
+                'verification_code' => ['required', 'numeric'],
+                'phone_number' => ['required', 'string'],
+            ]);
+            /* Get credentials from .env */
+            $token = getenv("TWILIO_AUTH_TOKEN");
+            $twilio_sid = getenv("TWILIO_SID");
+            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+            $twilio = new Client($twilio_sid, $token);
+            $verification = $twilio->verify->v2->services($twilio_verify_sid)
+                ->verificationChecks
+                ->create(['code' => $data['verification_code'], 'to' => '+'.$data['phone_number']]);
+            if ($verification->valid) {
+                $user = tap(User::where('phone', $data['phone_number']))->update(['is_phone_verification_complete' => '1']);
+                /* Authenticate user */
+                Auth::login($user->first());
+                return response()->json(['status' => true, 'message' => "Phone number verified", 'data' => ''], 200);
+            }
+            return response()->json(['status' => false, 'message' => "Invalid verification code entered!", 'data' => $data['phone_number']], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getSingleBusinessUnitInfo($id)
+    {
+        try {
+            //$data = BusinessUnit::where('business_id', $id)->where('status', 'open')->first();
+            $data = Business::leftJoin('business_units', 'business_units.business_id', '=', 'business_details.id')
+                ->select('business_units.*')
+                ->where(['business_details.user_id' => $id])
+                ->where('business_units.status', 'open')
+                ->first();
+            if($data){
+                return response()->json(['status' => true, 'message' => "Sorry! You have already fund raise.", 'data' => $data], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "Data not fetching successfully", 'data' => ''], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
