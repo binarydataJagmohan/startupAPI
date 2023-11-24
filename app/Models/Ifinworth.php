@@ -30,8 +30,9 @@ class Ifinworth extends Model
         'latest_cap_table',
         'other_documents',  
         'status',
-        'approval_status'
-       
+        'approval_status',
+       'fund_name',
+       'fund_banner_image'
 
     ];    
 }

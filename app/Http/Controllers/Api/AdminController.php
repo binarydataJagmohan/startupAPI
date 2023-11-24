@@ -482,18 +482,32 @@ class AdminController extends Controller
     public function admin_add_campaign_detail(Request $request)
     {
         try {
-            $id = $request->input('id');
-            $campaignDetail = ($id) ? CampaignDetail::find($id) : new CampaignDetail();
+            $id = $request->ccsp_fund_id;
 
-            $campaignDetail->ccsp_fund_id = $request->input('ccsp_fund_id');
+            // Attempt to find the record with the given ccsp_fund_id
+            $campaignDetail = CampaignDetail::firstOrNew(['ccsp_fund_id' => $id]);
+
+            // Assign values from the request to the object
+            $campaignDetail->ccsp_fund_id = $id; // Assign ID directly
+
+            // Assign other properties from the request
             $campaignDetail->company_overview = $request->input('company_overview');
             $campaignDetail->product_description = $request->input('product_description');
             $campaignDetail->historical_financials_desc = $request->input('historical_financials_desc');
             $campaignDetail->past_financing_desc = $request->input('past_financing_desc');
+            $campaignDetail->dilution_percentage = $request->input('dilution_percentage');
+            $campaignDetail->min_commitment = $request->input('min_commitment');
+            $campaignDetail->max_commitment = $request->input('max_commitment');
+            $campaignDetail->valuation_cap = $request->input('valuation_cap');
+            $campaignDetail->amount_raised = $request->input('amount_raised');
+            $campaignDetail->round_name = $request->input('round_name');
 
+            // Save the object
             $campaignDetail->save();
 
-            $message = ($id) ? 'Campaign detail has been updated successfully.' : 'Campaign detail has been added successfully.';
+            $message = $campaignDetail->wasRecentlyCreated ?
+                'Campaign detail has been added successfully.' :
+                'Campaign detail has been updated successfully.';
 
             return response()->json([
                 'status' => true,
@@ -509,12 +523,14 @@ class AdminController extends Controller
     }
 
 
+
+
     public function admin_add_company_data(Request $request)
     {
         try {
             $competitor = new Competitor();
 
-            $competitor->fund_id = $request->input('fund_id');
+            $competitor->ccsp_fund_id = $request->input('ccsp_fund_id');
             $competitor->company_name = $request->input('company_name');
             $competitor->company_desc = $request->input('company_desc');
 
@@ -549,7 +565,7 @@ class AdminController extends Controller
             $competitor = Competitor::findOrFail($id);
 
             // Update the Competitor data
-            $competitor->fund_id = $request->input('fund_id');
+            $competitor->ccsp_fund_id = $request->input('ccsp_fund_id');
             $competitor->company_name = $request->input('company_name');
             $competitor->company_desc = $request->input('company_desc');
 
@@ -599,7 +615,7 @@ class AdminController extends Controller
         try {
             $team = new Team();
 
-            $team->fund_id = $request->input('fund_id');
+            $team->ccsp_fund_id = $request->input('ccsp_fund_id');
             $team->member_name = $request->input('member_name');
             $team->member_designation = $request->input('member_designation');
             $team->description = $request->input('description');
@@ -633,7 +649,7 @@ class AdminController extends Controller
             // Find the Competitor by ID
             $team = Team::findOrFail($id);
 
-            $team->fund_id = $request->input('fund_id');
+            $team->ccsp_fund_id = $request->input('ccsp_fund_id');
             $team->member_name = $request->input('member_name');
             $team->member_designation = $request->input('member_designation');
             $team->description = $request->input('description');
@@ -707,13 +723,13 @@ class AdminController extends Controller
     public function get_team_and_company_data(Request $request)
     {
         try {
-            $fund_id = $request->input('fund_id');
+            $ccsp_fund_id = $request->input('ccsp_fund_id');
 
-            $competitors = Competitor::where('fund_id', $fund_id)->where('status', 'active')->get();
+            $competitors = Competitor::where('ccsp_fund_id', $ccsp_fund_id)->where('status', 'active')->get();
 
-            $teams = Team::where('fund_id', $fund_id)->where('status', 'active')->get();
+            $teams = Team::where('ccsp_fund_id', $ccsp_fund_id)->where('status', 'active')->get();
 
-            $products = Product::where('fund_id', $fund_id)->where('status', 'active')->get();
+            $products = Product::where('ccsp_fund_id', $ccsp_fund_id)->where('status', 'active')->get();
 
             return response()->json([
                 'status' => true,
@@ -729,69 +745,12 @@ class AdminController extends Controller
     }
 
 
-    public function admin_add_round_details(Request $request)
-    {
-        try {
-            $id = $request->input('id');
-
-            if (!$id) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'ID is required for updating a campaign detail.',
-                ], 400);
-            }
-
-            $roundDetail = BusinessUnit::find($id);
-
-            if (!$roundDetail) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Campaign detail not found.',
-                ], 404);
-            }
-            if ($request->filled('dilution_percentage')) {
-                $roundDetail->dilution_percentage = $request->input('dilution_percentage');
-            }
-
-            if ($request->filled('min_commitment')) {
-                $roundDetail->min_commitment = $request->input('min_commitment');
-            }
-
-            if ($request->filled('max_commitment')) {
-                $roundDetail->max_commitment = $request->input('max_commitment');
-            }
-
-            if ($request->filled('valuation_cap')) {
-                $roundDetail->valuation_cap = $request->input('valuation_cap');
-            }
-
-            if ($request->filled('amount_raised')) {
-                $roundDetail->amount_raised = $request->input('amount_raised');
-            }
-
-            if ($request->filled('round_name')) {
-                $roundDetail->round_name = $request->input('round_name');
-            }
-
-            // Save the updated record
-            $roundDetail->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Round detail has been updated successfully.',
-                'data' => $roundDetail // Optional: Return the updated data in the response
-            ], 200);
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-        }
-    }
-
     public function admin_add_products(Request $request)
     {
         try {
             $product = new Product();
 
-            $product->fund_id = $request->input('fund_id');
+            $product->ccsp_fund_id = $request->input('ccsp_fund_id');
             $product->product_description = $request->input('product_description');
             $product->product_overview = $request->input('product_overview');
 
@@ -825,7 +784,7 @@ class AdminController extends Controller
             // Find the Competitor by ID
             $product = product::findOrFail($id);
 
-            $product->fund_id = $request->input('fund_id');
+            $product->ccsp_fund_id = $request->input('ccsp_fund_id');
             $product->product_description = $request->input('product_description');
             $product->product_overview = $request->input('product_overview');
 
@@ -893,7 +852,10 @@ class AdminController extends Controller
                 'ifinworth_details.ifinworth_amount',
                 'ifinworth_details.pre_committed_ifinworth_amount',
                 'ifinworth_details.approval_status',
-                'ifinworth_details.id'
+                'ifinworth_details.id',
+                'ifinworth_details.fund_name',
+                'ifinworth_details.fund_banner_image'
+
             )
                 ->join('ifinworth_details', 'users.id', '=', 'ifinworth_details.startup_id')
                 ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
@@ -964,5 +926,64 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function get_all_campaign_deetail_data(Request $request)
+    {
+        try {
+            $campaign = CampaignDetail::where('campaign_details.status', 'active')
+                ->orderBy('campaign_details.created_at', 'desc')
+                ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                ->get();
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Retrive successfully',
+                "data" => $campaign
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
+    public function admin_add_fundName(Request $request)
+    {
+        try {
+
+
+            $id = $request->id;
+
+            $fund = Ifinworth::where('ccsp_fund_id', $id)->first();
+            if ($fund === null) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Fund not found.',
+                ], 404);
+            }
+
+            $fund->fund_name = $request->input('fund_name');
+            $fund->fund_desc = $request->input('fund_desc');
+
+            if ($request->hasFile('fund_banner_image')) {
+                $randomNumber = mt_rand(1000000000, 9999999999);
+                $imagePath = $request->file('fund_banner_image');
+                $imageName = $randomNumber . $imagePath->getClientOriginalName();
+                $imagePath->move(public_path('images/fundbannerimage'), $imageName);
+                $fund->fund_banner_image = $imageName;
+            }
+
+            $fund->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Fund data updated successfully.',
+                'data' => $fund,
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
 
 }

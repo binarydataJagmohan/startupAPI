@@ -1052,7 +1052,7 @@ class StartupController extends Controller
             $twilio = new Client($twilio_sid, $token);
             $verification = $twilio->verify->v2->services($twilio_verify_sid)
                 ->verificationChecks
-                ->create(['code' => $data['verification_code'], 'to' => '+'.$data['phone_number']]);
+                ->create(['code' => $data['verification_code'], 'to' => '+' . $data['phone_number']]);
             if ($verification->valid) {
                 $user = tap(User::where('phone', $data['phone_number']))->update(['is_phone_verification_complete' => '1']);
                 /* Authenticate user */
@@ -1079,7 +1079,7 @@ class StartupController extends Controller
                 ->where(['business_details.user_id' => $id])
                 ->where('business_units.status', 'open')
                 ->first();
-            if($data){
+            if ($data) {
                 return response()->json(['status' => true, 'message' => "Sorry! You have already fund raise.", 'data' => $data], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "Data not fetching successfully", 'data' => ''], 200);
@@ -1093,4 +1093,42 @@ class StartupController extends Controller
             ], 500);
         }
     }
+
+
+    public function get_all_CCSP_fund_details()
+    {
+        try {
+            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                ->select('ifinworth_details.*', 'campaign_details.*')
+                ->get();
+            if ($data) {
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+
+        }
+    }
+
+
+    public function get_single_ccsp_fund_detail($id)
+    {
+        try {
+            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                ->select('ifinworth_details.*', 'campaign_details.*')
+                ->where(['ifinworth_details.ccsp_fund_id' => $id])
+                ->latest('campaign_details.created_at')
+                ->first();
+            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 }
