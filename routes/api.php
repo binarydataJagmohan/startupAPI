@@ -167,6 +167,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('/delete-all-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteAllErorlog']);
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
+    Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
+    Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
+    Route::get('get-pre-commited-investors/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
+    Route::post('publish-ccsp-fund/{id}', [App\Http\Controllers\Api\StartupController::class, 'publish_ccsp_fund']);
 
 
 
@@ -195,6 +199,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-single-ccsp-fund-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_ccsp_fund_detail']);
     Route::post('admin-add-fundName', [App\Http\Controllers\Api\AdminController::class, 'admin_add_fundName']);
 
+    Route::get('get-single-data-ifinworth-data', [App\Http\Controllers\Api\StartupController::class, 'get_admin_startup_ifinworth_detail']);
 
 
     Route::group(['prefix' => 'pan'], function () {	   		 					

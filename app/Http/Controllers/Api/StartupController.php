@@ -1130,5 +1130,39 @@ class StartupController extends Controller
         }
     }
 
+    public function publish_ccsp_fund(Request $request, $id)
+    {
+        try {
+            $data = Ifinworth::where(['ccsp_fund_id' => $id])->firstOrFail();
+            $data->approval_status = $request->input('approval_status');
+            $data->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function get_admin_startup_ifinworth_detail(Request $request)
+    {
+
+        try {
+            $ifinworth = Ifinworth::where('id', $request->id)->first();
+            if ($ifinworth) {
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
 
 }
