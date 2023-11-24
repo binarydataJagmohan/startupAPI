@@ -930,9 +930,17 @@ class AdminController extends Controller
     public function get_all_campaign_deetail_data(Request $request)
     {
         try {
-            $campaign = CampaignDetail::where('campaign_details.status', 'active')
-                ->orderBy('campaign_details.created_at', 'desc')
-                ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+            // $campaign = CampaignDetail::where('campaign_details.status', 'active')
+            //     ->orderBy('campaign_details.created_at', 'desc')
+            //     ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+            //     ->get();
+
+                $campaign = Ifinworth::leftJoin('campaign_details', function ($join) {
+                    $join->on('ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                        ->where('campaign_details.status', 'active');
+                })
+                ->orderBy('ifinworth_details.created_at', 'desc')
+                ->select('ifinworth_details.*', 'campaign_details.*') // Select columns you need
                 ->get();
 
 

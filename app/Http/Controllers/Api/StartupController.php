@@ -1165,4 +1165,25 @@ class StartupController extends Controller
         }
     }
 
+    public function add_pre_commited_investor(Request $request)
+    {
+
+        try {
+
+            $startupId = $request->user_id;
+            $ifinworth = new PreCommitedInvestor();
+            $ifinworth->startup_id = $startupId;
+            $ifinworth->investor_id = $request->investor_id;
+            $savedata = $ifinworth->save();
+
+            if ($savedata) {
+                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
 }
