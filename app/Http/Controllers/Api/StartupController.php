@@ -1119,4 +1119,36 @@ public function delete_pre_commited_investor($id)
             ], 500);
         }
     }
+
+    public function publish_ccsp_fund(Request $request, $id)
+    {
+        try {
+            $data = Ifinworth::where(['ccsp_fund_id' => $id])->firstOrFail();
+            $data->approval_status = $request->input('approval_status');
+            $data->save();
+            // if ($data->approval_status === 'approved') {
+            //     $mail['user']  = $data;
+            //     $mail['email'] = $data->email;
+            //     $mail['title'] = "Approval Mail";
+            //     $mail['body'] =  "Your Account has been approved Successfully. ";
+            //     Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+            //         $message->to($mail['email'])->subject($mail['title']);
+            //     });
+            // }
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 }

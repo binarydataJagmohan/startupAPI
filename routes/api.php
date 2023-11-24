@@ -170,6 +170,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
     Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
     Route::get('get-pre-commited-investors/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
+    Route::post('publish-ccsp-fund/{id}', [App\Http\Controllers\Api\StartupController::class, 'publish_ccsp_fund']);
 
 
 
