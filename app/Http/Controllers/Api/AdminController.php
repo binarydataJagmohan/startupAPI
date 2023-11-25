@@ -28,6 +28,7 @@ use App\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use DB;
+use Mail;
 
 class AdminController extends Controller
 {
@@ -841,6 +842,34 @@ class AdminController extends Controller
     }
 
 
+    public function get_all_campaign_deetail_data(Request $request)
+    {
+        try {
+            // $campaign = CampaignDetail::where('campaign_details.status', 'active')
+            //     ->orderBy('campaign_details.created_at', 'desc')
+            //     ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+            //     ->get();
+
+                $campaign = Ifinworth::leftJoin('campaign_details', function ($join) {
+                    $join->on('ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                        ->where('campaign_details.status', 'active');
+                })
+                ->orderBy('ifinworth_details.created_at', 'desc')
+                ->select('ifinworth_details.*', 'campaign_details.*') // Select columns you need
+                ->get();
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Retrive successfully',
+                "data" => $campaign
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
     public function get_all_campaign(Request $request)
     {
         try {
@@ -854,10 +883,17 @@ class AdminController extends Controller
                 'ifinworth_details.approval_status',
                 'ifinworth_details.id',
                 'ifinworth_details.fund_name',
-                'ifinworth_details.fund_banner_image'
+                'ifinworth_details.fund_banner_image',
+                'campaign_details.dilution_percentage',
+                'campaign_details.min_commitment',
+                'campaign_details.max_commitment',
+                'campaign_details.valuation_cap',
+                'campaign_details.amount_raised',
+                'campaign_details.round_name',
 
             )
                 ->join('ifinworth_details', 'users.id', '=', 'ifinworth_details.startup_id')
+                ->leftjoin('campaign_details','ifinworth_details.ccsp_fund_id', '=','campaign_details.ccsp_fund_id')
                 ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
                 ->where('ifinworth_details.status', '=', 'active')
                 ->get();
@@ -872,31 +908,45 @@ class AdminController extends Controller
     }
 
 
-    public function updateCampignStatus(Request $request, $id)
-    {
-        try {
-            $data = Ifinworth::find($id);
+        public function updateCampignStatus(Request $request, $id)
+        {
+            try {
+                $data = Ifinworth::find($id);
 
-            if (!$data) {
+                if (!$data) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Record not found.',
+                    ], 404);
+                }
+
+                $data->approval_status = $request->input('approval_status');
+                $data->updated_at = Carbon::now();
+                $data->save();
+                if ($data->approval_status === "approved") {
+                    $user = User::where('id', $data->startup_id)->first();
+                    if ($user) {
+                        $mail['user'] = $user;
+                        $mail['email'] = $user->email;
+                        $mail['title'] = "Congratulations! Your Fund Has Been Approved";
+        
+                        // Send email to the user associated with the startup_id
+                        Mail::send('email.ccspfundapproval', ['mail' => $mail], function ($message) use ($mail) {
+                            $message->from('sender@example.com', 'Rising Capitalist'); // Replace with your sender email and name
+                            $message->to($mail['email'])->subject($mail['title']);
+                        });
+                    }
+                }
+
                 return response()->json([
-                    'status' => false,
-                    'message' => 'Record not found.',
-                ], 404);
+                    'status' => true,
+                    'message' => 'Status Updated Successfully.',
+                    'data' => $data
+                ], 200);
+            } catch (\Exception $e) {
+                throw new HttpException(500, $e->getMessage());
             }
-
-            $data->approval_status = $request->input('approval_status');
-            $data->updated_at = Carbon::now();
-            $data->save();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Status Updated Successfully.',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
         }
-    }
 
 
     public function deleteCampign(Request $request, $id)
@@ -927,32 +977,6 @@ class AdminController extends Controller
         }
     }
 
-    public function get_all_campaign_deetail_data(Request $request)
-    {
-        try {
-            // $campaign = CampaignDetail::where('campaign_details.status', 'active')
-            //     ->orderBy('campaign_details.created_at', 'desc')
-            //     ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
-            //     ->get();
-
-                $campaign = Ifinworth::leftJoin('campaign_details', function ($join) {
-                    $join->on('ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
-                        ->where('campaign_details.status', 'active');
-                })
-                ->orderBy('ifinworth_details.created_at', 'desc')
-                ->select('ifinworth_details.*', 'campaign_details.*') // Select columns you need
-                ->get();
-
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Retrive successfully',
-                "data" => $campaign
-            ], 200);
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-        }
-    }
 
 
     public function admin_add_fundName(Request $request)
