@@ -15,6 +15,7 @@ use App\Models\BankDetails;
 use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\BusinessUnit;
+use App\Models\PreCommitedInvestor;
 use App\Models\Contact;
 use App\Models\Ifinworth;
 use Sse\SSE;
@@ -222,77 +223,13 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-    // public function insert_ifinworth_details(Request $request)
-    // {        
-    //     try {
-    //         $ifinworth = new Ifinworth();
-
-    //         $ifinworth->startup_id = $request->startup_id;
-    //         $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
-    //         $ifinworth->ifinworth_currency = $request->ifinworth_currency;
-    //         $ifinworth->ifinworth_amount = $request->ifinworth_amount;
-    //         $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
-    //         $ifinworth->pre_committed_ifinworth_amount = $request->pre_committed_ifinworth_amount;
-    //         $ifinworth->pre_committed_investor = $request->pre_committed_investor;
-    //         $ifinworth->accredited_investors = $request->accredited_investors;
-    // $ifinworth->angel_investors = $request->angel_investors;
-    // $ifinworth->regular_investors = $request->regular_investors;
-    //         $ifinworth->other_funding_detail = $request->other_funding_detail;
-
-    //         if ($request->hasFile('pitch_deck')) {
-    //             $randomNumber = mt_rand(1000000000, 9999999999);
-    //             $imagePath = $request->file('pitch_deck');
-    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
-    //             $imagePath->move(public_path('docs'), $imageName);
-    //             $ifinworth->pitch_deck = $imageName;
-    //         }
-
-    //         if ($request->hasFile('one_pager')) {
-    //             $randomNumber = mt_rand(1000000000, 9999999999);
-    //             $imagePath = $request->file('one_pager');
-    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
-    //             $imagePath->move(public_path('docs'), $imageName);
-    //             $ifinworth->one_pager = $imageName;
-    //         }          
-    //         if ($request->hasFile('previous_financials')) {
-    //             $randomNumber = mt_rand(1000000000, 9999999999);
-    //             $imagePath = $request->file('previous_financials');
-    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
-    //             $imagePath->move(public_path('docs'), $imageName);
-    //             $ifinworth->previous_financials = $imageName;
-    //         }
-
-    //         if ($request->hasFile('latest_cap_table')) {
-    //             $randomNumber = mt_rand(1000000000, 9999999999);
-    //             $imagePath = $request->file('latest_cap_table');
-    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
-    //             $imagePath->move(public_path('docs'), $imageName);
-    //             $ifinworth->latest_cap_table = $imageName;
-    //         }
-
-    //         if ($request->hasFile('other_documents')) {
-    //             $randomNumber = mt_rand(1000000000, 9999999999);
-    //             $imagePath = $request->file('other_documents');
-    //             $imageName = $randomNumber . $imagePath->getClientOriginalName();
-    //             $imagePath->move(public_path('docs'), $imageName);
-    //             $ifinworth->other_documents = $imageName;
-    //         }
-    //         $savedata = $ifinworth->save();
-
-    //         if ($savedata) {
-    //             return response()->json(['status' => true, 'message' => "Data storred successfully", 'data' => $savedata], 200);
-    //         } else {
-    //             return response()->json(['status' => false, 'message' => "There has been an error ", 'data' => ""], 200);
-    //         }
-    //     } catch (\Exception $e) {
-    //         throw new HttpException(500, $e->getMessage());
-    //     }
-    // }
     public function insert_ifinworth_details(Request $request)
     {
+        
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
+                'ifinworth_fund_name' => 'required',
                 'ifinworth_currency' => 'required',
                 'ifinworth_amount' => 'required',
                 'pre_committed_ifinworth_currency' => 'required',
@@ -322,6 +259,7 @@ class StartupController extends Controller
 
 
             $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
+            $ifinworth->fund_name = $request->ifinworth_fund_name;
             $ifinworth->ifinworth_currency = $request->ifinworth_currency;
             $ifinworth->ifinworth_amount = $request->ifinworth_amount;
             $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
@@ -372,6 +310,58 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
+
+    public function add_pre_commited_investor(Request $request)
+    {
+
+        try {
+
+            $startupId = $request->user_id;
+            $ifinworth = new PreCommitedInvestor();
+            $ifinworth->startup_id = $startupId;
+            $ifinworth->investor_id = $request->investor_id;
+            $savedata = $ifinworth->save();
+
+            if ($savedata) {
+                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function delete_pre_commited_investor($id)
+    {
+        try {
+
+            $investor = PreCommitedInvestor::where('investor_id', $id)->first();
+
+            if (!$investor) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Investor not found.'
+                ], 404);
+            }
+            $investor->delete();
+
+            return response()->json([
+                'status' => 'true',
+                'message' => 'Investor deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *
@@ -1164,26 +1154,5 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-
-    public function add_pre_commited_investor(Request $request)
-    {
-
-        try {
-
-            $startupId = $request->user_id;
-            $ifinworth = new PreCommitedInvestor();
-            $ifinworth->startup_id = $startupId;
-            $ifinworth->investor_id = $request->investor_id;
-            $savedata = $ifinworth->save();
-
-            if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
-            } else {
-                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
-            }
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-        }
-    }
-
+ 
 }
