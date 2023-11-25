@@ -200,7 +200,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('admin-add-fundName', [App\Http\Controllers\Api\AdminController::class, 'admin_add_fundName']);
 
     Route::get('get-single-data-ifinworth-data', [App\Http\Controllers\Api\StartupController::class, 'get_admin_startup_ifinworth_detail']);
-
+    Route::get('get-ccsp-detail-for-startup/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_ccsp_detail_for_startup']);
 
     Route::group(['prefix' => 'pan'], function () {	   		 					
         Route::post('/verification', [App\Http\Controllers\Api\PanVerificationController::class, 'panVerification']);

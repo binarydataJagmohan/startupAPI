@@ -15,7 +15,6 @@ use App\Models\BankDetails;
 use App\Models\CoFounder;
 use App\Models\About;
 use App\Models\BusinessUnit;
-use App\Models\PreCommitedInvestor;
 use App\Models\Contact;
 use App\Models\Ifinworth;
 use Sse\SSE;
@@ -24,6 +23,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use App\Models\Payments;
+use App\Models\PreCommitedInvestor;
 use Illuminate\Support\Facades\Mail;
 use Twilio\Rest\Client;
 
@@ -229,7 +229,7 @@ class StartupController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
-                'ifinworth_fund_name' => 'required',
+                'fund_name' => 'required',
                 'ifinworth_currency' => 'required',
                 'ifinworth_amount' => 'required',
                 'pre_committed_ifinworth_currency' => 'required',
@@ -259,7 +259,7 @@ class StartupController extends Controller
 
 
             $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
-            $ifinworth->fund_name = $request->ifinworth_fund_name;
+            $ifinworth->fund_name = $request->fund_name;
             $ifinworth->ifinworth_currency = $request->ifinworth_currency;
             $ifinworth->ifinworth_amount = $request->ifinworth_amount;
             $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
@@ -278,7 +278,7 @@ class StartupController extends Controller
             $savedata = $ifinworth->save();
 
             if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Data stored successfully", 'data' => $savedata], 200);
+                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
             }
@@ -297,6 +297,42 @@ class StartupController extends Controller
             $model->$attribute = $imageName;
         }
     }
+
+    public function get_pre_commited_investors($id)
+    {
+        try {
+           
+            $investor_ids = PreCommitedInvestor::where('startup_id', $id)->pluck('investor_id');
+
+            if ($investor_ids->isNotEmpty()) {
+               
+                $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');               
+                $investors_array = [];
+
+                foreach ($investors as $user_id => $user_name) {
+                    $investors_array[] = ['id' => $user_id, 'name' => $user_name];
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => "Investor data fetched successfully",
+                    'data' => $investors_array
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => "No investor data found for the given startup id",
+                    'data' => []
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
+
+
 
     public function get_startup_ifinworth_detail(Request $request)
     {
@@ -1084,48 +1120,21 @@ class StartupController extends Controller
         }
     }
 
-
-    public function get_all_CCSP_fund_details()
-    {
-        try {
-            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
-                ->select('ifinworth_details.*', 'campaign_details.*')
-                ->get();
-            if ($data) {
-                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
-            }
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-
-        }
-    }
-
-
-    public function get_single_ccsp_fund_detail($id)
-    {
-        try {
-            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
-                ->select('ifinworth_details.*', 'campaign_details.*')
-                ->where(['ifinworth_details.ccsp_fund_id' => $id])
-                ->latest('campaign_details.created_at')
-                ->first();
-            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'message' => 'Error Occurred.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
     public function publish_ccsp_fund(Request $request, $id)
     {
         try {
             $data = Ifinworth::where(['ccsp_fund_id' => $id])->firstOrFail();
             $data->approval_status = $request->input('approval_status');
             $data->save();
+            // if ($data->approval_status === 'approved') {
+            //     $mail['user']  = $data;
+            //     $mail['email'] = $data->email;
+            //     $mail['title'] = "Approval Mail";
+            //     $mail['body'] =  "Your Account has been approved Successfully. ";
+            //     Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+            //         $message->to($mail['email'])->subject($mail['title']);
+            //     });
+            // }
             return response()->json([
                 'status' => true,
                 'message' => 'Status Updated Successfully.',
@@ -1141,18 +1150,37 @@ class StartupController extends Controller
         }
     }
 
-
-    public function get_admin_startup_ifinworth_detail(Request $request)
+    public function get_ccsp_detail_for_startup($id)
     {
-
         try {
-            $ifinworth = Ifinworth::where('id', $request->id)->first();
-            if ($ifinworth) {
-                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+            // Assuming $id is the startup_id you're searching for
+            $startupId = Ifinworth::where('startup_id', $id)->pluck('id');
+    
+            if ($startupId->isNotEmpty()) {
+                $detail = Ifinworth::whereIn('id', $startupId)->get();
+                $detail_array = $detail->toArray();
+    
+                return response()->json([
+                    'status' => true,
+                    'message' => "CCSP Detail fetched successfully",
+                    'data' => $detail_array
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No CCSP Detail found for the given startup ID',
+                ], 404);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
- 
+    
+
+
 }
