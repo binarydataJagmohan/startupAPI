@@ -167,40 +167,39 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('/delete-all-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteAllErorlog']);
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
+    Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
+    Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
+    Route::get('get-pre-commited-investors/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
+    Route::post('publish-ccsp-fund/{id}', [App\Http\Controllers\Api\StartupController::class, 'publish_ccsp_fund']);
 
 
 
     Route::post('admin-add-campaign-detail', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_detail']);
     Route::post('admin-add-campaign', [App\Http\Controllers\Api\AdminController::class, 'admin_add_campaign_details']);
-
     Route::post('admin-add-campany-data', [App\Http\Controllers\Api\AdminController::class, 'admin_add_company_data']);
     Route::post('admin-add-team-members', [App\Http\Controllers\Api\AdminController::class, 'admin_add_team_members']);
-
     Route::get('/get-all-company-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_company_data']);
-
     Route::get('/get-all-team-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_team_data']);
-
-
     Route::post('admin-update-campany-data', [App\Http\Controllers\Api\AdminController::class, 'admin_update_company_data']);
-
     Route::post('admin-update-team-data', [App\Http\Controllers\Api\AdminController::class, 'admin_update_team_data']);
-
     Route::get('/get-investor-page-data', [App\Http\Controllers\Api\AdminController::class, 'get_investor_page_data']);
     Route::get('/get-team-and-company-data', [App\Http\Controllers\Api\AdminController::class, 'get_team_and_company_data']);
-
     Route::get('/get-all-product-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_product_data']);
-
     Route::post('admin-add-round-details', [App\Http\Controllers\Api\AdminController::class, 'admin_add_round_details']);
     Route::post('admin-add-products', [App\Http\Controllers\Api\AdminController::class, 'admin_add_products']);
     Route::post('admin-update-products', [App\Http\Controllers\Api\AdminController::class, 'admin_update_product']);
-
-
     Route::post('company-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_company_data']);
-
     Route::post('update-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'updateCampignStatus']);
     Route::post('delete-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'deleteCampign']);
-
     Route::get('get-all-campaign', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign']);
+    Route::get('get-all-campaign-detail-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign_deetail_data']);
+
+    
+    Route::get('get-all-CCSP-fund-details', [App\Http\Controllers\Api\StartupController::class, 'get_all_CCSP_fund_details']);
+    Route::get('get-single-ccsp-fund-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_ccsp_fund_detail']);
+    Route::post('admin-add-fundName', [App\Http\Controllers\Api\AdminController::class, 'admin_add_fundName']);
+
+    Route::get('get-single-data-ifinworth-data', [App\Http\Controllers\Api\StartupController::class, 'get_admin_startup_ifinworth_detail']);
 
 
     Route::group(['prefix' => 'pan'], function () {	   		 					
