@@ -223,12 +223,14 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-   
+
     public function insert_ifinworth_details(Request $request)
     {
+        
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
+                'ifinworth_fund_name' => 'required',
                 'ifinworth_currency' => 'required',
                 'ifinworth_amount' => 'required',
                 'pre_committed_ifinworth_currency' => 'required',
@@ -258,6 +260,7 @@ class StartupController extends Controller
 
 
             $ifinworth->round_of_ifinworth = $request->round_of_ifinworth;
+            $ifinworth->fund_name = $request->ifinworth_fund_name;
             $ifinworth->ifinworth_currency = $request->ifinworth_currency;
             $ifinworth->ifinworth_amount = $request->ifinworth_amount;
             $ifinworth->pre_committed_ifinworth_currency = $request->pre_committed_ifinworth_currency;
@@ -295,24 +298,24 @@ class StartupController extends Controller
             $model->$attribute = $imageName;
         }
     }
-   
+
     public function get_pre_commited_investors($id)
     {
         try {
             // Get investor IDs
             $investor_ids = PreCommitedInvestor::where('startup_id', $id)->pluck('investor_id');
-    
+
             if ($investor_ids->isNotEmpty()) {
                 // Fetch IDs and names from User table where id is in the investor_ids array
                 $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');
-    
+
                 // Convert the associative array into an indexed array
                 $investors_array = [];
-    
+
                 foreach ($investors as $user_id => $user_name) {
                     $investors_array[] = ['id' => $user_id, 'name' => $user_name];
                 }
-    
+
                 return response()->json([
                     'status' => true,
                     'message' => "Investor data fetched successfully",
@@ -329,10 +332,10 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-    
-    
-    
-    
+
+
+
+
 
     public function get_startup_ifinworth_detail(Request $request)
     {
@@ -347,55 +350,55 @@ class StartupController extends Controller
         }
     }
 
-public function add_pre_commited_investor(Request $request)
-{
-    
-    try {
-       
-        $startupId = $request->user_id;      
-        $ifinworth = new PreCommitedInvestor();      
-        $ifinworth->startup_id = $startupId;        
-        $ifinworth->investor_id = $request->investor_id;      
-        $savedata = $ifinworth->save();
+    public function add_pre_commited_investor(Request $request)
+    {
 
-        if ($savedata) {
-            return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
-        } else {
-            return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+        try {
+
+            $startupId = $request->user_id;
+            $ifinworth = new PreCommitedInvestor();
+            $ifinworth->startup_id = $startupId;
+            $ifinworth->investor_id = $request->investor_id;
+            $savedata = $ifinworth->save();
+
+            if ($savedata) {
+                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
-    } catch (\Exception $e) {
-        throw new HttpException(500, $e->getMessage());
     }
-}
 
-public function delete_pre_commited_investor($id)
-{               
-    try {
-      
-        $investor = PreCommitedInvestor::where('investor_id', $id)->first();
+    public function delete_pre_commited_investor($id)
+    {
+        try {
 
-        if (!$investor) {
+            $investor = PreCommitedInvestor::where('investor_id', $id)->first();
+
+            if (!$investor) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Investor not found.'
+                ], 404);
+            }
+            $investor->delete();
+
+            return response()->json([
+                'status' => 'true',
+                'message' => 'Investor deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+
             return response()->json([
                 'status' => false,
-                'message' => 'Investor not found.'
-            ], 404);
-        }    
-        $investor->delete();
-
-        return response()->json([
-            'status' => 'true',
-            'message' => 'Investor deleted successfully.'
-        ]);
-    } catch (\Exception $e) {
-        throw new HttpException(500, $e->getMessage());
-               
-        return response()->json([
-            'status' => false,
-            'message' => 'Error occurred.',
-            'error' => $e->getMessage()
-        ], 500);
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 
 
     /**
@@ -1078,7 +1081,7 @@ public function delete_pre_commited_investor($id)
             $twilio = new Client($twilio_sid, $token);
             $verification = $twilio->verify->v2->services($twilio_verify_sid)
                 ->verificationChecks
-                ->create(['code' => $data['verification_code'], 'to' => '+'.$data['phone_number']]);
+                ->create(['code' => $data['verification_code'], 'to' => '+' . $data['phone_number']]);
             if ($verification->valid) {
                 $user = tap(User::where('phone', $data['phone_number']))->update(['is_phone_verification_complete' => '1']);
                 /* Authenticate user */
@@ -1105,7 +1108,7 @@ public function delete_pre_commited_investor($id)
                 ->where(['business_details.user_id' => $id])
                 ->where('business_units.status', 'open')
                 ->first();
-            if($data){
+            if ($data) {
                 return response()->json(['status' => true, 'message' => "Sorry! You have already fund raise.", 'data' => $data], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "Data not fetching successfully", 'data' => ''], 200);
@@ -1149,6 +1152,4 @@ public function delete_pre_commited_investor($id)
             ], 500);
         }
     }
-
-
 }
