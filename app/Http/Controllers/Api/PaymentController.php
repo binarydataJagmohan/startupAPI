@@ -27,7 +27,7 @@ class PaymentController extends Controller
      */
     public function savePayment(Request $request)
     {
-
+      
         try {
 
             Stripe::setApiKey(env('STRIPE_SECRET'));
@@ -49,9 +49,12 @@ class PaymentController extends Controller
             $data->expiry_date = $request[0]['card']['exp_month'] . '/' . $request[0]['card']['exp_year'];
             $data->status = "success";
             $data->save();
-            return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
+            
+            // return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
             $user = User::where('id', $request[1]['user_id'])->first();
+          
             $business = Business::where('id', $request[2]['id'])->first();
+           
             $mail['username'] = $user->name;
             $mail['email'] = $user->email;
             $mail['user'] = $user;
@@ -62,12 +65,11 @@ class PaymentController extends Controller
             $mail['body'] = "Your Payment has done successfully. ";
             $timestamp = Carbon::parse($mail['booking']['repayment_date']);
             $mail['date'] = $timestamp->format('Y-m-d');
-    
+           
             Mail::send('email.paymentSuccess', ['mail' => $mail], function ($message) use ($mail) {
                 $message->to($mail['email'])->subject($mail['title']);
-            });
-    
-    
+            });   
+            return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
     
             $startup = User::find($business->user_id);
     
