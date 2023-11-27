@@ -53,7 +53,7 @@
                                 <tr>
                                     <td style="text-align: center">
                                          <a href="#" style="display: block;margin-bottom: 10px;"> 
-                                         <img src="{{ env('APP_URL') }}/public/images/logo.png" height="50" alt="logo" />
+                                         <img src="{{ env('APP_URL') }}/images/logo.png" height="50" alt="logo" />
                                          </a><br/>
                                     </td>
                                 </tr>
