@@ -896,6 +896,7 @@ class AdminController extends Controller
                 ->leftjoin('campaign_details','ifinworth_details.ccsp_fund_id', '=','campaign_details.ccsp_fund_id')
                 ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
                 ->where('ifinworth_details.status', '=', 'active')
+                // ->where('ifinworth_details.approval_status', '=', 'pending')
                 ->get();
 
             if ($data) {
