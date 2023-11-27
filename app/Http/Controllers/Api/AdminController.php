@@ -966,7 +966,7 @@ class AdminController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Status updated successfully.',
+                'message' => 'CCSP Campaign deleted successfully.',
                 'data' => $campign
             ], 200);
         } catch (\Exception $e) {
