@@ -225,7 +225,7 @@ class StartupController extends Controller
     }
     public function insert_ifinworth_details(Request $request)
     {
-        
+
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
@@ -302,12 +302,12 @@ class StartupController extends Controller
     public function get_pre_commited_investors($id)
     {
         try {
-           
+
             $investor_ids = PreCommitedInvestor::where('startup_id', $id)->pluck('investor_id');
 
             if ($investor_ids->isNotEmpty()) {
-               
-                $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');               
+
+                $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');
                 $investors_array = [];
 
                 foreach ($investors as $user_id => $user_name) {
@@ -1156,11 +1156,11 @@ class StartupController extends Controller
         try {
             // Assuming $id is the startup_id you're searching for
             $startupId = Ifinworth::where('startup_id', $id)->pluck('id');
-    
+
             if ($startupId->isNotEmpty()) {
                 $detail = Ifinworth::whereIn('id', $startupId)->get();
                 $detail_array = $detail->toArray();
-    
+
                 return response()->json([
                     'status' => true,
                     'message' => "CCSP Detail fetched successfully",
@@ -1181,7 +1181,24 @@ class StartupController extends Controller
             ], 500);
         }
     }
-    
 
+    public function get_single_ccsp_fund_detail($id)
+    {
+        try {
+            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                ->select('ifinworth_details.*', 'campaign_details.*')
+                ->where(['ifinworth_details.ccsp_fund_id' => $id])
+                ->latest('campaign_details.created_at')
+                ->first();
+            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 }
