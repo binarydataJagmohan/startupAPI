@@ -225,7 +225,7 @@ class StartupController extends Controller
     }
     public function insert_ifinworth_details(Request $request)
     {
-        
+
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
@@ -301,12 +301,12 @@ class StartupController extends Controller
     public function get_pre_commited_investors($id)
     {
         try {
-           
+
             $investor_ids = PreCommitedInvestor::where('startup_id', $id)->pluck('investor_id');
 
             if ($investor_ids->isNotEmpty()) {
-               
-                $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');               
+
+                $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');
                 $investors_array = [];
 
                 foreach ($investors as $user_id => $user_name) {
@@ -506,6 +506,7 @@ class StartupController extends Controller
                     $data->logo = $filename;
                     $data->save();
                 }
+                
                 if ($request->hasFile('pitch_deck')) {
                     $file = $request->file('pitch_deck');
                     $filename = time() . '_' . $file->getClientOriginalName();
@@ -1155,11 +1156,11 @@ class StartupController extends Controller
         try {
             // Assuming $id is the startup_id you're searching for
             $startupId = Ifinworth::where('startup_id', $id)->pluck('id');
-    
+
             if ($startupId->isNotEmpty()) {
                 $detail = Ifinworth::whereIn('id', $startupId)->get();
                 $detail_array = $detail->toArray();
-    
+
                 return response()->json([
                     'status' => true,
                     'message' => "CCSP Detail fetched successfully",
@@ -1180,7 +1181,4 @@ class StartupController extends Controller
             ], 500);
         }
     }
-    
-
-
 }
