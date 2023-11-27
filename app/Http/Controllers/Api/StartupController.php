@@ -229,7 +229,7 @@ class StartupController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
-                'ifinworth_fund_name' => 'required',
+                // 'ifinworth_fund_name' => 'required',
                 'ifinworth_currency' => 'required',
                 'ifinworth_amount' => 'required',
                 'pre_committed_ifinworth_currency' => 'required',
