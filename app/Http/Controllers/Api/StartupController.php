@@ -507,6 +507,7 @@ class StartupController extends Controller
                     $data->logo = $filename;
                     $data->save();
                 }
+
                 if ($request->hasFile('pitch_deck')) {
                     $file = $request->file('pitch_deck');
                     $filename = time() . '_' . $file->getClientOriginalName();
@@ -1198,6 +1199,19 @@ class StartupController extends Controller
                 'message' => 'Error Occurred.',
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function get_admin_startup_ifinworth_detail(Request $request)
+    {
+
+        try {
+            $ifinworth = Ifinworth::where('id', $request->id)->first();
+            if ($ifinworth) {
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
     }
 
