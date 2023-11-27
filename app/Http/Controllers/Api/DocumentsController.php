@@ -70,7 +70,7 @@ class DocumentsController extends Controller
                     $file->move($filepath, $filename);
                     $data->proof_img = $filename;
                 }
-              
+
                 $data->save();
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['data' => $data]], 200);
             } else {
@@ -160,6 +160,34 @@ class DocumentsController extends Controller
                     $filepath = public_path('docs/');
                     $file->move($filepath, $filename);
                     $documents->adhar_card_back = $filename;
+                }
+                if ($request->hasFile('certificate_incorporation')) {
+                    $file = $request->file('certificate_incorporation');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->certificate_incorporation = $filename;
+                }
+                if ($request->hasFile('bank_statement_three_years')) {
+                    $file = $request->file('bank_statement_three_years');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->bank_statement_three_years = $filename;
+                }
+                if ($request->hasFile('moa')) {
+                    $file = $request->file('moa');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->moa = $filename;
+                }
+                if ($request->hasFile('aoa')) {
+                    $file = $request->file('aoa');
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $filepath = public_path('docs/');
+                    $file->move($filepath, $filename);
+                    $documents->aoa = $filename;
                 }
                 $documents->save();
 
