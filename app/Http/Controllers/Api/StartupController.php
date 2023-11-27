@@ -229,6 +229,7 @@ class StartupController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'round_of_ifinworth' => 'required',
+                // 'ifinworth_fund_name' => 'required',
                 'fund_name' => 'required',
                 'ifinworth_currency' => 'required',
                 'ifinworth_amount' => 'required',
@@ -1181,4 +1182,18 @@ class StartupController extends Controller
             ], 500);
         }
     }
+    
+    public function get_admin_startup_ifinworth_detail(Request $request)
+    {
+
+        try {
+            $ifinworth = Ifinworth::where('id', $request->id)->first();
+            if ($ifinworth) {
+                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
 }
