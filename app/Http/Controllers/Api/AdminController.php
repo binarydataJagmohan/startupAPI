@@ -841,6 +841,37 @@ class AdminController extends Controller
         }
     }
 
+    public function destroy_admin_product_data(Request $request, $id)
+    {
+
+        try {
+            $data = Product::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Product Deleted Successfully.',
+                "data" => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+
+    public function destroy_admin_team_data(Request $request, $id)
+    {
+
+        try {
+            $data = Team::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Team Deleted Successfully.',
+                "data" => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+        }
+    }
+
 
     public function get_all_campaign_deetail_data(Request $request)
     {
@@ -896,7 +927,6 @@ class AdminController extends Controller
                 ->leftjoin('campaign_details','ifinworth_details.ccsp_fund_id', '=','campaign_details.ccsp_fund_id')
                 ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
                 ->where('ifinworth_details.status', '=', 'active')
-                // ->where('ifinworth_details.approval_status', '=', 'pending')
                 ->get();
 
             if ($data) {

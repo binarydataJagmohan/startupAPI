@@ -167,11 +167,20 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('/delete-all-error-log', [App\Http\Controllers\Api\ErrorLogController::class, 'deleteAllErorlog']);
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
-    Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
+    Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);
     Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
     Route::get('get-pre-commited-investors', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
     Route::post('publish-ccsp-fund/{id}', [App\Http\Controllers\Api\StartupController::class, 'publish_ccsp_fund']);
     Route::get('get-latest-ifinworth-detail', [App\Http\Controllers\Api\StartupController::class, 'get_latest_ifinworth_detail']);
+
+
+    //Blog routes
+    Route::get('/get-all-blogs', [App\Http\Controllers\Api\BlogController::class, 'getAllBlogs']);
+    Route::post('/edit-and-save-blog-data', [App\Http\Controllers\Api\BlogController::class, 'editAndSaveBlogData']);
+    Route::post('/delete-blog', [App\Http\Controllers\Api\BlogController::class, 'deleteBlog']);
+    Route::get('/blogs/{tag}', [App\Http\Controllers\Api\BlogController::class, 'getDataByTag']);
+    Route::get('/get-blog-by-slug/{slug}', [App\Http\Controllers\Api\BlogController::class, 'getBlogBySlug']);
+    Route::get('/get-blog-category', [App\Http\Controllers\Api\BlogCategoryController::class, 'getAllBlogCategories']);
 
 
 
@@ -194,8 +203,10 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('delete-campign-status/{id}', [App\Http\Controllers\Api\AdminController::class, 'deleteCampign']);
     Route::get('get-all-campaign', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign']);
     Route::get('get-all-campaign-detail-data', [App\Http\Controllers\Api\AdminController::class, 'get_all_campaign_deetail_data']);
+    Route::post('product-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_product_data']);
+    Route::post('team-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_admin_team_data']);
 
-    
+
     Route::get('get-all-CCSP-fund-details', [App\Http\Controllers\Api\StartupController::class, 'get_all_CCSP_fund_details']);
     Route::get('get-single-ccsp-fund-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_single_ccsp_fund_detail']);
     Route::post('admin-add-fundName', [App\Http\Controllers\Api\AdminController::class, 'admin_add_fundName']);
@@ -203,7 +214,7 @@ Route::group(['middleware' => ['api']], function () {
     Route::get('get-single-data-ifinworth-data', [App\Http\Controllers\Api\StartupController::class, 'get_admin_startup_ifinworth_detail']);
     Route::get('get-ccsp-detail-for-startup/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_ccsp_detail_for_startup']);
 
-    Route::group(['prefix' => 'pan'], function () {	   		 					
+    Route::group(['prefix' => 'pan'], function () {
         Route::post('/verification', [App\Http\Controllers\Api\PanVerificationController::class, 'panVerification']);
     });
     Route::post('/get-admin-message-data', [App\Http\Controllers\Api\AdminChatController::class, 'get_admin_message_data']);
