@@ -1238,6 +1238,25 @@ class StartupController extends Controller
         }
     }
 
+    public function get_single_ccsp_fund_detail($id)
+    {
+        try {
+            $data = Ifinworth::leftJoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                ->select('ifinworth_details.*', 'campaign_details.*')
+                ->where(['ifinworth_details.ccsp_fund_id' => $id])
+                ->latest('campaign_details.created_at')
+                ->first();
+            return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $data], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function get_admin_startup_ifinworth_detail(Request $request)
     {
 
