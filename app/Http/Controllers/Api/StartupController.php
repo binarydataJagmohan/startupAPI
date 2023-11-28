@@ -247,10 +247,12 @@ class StartupController extends Controller
                 ], 422);
             }
             $startupId = $request->startup_id;
-            $ifinworth = Ifinworth::where('startup_id', $startupId)->first();
+            $ccspFundId = $request->ccsp_fund_id;
+            $ifinworth = Ifinworth::where('ccsp_fund_id', $ccspFundId)->first();
 
             if (!$ifinworth) {
                 $ifinworth = new Ifinworth();
+                $ifinworth->ccsp_fund_id = $ccspFundId;
             }
 
             $ifinworth->startup_id = $startupId;
@@ -276,10 +278,18 @@ class StartupController extends Controller
             $this->processFileUpload($request, 'latest_cap_table', $ifinworth, 'latest_cap_table');
             $this->processFileUpload($request, 'other_documents', $ifinworth, 'other_documents');
 
+            $ifinworth->update($request->all());
             $savedata = $ifinworth->save();
 
             if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+                $lastInsertedFundId = $ifinworth->ccsp_fund_id;
+
+                return response()->json([
+                    'status' => true,
+                    'message' => "Information saved successfully",
+                    'data' => $savedata,
+                    'ccsp_fund_id' => $lastInsertedFundId,
+                ], 200);
             } else {
                 return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
             }
@@ -299,14 +309,17 @@ class StartupController extends Controller
         }
     }
 
-    public function get_pre_commited_investors($id)
+    public function get_pre_commited_investors(Request $request)
     {
-        try {
 
-            $investor_ids = PreCommitedInvestor::where('startup_id', $id)->pluck('investor_id');
+        try {
+            $ccspFundId = $request->id;
+
+            $investor_ids = PreCommitedInvestor::where('ccsp_fund_id', $ccspFundId)
+                ->orderBy('updated_at', 'desc')
+                ->pluck('investor_id');
 
             if ($investor_ids->isNotEmpty()) {
-
                 $investors = User::whereIn('id', $investor_ids)->pluck('name', 'id');
                 $investors_array = [];
 
@@ -332,42 +345,84 @@ class StartupController extends Controller
     }
 
 
+    public function get_latest_ifinworth_detail()
+    {
+        try {
+            $latestRecord = Ifinworth::latest('updated_at')->first();
 
+            if ($latestRecord) {
+                return response()->json(['status' => true, 'message' => "Data fetched successfully", 'data' => $latestRecord], 200);
+            } else {
+                return response()->json(['status' => false, 'message' => "No data found", 'data' => null], 404);
+            }
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 
     public function get_startup_ifinworth_detail(Request $request)
     {
-
         try {
-            $ifinworth = Ifinworth::where('startup_id', $request->id)->first();
+            $ifinworth = Ifinworth::where('ccsp_fund_id', $request->id)->latest('updated_at')->first();
+
             if ($ifinworth) {
-                return response()->json(['status' => true, 'message' => "single data fetching successfully", 'data' => $ifinworth], 200);
+                return response()->json(['status' => true, 'message' => "Single data fetching successfully", 'data' => $ifinworth], 200);
             }
+            //  else {
+            //     return response()->json(['status' => false, 'message' => "No data found for the specified startup ID", 'data' => null], 404);
+            // }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
     }
+
 
     public function add_pre_commited_investor(Request $request)
     {
-
         try {
-
             $startupId = $request->user_id;
-            $ifinworth = new PreCommitedInvestor();
-            $ifinworth->startup_id = $startupId;
-            $ifinworth->investor_id = $request->investor_id;
-            $savedata = $ifinworth->save();
+            $ccspFundId = $request->ccsp_fund_id;
+            $investorId = $request->investor_id;
+            $existingRecord = PreCommitedInvestor::where('startup_id', $startupId)
+                ->where('ccsp_fund_id', $ccspFundId)
+                ->where('investor_id', $investorId)
+                ->first();
 
-            if ($savedata) {
-                return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+            if ($existingRecord) {
+                $existingRecord->update([]);
+
+                return response()->json(['status' => true, 'message' => 'Record updated successfully', 'data' => $existingRecord], 200);
             } else {
-                return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+                // If the record doesn't exist, create a new record
+                $ifinworth = new PreCommitedInvestor();
+                $ifinworth->startup_id = $startupId;
+                $ifinworth->ccsp_fund_id = $ccspFundId;
+                if (is_array($investorId)) {
+                    $ifinworth->investor_id = implode(', ', $investorId);
+                } else {
+                    $ifinworth->investor_id = $investorId;
+                }
+
+                $savedata = $ifinworth->save();
+
+                if ($savedata) {
+                    return response()->json(['status' => true, 'message' => "Information saved successfully", 'data' => $savedata], 200);
+                } else {
+                    return response()->json(['status' => false, 'message' => "There has been an error", 'data' => ""], 200);
+                }
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
     }
+
+
 
     public function delete_pre_commited_investor($id)
     {
@@ -1155,7 +1210,7 @@ class StartupController extends Controller
     {
         try {
             // Assuming $id is the startup_id you're searching for
-            $startupId = Ifinworth::where('startup_id', $id)->pluck('id');
+            $startupId = Ifinworth::where('startup_id', $id)->where('status', 'active')->pluck('id');
 
             if ($startupId->isNotEmpty()) {
                 $detail = Ifinworth::whereIn('id', $startupId)->get();
@@ -1213,5 +1268,4 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
-
 }
