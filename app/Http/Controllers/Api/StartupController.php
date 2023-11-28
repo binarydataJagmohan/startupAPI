@@ -533,7 +533,6 @@ class StartupController extends Controller
                 //     'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                 //     'max:20480',
                 // ],
-
             ]);
             if ($validator->fails()) {
                 return response()->json([
