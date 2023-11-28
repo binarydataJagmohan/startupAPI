@@ -168,10 +168,11 @@ Route::group(['middleware' => ['api']], function () {
     Route::post('ifinworth-details', [App\Http\Controllers\Api\StartupController::class, 'insert_ifinworth_details']);
     Route::get('get-ifinworth-details/{id}', [App\Http\Controllers\Api\StartupController::class, 'get_startup_ifinworth_detail']);
     Route::post('add-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'add_pre_commited_investor']);    
-    Route::post('delete-pre-commited-investor/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
+    Route::post('delete-pre-commited-investor', [App\Http\Controllers\Api\StartupController::class, 'delete_pre_commited_investor']);
     Route::get('get-pre-commited-investors', [App\Http\Controllers\Api\StartupController::class, 'get_pre_commited_investors']);
     Route::post('publish-ccsp-fund/{id}', [App\Http\Controllers\Api\StartupController::class, 'publish_ccsp_fund']);
     Route::get('get-latest-ifinworth-detail', [App\Http\Controllers\Api\StartupController::class, 'get_latest_ifinworth_detail']);
+    Route::post('delete-campaign/{id}', [App\Http\Controllers\Api\StartupController::class, 'delete_campaign']);
 
 
 
