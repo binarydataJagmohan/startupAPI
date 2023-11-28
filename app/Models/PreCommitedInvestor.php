@@ -13,6 +13,7 @@ class PreCommitedInvestor extends Model
     protected $fillable = [
         'startup_id',
         'investor_id',  
+        'ccsp_fund_id',
         'status',      
 
     ];    
