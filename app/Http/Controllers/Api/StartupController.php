@@ -424,34 +424,40 @@ class StartupController extends Controller
 
 
 
-    public function delete_pre_commited_investor($id)
-    {
-        try {
+    public function delete_pre_commited_investor(Request $request)
+{
+    try {
+        $ccsp_fund_id = $request->data['ccsp_fund_id'];
+        $investor_id = $request->data['investor_id'];
 
-            $investor = PreCommitedInvestor::where('investor_id', $id)->first();
+        $investor = PreCommitedInvestor::where('ccsp_fund_id', $ccsp_fund_id)
+            ->where('investor_id', $investor_id)
+            ->first();
 
-            if (!$investor) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Investor not found.'
-                ], 404);
-            }
-            $investor->delete();
-
-            return response()->json([
-                'status' => 'true',
-                'message' => 'Investor deleted successfully.'
-            ]);
-        } catch (\Exception $e) {
-            throw new HttpException(500, $e->getMessage());
-
+        if (!$investor) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error occurred.',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Investor not found.'
+            ], 404);
         }
+
+        $investor->delete();
+
+        return response()->json([
+            'status' => 'true',
+            'message' => 'Investor deleted successfully.'
+        ]);
+    } catch (\Exception $e) {
+        throw new HttpException(500, $e->getMessage());
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Error occurred.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
 
     /**
@@ -1268,4 +1274,35 @@ class StartupController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
+
+    public function delete_campaign(Request $request)
+    {
+        try {              
+            $ccsp_fund_id = $request->input('data');
+    
+            $deletedRows = IfinWorth::where('ccsp_fund_id', $ccsp_fund_id)->delete();
+    
+            if ($deletedRows === 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Campaign not found.'
+                ], 404);
+            }
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Campaign deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }    
+    }
+    
+    
 }
