@@ -485,19 +485,14 @@ class StartupController extends Controller
     {
 
         try {
-            $data = User::where('role', 'startup')->count();
+            $data = User::select('users.*', 'business_details.business_name', 'business_details.stage')
+                ->join('business_details', 'users.id', '=', 'business_details.user_id')
+                ->where(['role' => 'startup', 'is_profile_completed' => '1'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             if ($data) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Startups Count get Succcessfully ',
-                    'data' => $data
-                ], 200);
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Startups Count does not get Succcessfully ',
-                    'data' => 0
-                ], 404);
+                return response()->json(['status' => true, 'message' => "Data fetching successfully", 'data' => $data], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
@@ -654,7 +649,7 @@ class StartupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function get_all_startup(Request $request)
+    public function  get_all_startup(Request $request)
     {
         try {
             $data = User::select('users.*', 'business_details.business_name', 'business_details.stage')
