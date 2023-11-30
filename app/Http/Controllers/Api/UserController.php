@@ -82,7 +82,7 @@ class UserController extends Controller
                 // Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
                 //     $message->to($mail['email'])->subject($mail['title']);
                 // });
-                return response()->json(['status' => true, 'message' => 'Verification link has been sent to your email.', 'data' => ['user' => $user, $token]], 200);
+                return response()->json(['status' => true, 'message' => 'Registered successully!', 'data' => ['user' => $user, $token]], 200);
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
