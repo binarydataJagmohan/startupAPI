@@ -65,7 +65,7 @@
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top">
-                                            Hi {{ $mail['name'] }},
+                                            Hi {{$mail['name']}} ,<br><br>
                                             Welcome to Startup - IT Startups & Digital Services! We're thrilled to have
                                             you on board. To ensure the security of your account, please use the
                                             following OTP to verify your email address:

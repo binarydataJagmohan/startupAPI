@@ -505,6 +505,7 @@ class DocumentsController extends Controller
                 $domain = env('NEXT_URL_LOGIN');
                 $url = $domain . '/?token=' . $mailtoken;
                 $mail['url'] = $url;
+                $mail['name']= $user->name;
                 $mail['email'] = $user->email;
                 $mail['otp'] = $otp->otp;
                 $mail['title'] = "Verify Your Account";
