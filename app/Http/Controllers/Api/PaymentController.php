@@ -11,12 +11,12 @@ use Stripe\Customer;
 use Stripe\Token;
 use Stripe\Charge;
 use Stripe\Exception\CardException;
-use Illuminate\Http\Exceptions\HttpException;
 use Carbon\Carbon;
 use Stripe\PaymentIntent;
 use App\Models\User;
 use App\Models\Business;
 use Mail;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PaymentController extends Controller
 {
