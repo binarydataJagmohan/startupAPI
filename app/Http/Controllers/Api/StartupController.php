@@ -1210,13 +1210,10 @@ class StartupController extends Controller
     public function get_ccsp_detail_for_startup($id)
     {
         try {
-            // Assuming $id is the startup_id you're searching for
             $startupId = Ifinworth::where('startup_id', $id)->where('status', 'active')->pluck('id');
-
             if ($startupId->isNotEmpty()) {
-                $detail = Ifinworth::whereIn('id', $startupId)->get();
+                $detail = Ifinworth::whereIn('id', $startupId)->orderBy('created_at', 'desc')->get();
                 $detail_array = $detail->toArray();
-
                 return response()->json([
                     'status' => true,
                     'message' => "CCSP Detail fetched successfully",

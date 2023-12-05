@@ -23,9 +23,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use DB;
 use App\Mail\ResetPasswordMail;
 use App\Models\PasswordReset;
+use App\Models\DocumentUpload;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -775,6 +776,56 @@ class UserController extends Controller
             return response()->json(['status' => true, 'message' => "Otp successfully confirmed", 'data' => ''], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
+        }
+    }
+
+    public function re_submit_otp(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+    
+            $otp = VerificationCode::where('user_id', $request->id)->where('otp_type', 'email')->first();
+    
+            if ($otp) {
+                $otp->otp = rand(1000, 9999);
+                $otp->expire_at = now()->addMinutes(1);
+                $otp->save();
+            } else {
+                $otp = VerificationCode::create([
+                    'user_id' => $request->id,
+                    'otp' => rand(1000, 9999),
+                    'otp_type' => 'email',
+                    'expire_at' => now()->addMinutes(1),
+                ]);
+            }
+    
+            $user = User::find($request->id);
+            $data = [
+                'name' => $user->name,
+                'otp' => $otp->otp,
+            ];
+    
+            Mail::send('email.resendOtpMail', ['mail' => $data], function ($message) use ($user) {
+                $message->from('demo93119@gmail.com', "StartUp");
+                $message->subject('Resend Otp Verification Code');
+                $message->to($user['email']);
+            });
+    
+            DB::commit();
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'OTP sent successfully',
+                'data' => $otp->otp,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Error sending OTP',
+                'data' => $e->getMessage(),
+            ], 400);
         }
     }
 }
