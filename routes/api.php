@@ -27,6 +27,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::post('personal-information', [App\Http\Controllers\Api\StartupController::class, 'personal_information']);
     Route::post('investor-register', [App\Http\Controllers\Api\UserController::class, 'investor_register']);
     Route::post('send-otp/{id}', [App\Http\Controllers\Api\UserController::class, 'send_otp']);
+    Route::get('re-submit-otp/{id}', [App\Http\Controllers\Api\UserController::class, 're_submit_otp']);
     Route::post('confirm-otp', [App\Http\Controllers\Api\UserController::class, 'confirm_otp']);
     Route::post('save-contact', [App\Http\Controllers\Api\UserController::class, 'save_contact']);
     Route::post('user-login', [App\Http\Controllers\Api\UserController::class, 'user_login']);
@@ -133,6 +134,9 @@ Route::group(['middleware' => ['api']], function () {
 
     Route::get('get-all-active-funds', [\App\Http\Controllers\Api\AdminController::class, 'get_all_active_funds']);
     Route::get('totalcount-active-funds', [\App\Http\Controllers\Api\AdminController::class, 'total_count_active_funds']);
+    Route::get('all-contact-queries', [\App\Http\Controllers\Api\AdminController::class, 'all_contact_queries']);
+    Route::post('delete-querie/{id}', [App\Http\Controllers\Api\AdminController::class, 'delete_querie']);
+
 
     Route::delete('investor-delete/{id}', [App\Http\Controllers\Api\AdminController::class, 'destroy_investor_data']);
     Route::get('single-investor/{id}', [App\Http\Controllers\Api\AdminController::class, 'get_single_investor']);

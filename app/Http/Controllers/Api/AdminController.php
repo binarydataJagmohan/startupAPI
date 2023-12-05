@@ -101,22 +101,22 @@ class AdminController extends Controller
                         ], 422);
                     } else
                         if (!empty(trim($request->privacy_policies))) {
-                            $terms = new PrivacyPolicies();
-                            $terms->user_id = $user;
-                            $terms->privacy_policies = $request->privacy_policies;
-                            $terms->save();
+                        $terms = new PrivacyPolicies();
+                        $terms->user_id = $user;
+                        $terms->privacy_policies = $request->privacy_policies;
+                        $terms->save();
 
-                            return response()->json([
-                                'status' => true,
-                                'message' => 'Privacy Policies added successfully',
-                                'data' => $terms
-                            ], 200);
-                        } else {
-                            return response()->json([
-                                'status' => false,
-                                'message' => 'Privacy Policies cannot be empty',
-                            ], 422);
-                        }
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Privacy Policies added successfully',
+                            'data' => $terms
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Privacy Policies cannot be empty',
+                        ], 422);
+                    }
                 }
             }
         } catch (\Exception $e) {
@@ -716,7 +716,6 @@ class AdminController extends Controller
             ], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
-
         }
     }
 
@@ -742,7 +741,6 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
-
     }
 
 
@@ -821,7 +819,6 @@ class AdminController extends Controller
             ], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
-
         }
     }
 
@@ -881,10 +878,10 @@ class AdminController extends Controller
             //     ->join('ifinworth_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
             //     ->get();
 
-                $campaign = Ifinworth::leftJoin('campaign_details', function ($join) {
-                    $join->on('ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
-                        ->where('campaign_details.status', 'active');
-                })
+            $campaign = Ifinworth::leftJoin('campaign_details', function ($join) {
+                $join->on('ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
+                    ->where('campaign_details.status', 'active');
+            })
                 ->orderBy('ifinworth_details.created_at', 'desc')
                 ->select('ifinworth_details.*', 'campaign_details.*') // Select columns you need
                 ->get();
@@ -924,7 +921,7 @@ class AdminController extends Controller
 
             )
                 ->join('ifinworth_details', 'users.id', '=', 'ifinworth_details.startup_id')
-                ->leftjoin('campaign_details','ifinworth_details.ccsp_fund_id', '=','campaign_details.ccsp_fund_id')
+                ->leftjoin('campaign_details', 'ifinworth_details.ccsp_fund_id', '=', 'campaign_details.ccsp_fund_id')
                 ->orderBy('ifinworth_details.created_at', 'desc') // Specify the table for created_at
                 ->where('ifinworth_details.status', '=', 'active')
                 ->get();
@@ -934,50 +931,49 @@ class AdminController extends Controller
             }
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
-
         }
     }
 
 
-        public function updateCampignStatus(Request $request, $id)
-        {
-            try {
-                $data = Ifinworth::find($id);
+    public function updateCampignStatus(Request $request, $id)
+    {
+        try {
+            $data = Ifinworth::find($id);
 
-                if (!$data) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Record not found.',
-                    ], 404);
-                }
-
-                $data->approval_status = $request->input('approval_status');
-                $data->updated_at = Carbon::now();
-                $data->save();
-                if ($data->approval_status === "approved") {
-                    $user = User::where('id', $data->startup_id)->first();
-                    if ($user) {
-                        $mail['user'] = $user;
-                        $mail['email'] = $user->email;
-                        $mail['title'] = "Congratulations! Your Fund Has Been Approved";
-        
-                        // Send email to the user associated with the startup_id
-                        Mail::send('email.ccspfundapproval', ['mail' => $mail], function ($message) use ($mail) {
-                            $message->from('sender@example.com', 'Rising Capitalist'); // Replace with your sender email and name
-                            $message->to($mail['email'])->subject($mail['title']);
-                        });
-                    }
-                }
-
+            if (!$data) {
                 return response()->json([
-                    'status' => true,
-                    'message' => 'Status Updated Successfully.',
-                    'data' => $data
-                ], 200);
-            } catch (\Exception $e) {
-                throw new HttpException(500, $e->getMessage());
+                    'status' => false,
+                    'message' => 'Record not found.',
+                ], 404);
             }
+
+            $data->approval_status = $request->input('approval_status');
+            $data->updated_at = Carbon::now();
+            $data->save();
+            if ($data->approval_status === "approved") {
+                $user = User::where('id', $data->startup_id)->first();
+                if ($user) {
+                    $mail['user'] = $user;
+                    $mail['email'] = $user->email;
+                    $mail['title'] = "Congratulations! Your Fund Has Been Approved";
+
+                    // Send email to the user associated with the startup_id
+                    Mail::send('email.ccspfundapproval', ['mail' => $mail], function ($message) use ($mail) {
+                        $message->from('sender@example.com', 'Rising Capitalist'); // Replace with your sender email and name
+                        $message->to($mail['email'])->subject($mail['title']);
+                    });
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Status Updated Successfully.',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
         }
+    }
 
 
     public function deleteCampign(Request $request, $id)
@@ -1048,5 +1044,52 @@ class AdminController extends Controller
         }
     }
 
+    public function all_contact_queries()
+    {
+        try {
+            $contacts = Contact::get();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data retrieved successfully',
+                'data' => $contacts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function delete_querie(Request $request)
+    {
+        try {              
+            $id = $request->id;
+    
+            $deletedRows = Contact::where('id', $id)->delete();
+    
+            if ($deletedRows === 0) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Contact querie not found.'
+                ], 404);
+            }
+    
+            return response()->json([
+                'status' => true,
+                'message' => 'Contact querie deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            throw new HttpException(500, $e->getMessage());
+    
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Occurred.',
+                'error' => $e->getMessage()
+            ], 500);
+        }    
+    }
 
 }
