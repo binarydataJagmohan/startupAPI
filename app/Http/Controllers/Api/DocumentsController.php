@@ -119,7 +119,7 @@ class DocumentsController extends Controller
 
     public function upload_documents(Request $request)
     {
-      
+
         try {
 
 
@@ -190,7 +190,7 @@ class DocumentsController extends Controller
                     $file->move($filepath, $filename);
                     $documents->aoa = $filename;
                 }
-                
+
                 $documents->save();
 
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
@@ -275,6 +275,7 @@ class DocumentsController extends Controller
                 $url = $domain . '/?token=' . $mailtoken;
                 $mail['url'] = $url;
                 $mail['email'] = $user->email;
+                $mail['name'] = $user->name;
                 $mail['otp'] = $otp->otp;
                 $mail['title'] = "Verify Your Account";
                 $mail['body'] = "Please click on below link to verify your Account";
@@ -298,7 +299,7 @@ class DocumentsController extends Controller
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
-    }
+    }    
 
     public function SelectedOptionsDocumentUpload(Request $request)
     {
@@ -306,96 +307,103 @@ class DocumentsController extends Controller
             $user_id = $request->user_id;
             $user = User::findOrFail($user_id);
             $checkuserid = DocumentsUpload::where('user_id', $request->user_id)->count();
+
             if ($checkuserid > 0) {
                 $documents = DocumentsUpload::where('user_id', $user_id)->where('status', '1')->first();
+
                 if ($request->hasFile('proof_of_network')) {
                     $file = $request->file('proof_of_network');
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'proof_network';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'proof_network',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('proof_of_income')) {
                     $file = $request->file('proof_of_income');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'proof_income';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'proof_income',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('certificate_of_incorporation')) {
                     $file = $request->file('certificate_of_incorporation');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'certificate_incorporation';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'certificate_incorporation',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('ca_signed_net_angeable_2_crore')) {
                     $file = $request->file('ca_signed_net_angeable_2_crore');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'ca_signed_angeable_2_crore';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'ca_signed_angeable_2_crore',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('net_worth_atleast_10_crore')) {
                     $file = $request->file('net_worth_atleast_10_crore');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] =  'net_worth_10_crore';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'net_worth_10_crore',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('bank_statement_3_years')) {
                     $file = $request->file('bank_statement_3_years');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'bank_statement_3_years';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
-                }
 
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'bank_statement_3_years',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
+                }
                 if ($request->hasFile('incorporation_certificate')) {
                     $file = $request->file('incorporation_certificate');
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
+                    $filepath = public_path('docs');
                     $file->move($filepath, $filename);
-                    $Input = [];
-                    $Input['filename'] = $filename;
-                    $Input['filepath'] = $filepath;
-                    $Input['type'] = 'incorporation_certificate';
-                    $save_document_data = DocumentsUpload::where('user_id', $user_id)->update($Input);
+
+                    $Input = [
+                        'filename' => $filename,
+                        'filepath' => $filepath,
+                        'type' => 'incorporation_certificate',
+                    ];
+                    DocumentsUpload::where('id', $documents->id)->update($Input);
                 }
                 return response()->json(['status' => true, 'message' => 'Documents updated successfully', 'data' => ''], 200);
             } else {
-
-                //$documents = new DocumentsUpload();
-                //$documents->user_id = $request->user_id;
                 if ($request->hasFile('proof_of_network')) {
                     $file = $request->file('proof_of_network');
                     $filename = time() . '_' . $file->getClientOriginalName();
@@ -505,7 +513,7 @@ class DocumentsController extends Controller
                 $domain = env('NEXT_URL_LOGIN');
                 $url = $domain . '/?token=' . $mailtoken;
                 $mail['url'] = $url;
-                $mail['name']= $user->name;
+                $mail['name'] = $user->name;
                 $mail['email'] = $user->email;
                 $mail['otp'] = $otp->otp;
                 $mail['title'] = "Verify Your Account";
@@ -520,6 +528,7 @@ class DocumentsController extends Controller
             throw new HttpException(500, $e->getMessage());
         }
     }
+
 
     public function getUploadDocumentsByDocumentType(Request $request)
     {
