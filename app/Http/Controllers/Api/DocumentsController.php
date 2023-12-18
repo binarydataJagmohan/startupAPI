@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Models\VerificationCode;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 
 class DocumentsController extends Controller
@@ -29,70 +30,76 @@ class DocumentsController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */   
     public function basic_information(Request $request)
     {
         try {
             $userId = $request->user_id;
+
+            // Validate request data
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'pan_number' => 'required',
                 'uid' => 'required',
                 'dob' => 'required',
-                // 'proof_img' => [
-                //     Rule::requiredIf(function () use ($request) {
-                //         // Check if proof_img is already present in the database
-                //         $existingProofImg = Documents::where('user_id', $request->user_id)
-                //             ->whereNotNull('proof_img')
-                //             ->first();
-
-                //         return !$existingProofImg;
-                //     }),
-                //     'file',
-                //     'mimetypes:application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                //     'max:20480', // Adjust the file size limit if needed
-                // ],
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => 'Validation error', 'errors' => $validator->errors()], 400);
             }
-            $data  = Documents::where('user_id', $userId)->first();
+
+            // Verify PAN using Cashfree API
+            $panVerificationResponse = Http::withHeaders([
+                'x-client-id' => 'CF10024412CM00MRK1BOIESO9GIE6G',
+                'x-client-secret' => 'cfsk_ma_test_9dc07d8ae4136258c3fb702f95848cbb_2419fd1c',
+                'x-api-version' => 'v1',
+                'Content-Type' => 'application/json',
+            ])->post('https://sandbox.cashfree.com/verification/pan', [
+                'pan' => $request->pan_number,
+            ]);
+
+            if (!$panVerificationResponse->successful()) {
+                return response()->json(['status' => false, 'message' => 'PAN card number is not valid ']);
+            }
+
+            $data = Documents::where('user_id', $userId)->first();
+
             if ($data) {
+                // Update existing documents
                 $data->update([
                     'user_id' => $request->user_id,
-                    'pan_number' => $request->pan_number, 'uid' => $request->uid, 'dob' => $request->dob
+                    'pan_number' => $request->pan_number,
+                    'uid' => $request->uid,
+                    'dob' => $request->dob,
                 ]);
+
+                // Upload and update proof image if provided
                 if ($request->hasFile('proof_img')) {
-                    $file = $request->file('proof_img');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs');
-                    $file->move($filepath, $filename);
+                    $filename = time() . '_' . $request->file('proof_img')->getClientOriginalName();
+                    $request->file('proof_img')->move(public_path('docs'), $filename);
                     $data->proof_img = $filename;
                 }
-
                 $data->save();
-                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['data' => $data]], 200);
             } else {
-                $data                  = new Documents();
-                $data->user_id         = $userId;
-                $data->pan_number      = $request->pan_number;
-                $data->uid             = $request->uid;
-                $data->dob             = $request->dob;
-                //  $data->proof_img =basename($imagePath);
-                // $data->proof_img       = $request->proof_img;
+                $data = new Documents([
+                    'user_id' => $userId,
+                    'pan_number' => $request->pan_number,
+                    'uid' => $request->uid,
+                    'dob' => $request->dob,
+                ]);
+
                 if ($request->hasFile('proof_img')) {
-                    $file = $request->file('proof_img');
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $filepath = public_path('docs/');
-                    $file->move($filepath, $filename);
+                    $filename = time() . '_' . $request->file('proof_img')->getClientOriginalName();
+                    $request->file('proof_img')->move(public_path('docs'), $filename);
                     $data->proof_img = $filename;
                 }
 
                 $data->save();
-                $user = User::where('id', $userId)->update(['reg_step_3' => '1']);
-                return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $data]], 200);
+
+                User::where('id', $userId)->update(['reg_step_3' => '1']);
             }
+
+            return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $data]], 200);
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
@@ -300,7 +307,7 @@ class DocumentsController extends Controller
         } catch (\Exception $e) {
             throw new HttpException(500, $e->getMessage());
         }
-    }    
+    }
 
     public function SelectedOptionsDocumentUpload(Request $request)
     {
