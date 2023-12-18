@@ -54,7 +54,7 @@ class DocumentsController extends Controller
                 'x-client-secret' => 'cfsk_ma_test_9dc07d8ae4136258c3fb702f95848cbb_2419fd1c',
                 'x-api-version' => 'v1',
                 'Content-Type' => 'application/json',
-            ])->post('https://sandbox.cashfree.com/verification/pan', [
+            ])->post('https://api.cashfree.com/verification', [
                 'pan' => $request->pan_number,
             ]);
 
