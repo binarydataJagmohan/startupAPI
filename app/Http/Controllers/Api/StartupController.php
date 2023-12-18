@@ -654,7 +654,7 @@ class StartupController extends Controller
         try {
             $data = User::select('users.*', 'business_details.business_name', 'business_details.stage')
                 ->join('business_details', 'users.id', '=', 'business_details.user_id')
-                ->where(['role' => 'startup', 'is_profile_completed' => '1'])
+                ->where(['role' => 'startup', 'is_email_verification_complete' => '1'])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
@@ -692,6 +692,7 @@ class StartupController extends Controller
                 $mail['body'] = "Your Account has been approved Successfully. ";
 
                 Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                 });
             }

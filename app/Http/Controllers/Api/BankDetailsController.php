@@ -72,6 +72,7 @@ class BankDetailsController extends Controller
                 $mail['pdf_file'] = $pdf_file_path;
 
                 Mail::send('email.ProfileCompletedMail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                     $message->attach($mail['pdf_file']);
                 });

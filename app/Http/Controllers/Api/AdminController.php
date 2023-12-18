@@ -959,7 +959,7 @@ class AdminController extends Controller
 
                     // Send email to the user associated with the startup_id
                     Mail::send('email.ccspfundapproval', ['mail' => $mail], function ($message) use ($mail) {
-                        $message->from('sender@example.com', 'Rising Capitalist'); // Replace with your sender email and name
+                        $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                         $message->to($mail['email'])->subject($mail['title']);
                     });
                 }

@@ -281,6 +281,7 @@ class DocumentsController extends Controller
                 $mail['body'] = "Please click on below link to verify your Account";
                 $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
                 Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                 });
                 return response()->json(['status' => true, 'message' => 'Profile has been updated successfully', 'data' => ['documents_details' => $documents]], 200);
@@ -520,6 +521,7 @@ class DocumentsController extends Controller
                 $mail['body'] = "Please click on below link to verify your Account";
                 $user->where('id', $user->id)->update(['email_verification_token' => $mailtoken, 'email_verified_at' => Carbon::now()]);
                 Mail::send('email.emailVerify', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                 });
                 return response()->json(['status' => true, 'message' => 'Documents stored successfully', 'data' => ''], 200);
