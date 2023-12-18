@@ -323,6 +323,7 @@ class InvestorController extends Controller
                     $mail['title'] = "Profile Completed";
                     $mail['body'] =  "Profile has been Completed Successfully.";
                     Mail::send('email.InvestorProfileCompleted', ['mail' => $mail], function ($message) use ($mail) {
+                        $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                         $message->to($mail['email'])->subject($mail['title']);
                     });
                     return response()->json([
@@ -413,6 +414,7 @@ class InvestorController extends Controller
                 $mail['title'] = "Approval Mail";
                 $mail['body'] =  "Your Account has been approved Successfully. ";
                 Mail::send('email.approvedEmail', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                 });
             }

@@ -185,6 +185,7 @@ class NotificationController extends Controller
                 $mail['body'] = "New Fund Raised By Startup.";
                 $mail['username'] = $investor->name;
                 Mail::send('email.fundInvestorNotification', ['mail' => $mail], function ($message) use ($mail) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($mail['email'])->subject($mail['title']);
                 });
             }

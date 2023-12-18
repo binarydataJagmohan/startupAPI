@@ -67,6 +67,7 @@ class PaymentController extends Controller
             $mail['date'] = $timestamp->format('Y-m-d');
            
             Mail::send('email.paymentSuccess', ['mail' => $mail], function ($message) use ($mail) {
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->to($mail['email'])->subject($mail['title']);
             });   
             return response()->json(['status' => true, 'message' => 'Payment successful', 'data' => $data, 'paymentIntent' => $paymentIntent], 200);
@@ -86,6 +87,7 @@ class PaymentController extends Controller
             ];
         
             Mail::send('email.StartupFundNotification', ['mail' => $mail1Data], function ($message) use ($mail1Data) {
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->to($mail1Data['email'])->subject($mail1Data['title']);
             });
 

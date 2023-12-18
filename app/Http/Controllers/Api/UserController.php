@@ -431,7 +431,7 @@ class UserController extends Controller
                 ];
 
                 Mail::send('contactMail', ['data1' => $data], function ($message) use ($data) {
-                    $message->from('demo93119@gmail.com', "StartUp");
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->subject('Welcome to StartUp, ' . $data['name'] . '!');
                     $message->to($data['email']);
                 });
@@ -500,7 +500,7 @@ class UserController extends Controller
                 'email' => $user->email
             ];
             Mail::send('otpMail', ['data' => $data], function ($message) use ($user) {
-                $message->from('demo93119@gmail.com', "StartUp");
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->subject('Welcome to StartUp, ' . $user['name'] . '!');
                 $message->to($user['email']);
             });
@@ -550,6 +550,7 @@ class UserController extends Controller
                 $data['title'] = "password reset";
                 $data['body'] = "Please click on below link to reset your password";
                 Mail::send('email.ResetPasswordMail', ['data' => $data], function ($message) use ($data) {
+                    $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     $message->to($data['email'])->subject($data['title']);
                 });
                 $datetime = Carbon::now()->format('Y-m-d H:i:s');
@@ -743,7 +744,7 @@ class UserController extends Controller
                 'otp' => $otp->otp,
             ];
             Mail::send('email.resendOtpMail', ['mail' => $data], function ($message) use ($user) {
-                $message->from('demo93119@gmail.com', "StartUp");
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->subject('Resend Otp Verification Code');
                 $message->to($user['email']);
             });
@@ -783,9 +784,9 @@ class UserController extends Controller
     {
         try {
             DB::beginTransaction();
-    
+
             $otp = VerificationCode::where('user_id', $request->id)->where('otp_type', 'email')->first();
-    
+
             if ($otp) {
                 $otp->otp = rand(1000, 9999);
                 $otp->expire_at = now()->addMinutes(1);
@@ -798,21 +799,21 @@ class UserController extends Controller
                     'expire_at' => now()->addMinutes(1),
                 ]);
             }
-    
+
             $user = User::find($request->id);
             $data = [
                 'name' => $user->name,
                 'otp' => $otp->otp,
             ];
-    
+
             Mail::send('email.resendOtpMail', ['mail' => $data], function ($message) use ($user) {
-                $message->from('demo93119@gmail.com', "StartUp");
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                 $message->subject('Resend Otp Verification Code');
                 $message->to($user['email']);
             });
-    
+
             DB::commit();
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'OTP sent successfully',
@@ -820,7 +821,7 @@ class UserController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-    
+
             return response()->json([
                 'status' => false,
                 'message' => 'Error sending OTP',
