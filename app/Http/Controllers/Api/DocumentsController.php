@@ -50,16 +50,16 @@ class DocumentsController extends Controller
 
             // Verify PAN using Cashfree API
             $panVerificationResponse = Http::withHeaders([
-                'x-client-id' => 'CF10024412CM00MRK1BOIESO9GIE6G',
-                'x-client-secret' => 'cfsk_ma_test_9dc07d8ae4136258c3fb702f95848cbb_2419fd1c',
+                'x-client-id' => env('CASHFREE_CLIENT_ID'),
+                'x-client-secret' => env('CASHFREE_CLIENT_SECRET'),
                 'x-api-version' => 'v1',
                 'Content-Type' => 'application/json',
-            ])->post('https://api.cashfree.com/verification', [
+            ])->post(env('CASHFREE_POST_URL'), [
                 'pan' => $request->pan_number,
-            ]);
+            ]);      
 
             if (!$panVerificationResponse->successful()) {
-                return response()->json(['status' => false, 'message' => 'PAN card number is not valid ']);
+                return $panVerificationResponse;   
             }
 
             $data = Documents::where('user_id', $userId)->first();
